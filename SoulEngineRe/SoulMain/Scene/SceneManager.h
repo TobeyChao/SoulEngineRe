@@ -34,13 +34,9 @@ namespace Soul
 
 		virtual unsigned int RegisterNode(SceneNode* node, E_SCENENODE_TYPES pass);
 
-		virtual GameObject* CreateGameObject();
+		virtual GameObject* CreateGameObject(const std::string& name, SIMPLE_GAMEOBJECT simpleGameObject, const json& createParameters);
 
-		virtual GameObject* CreateGameObject(const std::string& name);
-
-		virtual GameObject* CreateGameObject(const std::string& name, SIMPLE_GAMEOBJECT simpleGameObject);
-
-		virtual GameObject* CreateGameObject(const std::string& name, const std::wstring& meshFilePath);
+		virtual GameObject* CreateGameObject(const std::string& name, const std::wstring& meshFilePath, const json& createParameters);
 
 		virtual Light* CreateLight(const std::string& name, LIGHT_TYPE lightType);
 
@@ -66,6 +62,10 @@ namespace Soul
 		{
 			mLightList.push_back(light);
 		}
+
+	private:
+		void SetCustomEffect(SubMesh* subMesh, const json& effctSetting);
+
 	private:
 
 		std::vector<SceneNode*> mCameraNodeList;

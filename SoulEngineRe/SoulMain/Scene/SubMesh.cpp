@@ -9,8 +9,11 @@ namespace Soul
 		mShader(nullptr),
 		mMaterial(nullptr),
 		mUseBlend(false),
+		mBlendType(BlendType::BT_DEFAULT),
 		mUseRasterizer(false),
+		mRasterizerType(RasterizerType::RT_DEFAULT),
 		mUseDepthStencil(false),
+		mDepthStencilType(DepthStencilType::DST_DEFAULT),
 		mParent(nullptr)
 	{
 		mOringinMeshData = new MeshData();

@@ -20,7 +20,8 @@ namespace Soul
 		mRasterizerDescChanged(false),
 		mDepthStencilDesc(),
 		mDepthStencilDescChanged(false),
-		mTextureSettingChanged(false)
+		mTextureSettingChanged(false),
+		mStencilRef(0)
 	{
 		mD3D11Device = new D3D11Device();
 	}
@@ -32,15 +33,6 @@ namespace Soul
 	void D3D11RenderSystem::Initialize(const std::string& initConfig)
 	{
 		RenderSystem::Initialize(initConfig);
-		mBlendDescChanged = true;
-		mRasterizerDescChanged = true;
-		mDepthStencilDescChanged = true;
-
-		// 混合
-		ZeroMemory(&mBlendDesc, sizeof(mBlendDesc));
-
-		// 深度模板
-		ZeroMemory(&mDepthStencilDesc, sizeof(mDepthStencilDesc));
 
 		// 创建D3DDevice
 		if (FAILED(CreateD3D11Device()))
@@ -48,19 +40,54 @@ namespace Soul
 			// 创建Device失败
 		}
 
-		//Rasterizer
-		// 光栅化
+		// 默认混合
+		ZeroMemory(&mBlendDesc, sizeof(mBlendDesc));
+		mBlendDesc.AlphaToCoverageEnable = true;
+		mBlendDesc.IndependentBlendEnable = false;
+		mBlendDesc.RenderTarget[0].BlendEnable = false;
+		mBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		if (FAILED((*mD3D11Device)->CreateBlendState(&mBlendDesc, mDefaultBlendState.ReleaseAndGetAddressOf())))
+		{
+		}
+
+		// 默认深度模板
+		ZeroMemory(&mDepthStencilDesc, sizeof(mDepthStencilDesc));
+		mDepthStencilDesc.DepthEnable = TRUE;
+		mDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		mDepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+		mDepthStencilDesc.StencilEnable = FALSE;
+		mDepthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+		mDepthStencilDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+		mDepthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		mDepthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+		mDepthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+		mDepthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+
+		mDepthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		mDepthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+
+		mDepthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		mDepthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		if (FAILED((*mD3D11Device)->CreateDepthStencilState(&mDepthStencilDesc, mDefaultDepthStencilState.ReleaseAndGetAddressOf())))
+		{
+		}
+
+		// 默认光栅化器
 		ZeroMemory(&mRasterizerDesc, sizeof(mRasterizerDesc));
-		mRasterizerDesc.FrontCounterClockwise = false; //顺时针
+		mRasterizerDesc.FrontCounterClockwise = false;
 		mRasterizerDesc.DepthClipEnable = true;
 		mRasterizerDesc.MultisampleEnable = true;
 		mRasterizerDesc.CullMode = D3D11_CULL_BACK;
 		mRasterizerDesc.FillMode = D3D11_FILL_SOLID;
-		if (FAILED((*mD3D11Device)->CreateRasterizerState(&mRasterizerDesc, mRasterizer.ReleaseAndGetAddressOf())))
+		if (FAILED((*mD3D11Device)->CreateRasterizerState(&mRasterizerDesc, mDefaultRasterizer.ReleaseAndGetAddressOf())))
 		{
 			// 创建RasterizerState失败
 		}
 
+		// 默认采样器
 		D3D11_SAMPLER_DESC dsd = {};
 		dsd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		dsd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -69,7 +96,7 @@ namespace Soul
 		dsd.MaxAnisotropy = ((*mD3D11Device)->GetFeatureLevel() > D3D_FEATURE_LEVEL_9_1) ? D3D11_MAX_MAXANISOTROPY : 2u;
 		dsd.MaxLOD = FLT_MAX;
 		dsd.ComparisonFunc = D3D11_COMPARISON_NEVER;
-		if (FAILED((*mD3D11Device)->CreateSamplerState(&dsd, mSamplerStates.ReleaseAndGetAddressOf())))
+		if (FAILED((*mD3D11Device)->CreateSamplerState(&dsd, mDefaultSamplerStates.ReleaseAndGetAddressOf())))
 		{
 			// 创建Sampler失败
 		}
@@ -84,6 +111,7 @@ namespace Soul
 		mShaderManager->AddShader(L"Texture2D");
 		mShaderManager->AddShader(L"Basic");
 		mShaderManager->AddShader(L"Color");
+		mShaderManager->AddShader(L"SkyBox");
 	}
 	const std::string& D3D11RenderSystem::GetRenderSystemName() const
 	{
@@ -97,7 +125,7 @@ namespace Soul
 		{
 			return nullptr;
 		}
-		bool ret =  window->Initialize(config);
+		bool ret = window->Initialize(config);
 		if (!ret)
 		{
 			return nullptr;
@@ -143,6 +171,100 @@ namespace Soul
 		mTextures[slot] = texture;
 		mTextureNum = slot + 1;
 		mTextureSettingChanged = true;
+	}
+	void D3D11RenderSystem::SetBlendType(const BlendType& bt)
+	{
+		switch (bt)
+		{
+		case BlendType::BT_DEFAULT:
+			mBlendDescChanged = false;
+			break;
+		case BlendType::BT_TRANSPARENT:
+			ZeroMemory(&mBlendDesc, sizeof(mBlendDesc));
+			mBlendDesc.AlphaToCoverageEnable = false;
+			mBlendDesc.RenderTarget[0].BlendEnable = true;
+			mBlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			mBlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+			mBlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			mBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+			mBlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+			mBlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			mBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			mBlendDescChanged = true;
+			break;
+		default:
+			mBlendDescChanged = false;
+			break;
+		}
+	}
+	void D3D11RenderSystem::SetRasterizerType(const RasterizerType& rt)
+	{
+		switch (rt)
+		{
+		case RasterizerType::RT_CULL_CLOCKWISE:
+			ZeroMemory(&mRasterizerDesc, sizeof(mRasterizerDesc));
+			mRasterizerDesc.FrontCounterClockwise = false;
+			mRasterizerDesc.DepthClipEnable = true;
+			mRasterizerDesc.MultisampleEnable = true;
+			mRasterizerDesc.CullMode = D3D11_CULL_FRONT;
+			mRasterizerDesc.FillMode = D3D11_FILL_SOLID;
+			mRasterizerDescChanged = true;
+			break;
+		case RasterizerType::RT_CULL_COUNTERCLOCKWISE:
+			ZeroMemory(&mRasterizerDesc, sizeof(mRasterizerDesc));
+			mRasterizerDesc.FrontCounterClockwise = false;
+			mRasterizerDesc.DepthClipEnable = true;
+			mRasterizerDesc.MultisampleEnable = true;
+			mRasterizerDesc.CullMode = D3D11_CULL_BACK;
+			mRasterizerDesc.FillMode = D3D11_FILL_SOLID;
+			mRasterizerDescChanged = true;
+			break;
+		case RasterizerType::RT_CULL_NONE:
+			ZeroMemory(&mRasterizerDesc, sizeof(mRasterizerDesc));
+			mRasterizerDesc.FrontCounterClockwise = false;
+			mRasterizerDesc.DepthClipEnable = true;
+			mRasterizerDesc.MultisampleEnable = true;
+			mRasterizerDesc.CullMode = D3D11_CULL_NONE;
+			mRasterizerDesc.FillMode = D3D11_FILL_SOLID;
+			mRasterizerDescChanged = true;
+			break;
+		case RasterizerType::RT_WIREFRAME:
+			ZeroMemory(&mRasterizerDesc, sizeof(mRasterizerDesc));
+			mRasterizerDesc.FrontCounterClockwise = false;
+			mRasterizerDesc.DepthClipEnable = true;
+			mRasterizerDesc.MultisampleEnable = true;
+			mRasterizerDesc.CullMode = D3D11_CULL_NONE;
+			mRasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+			mRasterizerDescChanged = true;
+			break;
+		case RasterizerType::RT_DEFAULT:
+			mRasterizerDescChanged = false;
+			break;
+		default:
+			mRasterizerDescChanged = false;
+			break;
+		}
+	}
+	void D3D11RenderSystem::SetDepthStencilType(const DepthStencilType& dst)
+	{
+		switch (dst)
+		{
+		case DepthStencilType::DST_DEFAULT:
+			mDepthStencilDescChanged = false;
+			break;
+		case DepthStencilType::DST_LESS_EQUAL:
+			// 允许使用深度值一致的像素进行替换的深度/模板状态
+			// 该状态用于绘制天空盒，因为深度值为1.0时可以通过深度测试
+			mDepthStencilDesc.DepthEnable = true;
+			mDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+			mDepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+			mDepthStencilDesc.StencilEnable = false;
+			mDepthStencilDescChanged = true;
+			break;
+		default:
+			break;
+		}
 	}
 	void D3D11RenderSystem::BindShader(Shader* shader)
 	{
@@ -199,15 +321,40 @@ namespace Soul
 		}
 
 		DX11RenderOperationState ros;
+		HRESULT hr;
+
+		//输出混合阶段
+		if (mBlendDescChanged)
+		{
+			mBlendDescChanged = false;
+			hr = (*mD3D11Device)->CreateBlendState(&mBlendDesc, ros.mBlendState.ReleaseAndGetAddressOf());
+			if (FAILED(hr))
+			{
+			}
+		}
 
 		//光栅化阶段
-		if (mRasterizer)
+		if (mRasterizerDescChanged)
 		{
-			deviceContext->RSSetState(mRasterizer.Get());
+			mRasterizerDescChanged = false;
+			hr = (*mD3D11Device)->CreateRasterizerState(&mRasterizerDesc, ros.mRasterizer.ReleaseAndGetAddressOf());
+			if (FAILED(hr))
+			{
+				// 创建RasterizerState失败
+			}
+		}
+
+		if (mDepthStencilDescChanged)
+		{
+			mDepthStencilDescChanged = false;
+			hr = (*mD3D11Device)->CreateDepthStencilState(&mDepthStencilDesc, ros.mDepthStencilState.ReleaseAndGetAddressOf());
+			if (FAILED(hr))
+			{
+			}
 		}
 
 		//像素着色阶段
-		/****设置纹理****/
+		// 纹理
 		if (mTextureSettingChanged)
 		{
 			mTextureSettingChanged = false;
@@ -225,29 +372,50 @@ namespace Soul
 				deviceContext->PSSetShaderResources(0u, (UINT)ros.mTexturesCount, &ros.mTextures[0]);
 			}
 		}
-		/****纹理结束****/
-		if (mSamplerStates)
+		
+		// 采样
+		if (mDefaultSamplerStates)
 		{
-			deviceContext->PSSetSamplers(0, 1, mSamplerStates.GetAddressOf());
+			deviceContext->PSSetSamplers(0, 1, mDefaultSamplerStates.GetAddressOf());
 		}
 
-		//输出混合阶段
-		if (mBlendDescChanged)
+		// 混合
+		if (ros.mBlendState)
 		{
-			mBlendDescChanged = false;
+			deviceContext->OMSetBlendState(ros.mBlendState.Get(), 0, 0xffffffff);
 		}
-		if (mDepthStencilDescChanged)
+		else
 		{
-			mDepthStencilDescChanged = false;
+			deviceContext->OMSetBlendState(mDefaultBlendState.Get(), 0, 0xffffffff);
+		}
+
+		// 光栅化
+		if (ros.mRasterizer)
+		{
+			deviceContext->RSSetState(ros.mRasterizer.Get());
+		}
+		else
+		{
+			deviceContext->RSSetState(mDefaultRasterizer.Get());
+		}
+
+		// 深度模板
+		if (ros.mDepthStencilState)
+		{
+			deviceContext->OMSetDepthStencilState(ros.mDepthStencilState.Get(), mStencilRef);
+		}
+		else
+		{
+			deviceContext->OMSetDepthStencilState(mDefaultDepthStencilState.Get(), mStencilRef);
 		}
 
 		deviceContext->DrawIndexed(rp.mIndicesCount, 0u, 0);
 
-		//关闭混合
-		deviceContext->OMSetBlendState(0, 0, 0xffffffff);
-
-		//恢复默认的渲染状态
-		deviceContext->RSSetState(nullptr);
+		// 恢复默认的渲染状态
+		//deviceContext->OMSetBlendState(0, 0, 0xffffffff);
+		//deviceContext->RSSetState(nullptr);
+		//deviceContext->OMSetDepthStencilState(0, 0);
+		//deviceContext->PSSetSamplers(static_cast<UINT>(0), static_cast<UINT>(0), 0);
 	}
 	HRESULT D3D11RenderSystem::CreateD3D11Device() const
 	{

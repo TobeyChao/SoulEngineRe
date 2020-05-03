@@ -3,9 +3,6 @@
 #include "GameObject.h"
 
 #include "SubMesh.h"
-#include "Cube.h"
-#include "Sphere.h"
-#include "Plane.h"
 #include "Line3D.h"
 #include "Point3D.h"
 
@@ -123,59 +120,58 @@ namespace Soul
 		return taken;
 	}
 
-	GameObject* SceneManager::CreateGameObject()
-	{
-		return CreateGameObject("GameObject");
-	}
-
-	GameObject* SceneManager::CreateGameObject(const std::string& name)
-	{
-		return new GameObject(name);
-	}
-
-	GameObject* SceneManager::CreateGameObject(const std::string& name, SIMPLE_GAMEOBJECT simpleGameObject)
+	GameObject* SceneManager::CreateGameObject(const std::string& name, SIMPLE_GAMEOBJECT simpleGameObject, const json& createParameters)
 	{
 		GameObject* newGameObject = nullptr;
-		SubMesh* subMesh = nullptr;
+
+		SubMesh* subMesh = new SubMesh(name);
+
+		// Material
+		Material* material = new Material();
+		material->ambient = { 0.7250f, 0.7100f, 0.6800f, 1.0f };
+		material->diffuse = { 0.7250f, 0.7100f, 0.6800f, 1.0f };
+		material->specular = { 0.5f, 0.5f, 0.5f, 5.0f };
+		subMesh->SetMaterial(material);
+
+		SetCustomEffect(subMesh, createParameters);
+
+		// Mesh
 		GeometryGenerator geoGen;
 		switch (simpleGameObject)
 		{
 		case SIMPLE_GAMEOBJECT::SG_CUBE:
 			newGameObject = new GameObject(name);
-			subMesh = new Cube(name);
 			newGameObject->PushSubMesh(subMesh);
 			geoGen.CreateBox(1.f, 1.f, 1.f, *subMesh->GetOriginalMeshDataPtr());
 			subMesh->InitializeBuffer();
 			break;
 		case SIMPLE_GAMEOBJECT::SG_PLANE:
 			newGameObject = new GameObject(name);
-			subMesh = new Plane(name);
 			newGameObject->PushSubMesh(subMesh);
 			geoGen.CreateGrid(1.f, 1.f, 2, 2, *subMesh->GetOriginalMeshDataPtr());
 			subMesh->InitializeBuffer();
 			break;
 		case SIMPLE_GAMEOBJECT::SG_SPHERE:
 			newGameObject = new GameObject(name);
-			subMesh = new Sphere(name);
 			newGameObject->PushSubMesh(subMesh);
 			geoGen.CreateSphere(1.f, 60, 30, *subMesh->GetOriginalMeshDataPtr());
 			subMesh->InitializeBuffer();
 			break;
-		case SIMPLE_GAMEOBJECT::SG_LINE3D:
-			newGameObject = new GameObject(name);
-			subMesh = new Line3D(name, { -1, 0, 0 }, { 1, 0, 0 });
-			newGameObject->PushSubMesh(subMesh);
-			break;
-		case SIMPLE_GAMEOBJECT::SG_POINT3D:
-			newGameObject = new GameObject(name);
-			subMesh = new Point3D(name);
-			newGameObject->PushSubMesh(subMesh);
-			break;
+			//case SIMPLE_GAMEOBJECT::SG_LINE3D:
+			//	newGameObject = new GameObject(name);
+			//	subMesh = new Line3D(name, { -1, 0, 0 }, { 1, 0, 0 });
+			//	newGameObject->PushSubMesh(subMesh);
+			//	break;
+			//case SIMPLE_GAMEOBJECT::SG_POINT3D:
+			//	newGameObject = new GameObject(name);
+			//	subMesh = new Point3D(name);
+			//	newGameObject->PushSubMesh(subMesh);
+			//	break;
 		}
 		return newGameObject;
 	}
 
-	GameObject* SceneManager::CreateGameObject(const std::string& name, const std::wstring& meshFilePath)
+	GameObject* SceneManager::CreateGameObject(const std::string& name, const std::wstring& meshFilePath, const json& createParameters)
 	{
 		ObjLoader loader;
 		loader.LoadObjModel(meshFilePath);
@@ -188,7 +184,7 @@ namespace Soul
 		GameObject* newGameObject = new GameObject(name);
 		for (auto it : subMeshes)
 		{
-			it->SetShader(ShaderManager::GetInstance().GetShaderByName(L"Basic"));
+			SetCustomEffect(it, createParameters);
 			it->InitializeBuffer();
 			newGameObject->PushSubMesh(it);
 		}
@@ -226,6 +222,64 @@ namespace Soul
 	{
 	}
 
+	void SceneManager::SetCustomEffect(SubMesh* subMesh, const json& effctSetting)
+	{
+		// DepthStencil
+		if (effctSetting.find("DepthStencil") != effctSetting.end())
+		{
+			std::string depthStencil = effctSetting["DepthStencil"];
+			if (depthStencil == "DST_LESS_EQUAL")
+			{
+				subMesh->SetDepthStencil(DepthStencilType::DST_LESS_EQUAL);
+			}
+		}
+
+		// Rasterizer
+		if (effctSetting.find("Rasterizer") != effctSetting.end())
+		{
+			std::string rasterizer = effctSetting["Rasterizer"];
+			if (rasterizer == "RT_CULL_CLOCKWISE")
+			{
+				subMesh->SetRasterizer(RasterizerType::RT_CULL_CLOCKWISE);
+			}
+			else if (rasterizer == "RT_CULL_NONE")
+			{
+				subMesh->SetRasterizer(RasterizerType::RT_CULL_NONE);
+			}
+			else if (rasterizer == "RT_CULL_COUNTERCLOCKWISE")
+			{
+				subMesh->SetRasterizer(RasterizerType::RT_CULL_COUNTERCLOCKWISE);
+			}
+			else if (rasterizer == "RT_WIREFRAME")
+			{
+				subMesh->SetRasterizer(RasterizerType::RT_WIREFRAME);
+			}
+		}
+
+		// Rasterizer
+		if (effctSetting.find("Blend") != effctSetting.end())
+		{
+			std::string rasterizer = effctSetting["Blend"];
+			if (rasterizer == "BT_TRANSPARENT")
+			{
+				subMesh->SetBlend(BlendType::BT_TRANSPARENT);
+			}
+		}
+
+		// Shader
+		Shader* shader = nullptr;
+		if (effctSetting.find("Shader") != effctSetting.end())
+		{
+			std::string shaderName = effctSetting["Shader"];
+			shader = ShaderManager::GetInstance().GetShaderByName(StringToWstring(shaderName));
+		}
+		else
+		{
+			shader = ShaderManager::GetInstance().GetShaderByName(L"Basic");
+		}
+		subMesh->SetShader(shader);
+	}
+
 	void SceneManager::DrawAll(SceneNodeCamera* camera, Viewport* viewport)
 	{
 		SetActiveCamera(camera);
@@ -252,7 +306,26 @@ namespace Soul
 		{
 			SubMesh* sm = mAllAttachedGameObject.front();
 			RenderParameter* rp = sm->GetRenderParameter();
-			//根据SceneNode设置Shader的相关变量
+
+			// 深度模板
+			if (sm->UseDepthStencil())
+			{
+				mRenderSystem->SetDepthStencilType(sm->GetDepthStencilType());
+			}
+
+			// 光栅化
+			if (sm->UseRasterizer())
+			{
+				mRenderSystem->SetRasterizerType(sm->GetRasterizerType());
+			}
+
+			// 混合
+			if (sm->UseBlend())
+			{
+				mRenderSystem->SetBlendType(sm->GetBlendType());
+			}
+
+			// 根据SceneNode设置Shader的相关变量
 			Shader* shader = sm->GetShader();
 			if (shader)
 			{
@@ -262,6 +335,7 @@ namespace Soul
 					sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation() *
 					GetActiveCamera()->GetViewMatrix() *
 					GetActiveCamera()->GetProjectionMatrix());
+
 				// 材质
 				if (sm->GetTextures().size() > 0)
 				{
@@ -323,12 +397,15 @@ namespace Soul
 
 				// 材质
 				shader->SetMaterial(*(sm->GetMaterial()));
+
+				// 设置Shader
 				mRenderSystem->BindShader(shader);
 			}
 			else
 			{
 				mRenderSystem->BindShader(nullptr);
 			}
+			// 渲染
 			mRenderSystem->Render(*rp);
 			mAllAttachedGameObject.pop();
 		}

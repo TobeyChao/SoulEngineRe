@@ -8,7 +8,7 @@ namespace Soul
 	{
 	public:
 		Line3D(std::string name, const Core::SVector3& start, const Core::SVector3& end);
-		void SetShader(Shader* shader) override;
+		void SetShader(Shader* shader);
 	private:
 		Core::SVector3 mStart;
 		Core::SVector3 mEnd;

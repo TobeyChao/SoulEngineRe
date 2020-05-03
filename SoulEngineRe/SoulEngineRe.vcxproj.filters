@@ -165,16 +165,7 @@
     <ClCompile Include="RenderSystem\DirectX11\D3D11GPUBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SoulMain\Scene\Sphere.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="SoulMain\Scene\Rectangle2D.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="SoulMain\Scene\Cube.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="SoulMain\Scene\Plane.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SoulMain\RenderSystem\RenderSystem.cpp">
@@ -440,16 +431,7 @@
     <ClInclude Include="RenderSystem\DirectX11\D3D11GPUConstantBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SoulMain\Scene\Sphere.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="SoulMain\Scene\Rectangle2D.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="SoulMain\Scene\Cube.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="SoulMain\Scene\Plane.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="SoulMain\Scene\Light.h">
@@ -476,9 +458,6 @@
     <ClInclude Include="AudioSystem\DSound\DSoundModule.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="RenderSystem\DirectX11\D3D11ColorShader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="SoulMain\Scene\Line3D.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -492,6 +471,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="SoulMain\Resource\ObjLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11Mapping.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -33,6 +33,12 @@ namespace Soul
 		void SwapRenderTargetBuffer();
 		// 设置纹理
 		virtual void SetTexture(size_t slot, ITexture* texture) = 0;
+		// 设置混合
+		virtual void SetBlendType(const BlendType& bt) = 0;
+		// 设置光栅化
+		virtual void SetRasterizerType(const RasterizerType& rt) = 0;
+		// 设置深度模板
+		virtual void SetDepthStencilType(const DepthStencilType& dst) = 0;
 		// 设置着色器
 		virtual void BindShader(Shader* shader) = 0;
 

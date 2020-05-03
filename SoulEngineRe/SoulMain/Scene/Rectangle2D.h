@@ -8,7 +8,7 @@ namespace Soul
 	{
 	public:
 		Rectangle2D(std::string name, const Core::SDimension2& size);
-		void SetShader(Shader* shader) override;
+		void SetShader(Shader* shader);
 	private:
 		Core::SDimension2 mSize;
 	};

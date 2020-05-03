@@ -202,11 +202,8 @@
     <ClCompile Include="SoulMain\Scene\SceneNode.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneNodeLight.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneNodeRenderable.cpp" />
-    <ClCompile Include="SoulMain\Scene\Cube.cpp" />
     <ClCompile Include="SoulMain\Scene\Line3D.cpp" />
-    <ClCompile Include="SoulMain\Scene\Plane.cpp" />
     <ClCompile Include="SoulMain\Scene\Point3D.cpp" />
-    <ClCompile Include="SoulMain\Scene\Sphere.cpp" />
     <ClCompile Include="SoulMain\Scene\SubMesh.cpp" />
     <ClCompile Include="SoulMain\Utils\StringUtils.cpp" />
   </ItemGroup>
@@ -222,12 +219,12 @@
     <ClInclude Include="Platform\Win\Timer.h" />
     <ClInclude Include="Platform\Win\WindowsUtils.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11BasicShader.h" />
-    <ClInclude Include="RenderSystem\DirectX11\D3D11ColorShader.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11Device.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11GPUBuffer.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11GPUBufferManager.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11GPUConstantBuffer.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11InputLayouts.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11Mapping.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11PCH.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11RenderModule.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11RenderSystem.h" />
@@ -293,13 +290,10 @@
     <ClInclude Include="SoulMain\Scene\SceneNode.h" />
     <ClInclude Include="SoulMain\Scene\SceneNodeLight.h" />
     <ClInclude Include="SoulMain\Scene\SceneNodeRenderable.h" />
-    <ClInclude Include="SoulMain\Scene\Cube.h" />
     <ClInclude Include="SoulMain\Scene\Light.h" />
     <ClInclude Include="SoulMain\Scene\Line3D.h" />
-    <ClInclude Include="SoulMain\Scene\Plane.h" />
     <ClInclude Include="SoulMain\Scene\Point3D.h" />
     <ClInclude Include="SoulMain\Scene\Rectangle2D.h" />
-    <ClInclude Include="SoulMain\Scene\Sphere.h" />
     <ClInclude Include="SoulMain\Scene\SubMesh.h" />
     <ClInclude Include="SoulMain\SoulPCH.h" />
     <ClInclude Include="SoulMain\Utils\json.hpp" />

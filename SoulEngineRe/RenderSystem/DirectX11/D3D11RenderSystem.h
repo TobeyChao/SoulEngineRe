@@ -16,6 +16,9 @@ constexpr auto MAX_TEXTURES = 8;
 		void SetRenderTarget(RenderTarget* renderTarget) override;
 		void SetViewport(Viewport* viewport) override;
 		void SetTexture(size_t slot, ITexture* texture) override;
+		void SetBlendType(const BlendType& bt) override;
+		void SetRasterizerType(const RasterizerType& rt) override;
+		void SetDepthStencilType(const DepthStencilType& dst) override;
 		void BindShader(Shader* shader) override;
 		void Clear(const Core::SColorf& color) override;
 		void Render(const RenderParameter& rp) override;
@@ -34,15 +37,17 @@ constexpr auto MAX_TEXTURES = 8;
 		D3D11_RASTERIZER_DESC   mRasterizerDesc;
 		bool mRasterizerDescChanged;
 
+		UINT mStencilRef;
 		D3D11_DEPTH_STENCIL_DESC mDepthStencilDesc;
 		bool mDepthStencilDescChanged;
 
 		bool mTextureSettingChanged;
 
-		Microsoft::WRL::ComPtr<ID3D11BlendState> mBlendState;
-		Microsoft::WRL::ComPtr<ID3D11RasterizerState> mRasterizer;
-		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> mDepthStencilState;
-		Microsoft::WRL::ComPtr<ID3D11SamplerState> mSamplerStates;
+		Microsoft::WRL::ComPtr<ID3D11BlendState> mDefaultBlendState;
+		Microsoft::WRL::ComPtr<ID3D11RasterizerState> mDefaultRasterizer;
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> mDefaultDepthStencilState;
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> mDefaultSamplerStates;
+
 		// ²ÄÖÊ
 		ITexture* mTextures[MAX_TEXTURES];
 		size_t mTextureNum = 0;

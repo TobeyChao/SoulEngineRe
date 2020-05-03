@@ -6,6 +6,6 @@ namespace Soul
 	{
 	public:
 		Point3D(std::string name);
-		void SetShader(Shader* shader) override;
+		void SetShader(Shader* shader);
 	};
 }

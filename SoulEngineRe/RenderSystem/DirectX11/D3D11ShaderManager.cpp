@@ -3,7 +3,6 @@
 
 #include "D3D11TextureShader.h"
 #include "D3D11BasicShader.h"
-#include "D3D11ColorShader.h"
 
 namespace Soul
 {
@@ -26,17 +25,9 @@ namespace Soul
 		{
 			shader = new D3D11BasicShader(mDevice, shaderName, mShaderConfig[WstringToString(shaderName)]);
 		}
-		else if (shaderName == L"Texture2D")
-		{
-			shader = new D3D11TextureShader(mDevice, shaderName, mShaderConfig[WstringToString(shaderName)]);
-		}
-		else if (shaderName == L"Color")
-		{
-			shader = new D3D11ColorShader(mDevice, shaderName, mShaderConfig[WstringToString(shaderName)]);
-		}
 		else
 		{
-			return;
+			shader = new D3D11SimpleShader(mDevice, shaderName, mShaderConfig[WstringToString(shaderName)]);;
 		}
 		mShaderList.emplace(shaderName, shader);
 	}

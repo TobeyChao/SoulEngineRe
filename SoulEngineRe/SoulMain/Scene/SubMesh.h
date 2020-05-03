@@ -33,6 +33,7 @@ namespace Soul
 			return mRenderParameter;
 		}
 
+		// 顶点缓存
 		void InitializeBuffer();
 
 		template<typename VertexType>
@@ -81,14 +82,15 @@ namespace Soul
 			vertices = nullptr;
 		}
 
-		std::vector<ITexture*>& GetTextures()
-		{
-			return mTextures;
-		}
-
+		// 纹理
 		void PushTexture(ITexture* texture)
 		{
 			mTextures.push_back(texture);
+		}
+
+		std::vector<ITexture*>& GetTextures()
+		{
+			return mTextures;
 		}
 
 		void ClearTexture()
@@ -96,7 +98,8 @@ namespace Soul
 			mTextures.clear();
 		}
 
-		virtual void SetShader(Shader* shader)
+		// Shader
+		void SetShader(Shader* shader)
 		{
 			mShader = shader;
 		}
@@ -106,6 +109,7 @@ namespace Soul
 			return mShader;
 		}
 
+		// 材质
 		Material* GetMaterial() const
 		{
 			return mMaterial;
@@ -121,6 +125,63 @@ namespace Soul
 			mMaterial = newMaterial;;
 		}
 
+		// Mesh
+		MeshData* GetOriginalMeshDataPtr()
+		{
+			return mOringinMeshData;
+		}
+
+		// 深度模板
+		void SetDepthStencil(const DepthStencilType& dst)
+		{
+			mUseDepthStencil = true;
+			mDepthStencilType = dst;
+		}
+
+		bool UseDepthStencil()
+		{
+			return mUseDepthStencil;
+		}
+
+		const DepthStencilType& GetDepthStencilType()
+		{
+			return mDepthStencilType;
+		}
+
+		// 光栅化
+		void SetRasterizer(const RasterizerType& dst)
+		{
+			mUseRasterizer = true;
+			mRasterizerType = dst;
+		}
+
+		bool UseRasterizer()
+		{
+			return mUseRasterizer;
+		}
+
+		const RasterizerType& GetRasterizerType()
+		{
+			return mRasterizerType;
+		}
+
+		// 混合
+		void SetBlend(const BlendType& dst)
+		{
+			mUseBlend = true;
+			mBlendType = dst;
+		}
+
+		bool UseBlend()
+		{
+			return mUseBlend;
+		}
+
+		const BlendType& GetBlendType()
+		{
+			return mBlendType;
+		}
+
 		void SetParent(GameObject* gameObject)
 		{
 			mParent = gameObject;
@@ -131,24 +192,19 @@ namespace Soul
 			return mParent;
 		}
 
-		MeshData* GetOriginalMeshDataPtr()
-		{
-			return mOringinMeshData;
-		}
-
 	protected:
 		std::string mName;
 		// 是否自定义混合
 		bool mUseBlend;
-
+		BlendType mBlendType;
 
 		// 是否自定义光栅化
 		bool mUseRasterizer;
-
+		RasterizerType mRasterizerType;
 
 		// 是否自定义深度模板
 		bool mUseDepthStencil;
-
+		DepthStencilType mDepthStencilType;
 
 		// 需要渲染的顶点缓存
 		RenderParameter* mRenderParameter;
