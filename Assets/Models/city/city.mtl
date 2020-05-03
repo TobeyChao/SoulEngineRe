@@ -1,0 +1,162 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 24.04.2020 21:49:32
+
+newmtl city_default_tubes
+	Ns 0.7500
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\sc1_01_01_01.jpg
+	map_Kd maps\sc1_01_01_01.jpg
+
+newmtl city_default_city_bldgs_2
+	Ns 1.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\axcv1.jpg
+	map_Kd maps\axcv1.jpg
+
+newmtl city_default
+	Ns 1.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\aw2.jpg
+	map_Kd maps\aw2.jpg
+
+newmtl city_default_water_canal
+	Ns 1.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\fl1.jpg
+	map_Kd maps\fl1.jpg
+
+newmtl city_default_water_canal_city_base_2
+	Ns 1.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\fl1.jpg
+	map_Kd maps\fl1.jpg
+
+newmtl city_default_water_canal_city_base_2_1
+	Ns 1.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\fl1.jpg
+	map_Kd maps\fl1.jpg
+
+newmtl city_default_water_canal_city_base_2_2
+	Ns 1.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\fl1.jpg
+	map_Kd maps\fl1.jpg
+
+newmtl city_default_glass
+	Ns 1.0000
+	Ni 1.5000
+	d 0.8000
+	Tr 0.2000
+	Tf 0.8000 0.8000 0.8000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0000 0.0000 0.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl city_default_glass_city_base_2
+	Ns 1.0000
+	Ni 1.5000
+	d 0.8000
+	Tr 0.2000
+	Tf 0.8000 0.8000 0.8000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0000 0.0000 0.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl city_default_glass_city_base_2_1
+	Ns 1.0000
+	Ni 1.5000
+	d 0.8000
+	Tr 0.2000
+	Tf 0.8000 0.8000 0.8000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0000 0.0000 0.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl city_default_glass_city_base_2_2
+	Ns 1.0000
+	Ni 1.5000
+	d 0.8000
+	Tr 0.2000
+	Tf 0.8000 0.8000 0.8000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0000 0.0000 0.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl city_default_sign_mult
+	Ns 1.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 1.0000 1.0000 1.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 1.0000 1.0000 1.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\b12.jpg
+	map_Kd maps\b12.jpg

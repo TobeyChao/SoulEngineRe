@@ -1,0 +1,8 @@
+{
+    "modules": [
+        "dx11_render_system",
+        "dsound",
+        "xaudio",
+        "dxinput"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "render_system" : "dx11_render_system",
+    "shader_manager_config" : "../Assets/Shaders/Shader.json",
+    "audio_system" : "dsound",
+    "d3d_feature_level" : "11.0",
+    "d3d_driver_type" : "hardware",
+    "window_title" : "render demo",
+    "icon" : "Soul.ico",
+    "fullscreen" : false,
+    "screen_width" : 1280,
+    "screen_height" : 720,
+    "vsync" : true,
+    "msaa" : 8
+}

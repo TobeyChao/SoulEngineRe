@@ -1,0 +1,31 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 24.04.2020 21:34:51
+
+newmtl Trank_bark
+	Ns 16.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0000 0.0000 0.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\bark_0021.jpg
+	map_Kd maps\bark_0021.jpg
+
+newmtl polySurface1SG1
+	Ns 5.8900
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0000 0.0000 0.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\DB2X2_L01.png
+	map_Kd maps\DB2X2_L01.png
+	map_Ks maps\DB2X2_L01_Spec.png

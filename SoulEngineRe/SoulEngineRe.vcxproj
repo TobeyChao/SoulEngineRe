@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{4CE8E9A4-EA39-4ACB-BF9D-5CDA803B4EAF}</ProjectGuid>
+    <RootNamespace>SoulEngineRe</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\$(ProjectName)\$(Configuration)\intermediate\</IntDir>
+    <TargetName>$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\$(ProjectName)\$(Configuration)\intermediate\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AudioSystem\DSound\DSoundAudio.cpp" />
+    <ClCompile Include="AudioSystem\DSound\DSoundAudioBuffer.cpp" />
+    <ClCompile Include="AudioSystem\DSound\DSoundModule.cpp" />
+    <ClCompile Include="AudioSystem\XAudio\XAudioModule.cpp" />
+    <ClCompile Include="AudioSystem\XAudio\XAudio2Audio.cpp" />
+    <ClCompile Include="AudioSystem\XAudio\XAudio2AudioBuffer.cpp" />
+    <ClCompile Include="Input\DXInput\Input.cpp" />
+    <ClCompile Include="Platform\Win\CPUUse.cpp" />
+    <ClCompile Include="Platform\Win\Timer.cpp" />
+    <ClCompile Include="Platform\Win\WindowsUtils.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D3D11Device.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D3D11GPUBuffer.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D3D11GPUBufferManager.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D3D11InputLayouts.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D3D11RenderModule.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D3D11RenderSystem.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D3D11RenderWindow.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D3D11ShaderManager.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D3D11Texture.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D3D11TextureManager.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\DDSTextureLoader.cpp" />
+    <ClCompile Include="App\Application.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\TGATextureLoader.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\WICTextureLoader.cpp" />
+    <ClCompile Include="SoulMain\Audio\Audio.cpp" />
+    <ClCompile Include="SoulMain\Audio\AudioBuffer.cpp" />
+    <ClCompile Include="SoulMain\Audio\SoundResourceExtraData.cpp" />
+    <ClCompile Include="SoulMain\Audio\SoundResourceManager.cpp" />
+    <ClCompile Include="SoulMain\RenderSystem\GPUBufferManager.cpp" />
+    <ClCompile Include="SoulMain\RenderSystem\ITexture.cpp" />
+    <ClCompile Include="SoulMain\RenderSystem\RenderSystem.cpp" />
+    <ClCompile Include="SoulMain\RenderSystem\RenderTarget.cpp" />
+    <ClCompile Include="SoulMain\RenderSystem\RenderWindow.cpp" />
+    <ClCompile Include="SoulMain\RenderSystem\ShaderManager.cpp" />
+    <ClCompile Include="SoulMain\RenderSystem\Viewport.cpp" />
+    <ClCompile Include="SoulMain\Resource\ObjLoader.cpp" />
+    <ClCompile Include="SoulMain\Resource\Resource.cpp" />
+    <ClCompile Include="SoulMain\Resource\ResourceGroupManager.cpp" />
+    <ClCompile Include="SoulMain\Resource\ResourceManager.cpp" />
+    <ClCompile Include="SoulMain\Resource\TextureManager.cpp" />
+    <ClCompile Include="SoulMain\Resource\WaveResourceLoader.cpp" />
+    <ClCompile Include="SoulMain\Launcher.cpp" />
+    <ClCompile Include="SoulMain\Core\Mathematics\SDimension2.cpp" />
+    <ClCompile Include="SoulMain\Core\Mathematics\SMatrix4x4.cpp" />
+    <ClCompile Include="SoulMain\Core\Mathematics\SQuaternion.cpp" />
+    <ClCompile Include="SoulMain\Core\Mathematics\SVector2.cpp" />
+    <ClCompile Include="SoulMain\Core\Mathematics\SVector3.cpp" />
+    <ClCompile Include="SoulMain\Core\Mathematics\SVector4.cpp" />
+    <ClCompile Include="SoulMain\Scene\Frustum.cpp" />
+    <ClCompile Include="SoulMain\Scene\GeometryGenerator.cpp" />
+    <ClCompile Include="SoulMain\Scene\Rectangle2D.cpp" />
+    <ClCompile Include="SoulMain\Scene\SceneManager.cpp" />
+    <ClCompile Include="SoulMain\Scene\SceneNodeCamera.cpp" />
+    <ClCompile Include="SoulMain\Scene\GameObject.cpp" />
+    <ClCompile Include="SoulMain\Scene\SceneNode.cpp" />
+    <ClCompile Include="SoulMain\Scene\SceneNodeLight.cpp" />
+    <ClCompile Include="SoulMain\Scene\SceneNodeRenderable.cpp" />
+    <ClCompile Include="SoulMain\Scene\Cube.cpp" />
+    <ClCompile Include="SoulMain\Scene\Line3D.cpp" />
+    <ClCompile Include="SoulMain\Scene\Plane.cpp" />
+    <ClCompile Include="SoulMain\Scene\Point3D.cpp" />
+    <ClCompile Include="SoulMain\Scene\Sphere.cpp" />
+    <ClCompile Include="SoulMain\Scene\SubMesh.cpp" />
+    <ClCompile Include="SoulMain\Utils\StringUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AudioSystem\DSound\DSoundAudio.h" />
+    <ClInclude Include="AudioSystem\DSound\DSoundAudioBuffer.h" />
+    <ClInclude Include="AudioSystem\DSound\DSoundModule.h" />
+    <ClInclude Include="AudioSystem\XAudio\XAudioModule.h" />
+    <ClInclude Include="AudioSystem\XAudio\XAudio2Audio.h" />
+    <ClInclude Include="AudioSystem\XAudio\XAudio2AudioBuffer.h" />
+    <ClInclude Include="Input\DXInput\Input.h" />
+    <ClInclude Include="Platform\Win\CPUUse.h" />
+    <ClInclude Include="Platform\Win\Timer.h" />
+    <ClInclude Include="Platform\Win\WindowsUtils.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11BasicShader.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11ColorShader.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11Device.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11GPUBuffer.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11GPUBufferManager.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11GPUConstantBuffer.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11InputLayouts.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11PCH.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11RenderModule.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11RenderSystem.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11RenderWindow.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11Shader.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11ShaderManager.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11Texture.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11TextureManager.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11TextureShader.h" />
+    <ClInclude Include="RenderSystem\DirectX11\DDSTextureLoader.h" />
+    <ClInclude Include="RenderSystem\DirectX11\DXBasicShader.h" />
+    <ClInclude Include="RenderSystem\DirectX11\DXTextureShader.h" />
+    <ClInclude Include="RenderSystem\DirectX11\Dx11GPUBufferManager.h" />
+    <ClInclude Include="RenderSystem\DirectX11\DXShader.h" />
+    <ClInclude Include="RenderSystem\DirectX11\InputLayouts.h" />
+    <ClInclude Include="App\Application.h" />
+    <ClInclude Include="RenderSystem\DirectX11\TGATextureLoader.h" />
+    <ClInclude Include="RenderSystem\DirectX11\WICTextureLoader.h" />
+    <ClInclude Include="SoulMain\Audio\Audio.h" />
+    <ClInclude Include="SoulMain\Audio\AudioBuffer.h" />
+    <ClInclude Include="SoulMain\Audio\IAudio.h" />
+    <ClInclude Include="SoulMain\Audio\IAudioBuffer.h" />
+    <ClInclude Include="SoulMain\Audio\SoundResourceExtraData.h" />
+    <ClInclude Include="SoulMain\Audio\SoundResourceManager.h" />
+    <ClInclude Include="SoulMain\Core\Mathematics\MathPCH.h" />
+    <ClInclude Include="SoulMain\Module\Module.h" />
+    <ClInclude Include="SoulMain\RenderSystem\FrameEventReceiver.h" />
+    <ClInclude Include="SoulMain\RenderSystem\GPUBuffer.h" />
+    <ClInclude Include="SoulMain\RenderSystem\GPUBufferManager.h" />
+    <ClInclude Include="SoulMain\RenderSystem\RenderSystem.h" />
+    <ClInclude Include="SoulMain\RenderSystem\RenderTarget.h" />
+    <ClInclude Include="SoulMain\RenderSystem\RenderWindow.h" />
+    <ClInclude Include="SoulMain\RenderSystem\Shader.h" />
+    <ClInclude Include="SoulMain\RenderSystem\ShaderManager.h" />
+    <ClInclude Include="SoulMain\RenderSystem\ITexture.h" />
+    <ClInclude Include="SoulMain\RenderSystem\RenderParameter.h" />
+    <ClInclude Include="SoulMain\RenderSystem\Viewport.h" />
+    <ClInclude Include="SoulMain\Resource\IResourceExtraData.h" />
+    <ClInclude Include="SoulMain\Resource\IResourceLoader.h" />
+    <ClInclude Include="SoulMain\Resource\ObjLoader.h" />
+    <ClInclude Include="SoulMain\Resource\Resource.h" />
+    <ClInclude Include="SoulMain\Resource\ResourceGroupManager.h" />
+    <ClInclude Include="SoulMain\Resource\ResourceManager.h" />
+    <ClInclude Include="SoulMain\Resource\TextureManager.h" />
+    <ClInclude Include="SoulMain\Resource\WaveResourceLoader.h" />
+    <ClInclude Include="SoulMain\Launcher.h" />
+    <ClInclude Include="SoulMain\Core\Mathematics\SDimension2.h" />
+    <ClInclude Include="SoulMain\Core\Mathematics\SMatrix4x4.h" />
+    <ClInclude Include="SoulMain\Core\Mathematics\MathConsts.h" />
+    <ClInclude Include="SoulMain\Core\Mathematics\SQuaternion.h" />
+    <ClInclude Include="SoulMain\Core\Mathematics\SVector2.h" />
+    <ClInclude Include="SoulMain\Core\Mathematics\SVector3.h" />
+    <ClInclude Include="SoulMain\Core\Mathematics\SVector4.h" />
+    <ClInclude Include="SoulMain\Core\SColorf.h" />
+    <ClInclude Include="SoulMain\Core\SRect.h" />
+    <ClInclude Include="SoulMain\Scene\Frustum.h" />
+    <ClInclude Include="SoulMain\Scene\GeometryGenerator.h" />
+    <ClInclude Include="SoulMain\Scene\PrimitiveTypes.h" />
+    <ClInclude Include="SoulMain\Scene\SceneManager.h" />
+    <ClInclude Include="SoulMain\Scene\SceneNodeCamera.h" />
+    <ClInclude Include="SoulMain\Scene\GameObject.h" />
+    <ClInclude Include="SoulMain\Scene\IEventReceiver.h" />
+    <ClInclude Include="SoulMain\Scene\SceneNode.h" />
+    <ClInclude Include="SoulMain\Scene\SceneNodeLight.h" />
+    <ClInclude Include="SoulMain\Scene\SceneNodeRenderable.h" />
+    <ClInclude Include="SoulMain\Scene\Cube.h" />
+    <ClInclude Include="SoulMain\Scene\Light.h" />
+    <ClInclude Include="SoulMain\Scene\Line3D.h" />
+    <ClInclude Include="SoulMain\Scene\Plane.h" />
+    <ClInclude Include="SoulMain\Scene\Point3D.h" />
+    <ClInclude Include="SoulMain\Scene\Rectangle2D.h" />
+    <ClInclude Include="SoulMain\Scene\Sphere.h" />
+    <ClInclude Include="SoulMain\Scene\SubMesh.h" />
+    <ClInclude Include="SoulMain\SoulPCH.h" />
+    <ClInclude Include="SoulMain\Utils\json.hpp" />
+    <ClInclude Include="SoulMain\Utils\Singleton.h" />
+    <ClInclude Include="SoulMain\Utils\StringUtils.h" />
+    <ClInclude Include="SoulMain\Utils\UtilsPCH.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

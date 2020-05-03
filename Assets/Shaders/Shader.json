@@ -1,0 +1,50 @@
+{
+    "Basic": {
+        "path": "../Assets/Shaders/Light.fx",
+        "input_layout": "pos_tex_normal_col",
+        "vert_cb_size": 1,
+        "pixel_cb_size": 0
+    },
+    "Color": {
+        "path": "../Assets/Shaders/ColorShader.fx",
+        "input_layout": "pos_col",
+        "vert_cb_size": 1,
+        "pixel_cb_size": 0
+    },
+    "ObjModel": {
+        "path": "../Assets/Shaders/ObjModelShader.fx",
+        "input_layout": "pos_tex_nor",
+        "vert_cb_size": 1,
+        "pixel_cb_size": 0
+    },
+    "Particle": {
+        "path": "../Assets/Shaders/ParticleShader.fx",
+        "input_layout": "pos_tex_clo",
+        "vert_cb_size": 1,
+        "pixel_cb_size": 1
+    },
+    "Shape": {
+        "path": "../Assets/Shaders/ShapeShader.fx",
+        "input_layout": "pos_tex_normal_tan",
+        "vert_cb_size": 1,
+        "pixel_cb_size": 1
+    },
+    "SkyBox": {
+        "path": "../Assets/Shaders/SkyBoxShader.fx",
+        "input_layout": "pos_tex",
+        "vert_cb_size": 1,
+        "pixel_cb_size": 1
+    },
+    "Terrain": {
+        "path": "../Assets/Shaders/TerrainShader.fx",
+        "input_layout": "pos_tex_nor_col_tan_binnor",
+        "vert_cb_size": 1,
+        "pixel_cb_size": 1
+    },
+    "Texture2D": {
+        "path": "../Assets/Shaders/Texture2DShader.fx",
+        "input_layout": "pos_tex",
+        "vert_cb_size": 1,
+        "pixel_cb_size": 1
+    }
+}

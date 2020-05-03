@@ -1,0 +1,498 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SoulMain\Core\Mathematics\SVector2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Core\Mathematics\SVector3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Core\Mathematics\SVector4.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Core\Mathematics\SDimension2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Core\Mathematics\SQuaternion.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Core\Mathematics\SMatrix4x4.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Application.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Utils\StringUtils.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Win\WindowsUtils.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Resource\Resource.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Resource\ResourceGroupManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Resource\ResourceManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSystem\XAudio\XAudio2AudioBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSystem\XAudio\XAudio2Audio.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Audio\SoundResourceManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Audio\SoundResourceExtraData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Audio\AudioBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Audio\Audio.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSystem\DSound\DSoundAudioBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSystem\DSound\DSoundAudio.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Resource\WaveResourceLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\GameObject.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\SceneNodeCamera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\SceneManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\RenderSystem\ITexture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Resource\TextureManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\SceneNode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\RenderSystem\ShaderManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Win\Timer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Win\CPUUse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\DXInput\Input.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\GeometryGenerator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\RenderSystem\GPUBufferManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\SceneNodeRenderable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\Frustum.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\SceneNodeLight.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\SubMesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D3D11Device.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D3D11GPUBufferManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D3D11InputLayouts.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D3D11RenderModule.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D3D11RenderSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D3D11RenderWindow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D3D11ShaderManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D3D11Texture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D3D11TextureManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\DDSTextureLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\TGATextureLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\WICTextureLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D3D11GPUBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\Sphere.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\Rectangle2D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\Cube.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\Plane.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\RenderSystem\RenderSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\RenderSystem\RenderTarget.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\RenderSystem\RenderWindow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\RenderSystem\Viewport.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSystem\XAudio\XAudioModule.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSystem\DSound\DSoundModule.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\Line3D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\Point3D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Launcher.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Resource\ObjLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SoulMain\Core\Mathematics\SVector2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Core\Mathematics\SVector3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Core\Mathematics\SVector4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Core\Mathematics\SDimension2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Core\Mathematics\SQuaternion.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Core\Mathematics\SMatrix4x4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Core\SColorf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Core\SRect.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Utils\Singleton.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Utils\json.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Utils\UtilsPCH.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Application.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Utils\StringUtils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\FrameEventReceiver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Win\WindowsUtils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Resource\Resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Resource\ResourceGroupManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Resource\ResourceManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Resource\IResourceLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Resource\IResourceExtraData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSystem\XAudio\XAudio2AudioBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSystem\XAudio\XAudio2Audio.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Audio\SoundResourceExtraData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Audio\SoundResourceManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Audio\IAudio.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Audio\IAudioBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Audio\Audio.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Audio\AudioBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSystem\DSound\DSoundAudio.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSystem\DSound\DSoundAudioBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Resource\WaveResourceLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\RenderParameter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\GameObject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\IEventReceiver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\SceneNodeCamera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\SceneManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\ITexture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Resource\TextureManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\SceneNode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\DXShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\ShaderManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\Shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Win\Timer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Win\CPUUse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\DXInput\Input.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\InputLayouts.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\GeometryGenerator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\PrimitiveTypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\GPUBufferManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\Dx11GPUBufferManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\GPUBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\DXTextureShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\SceneNodeRenderable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\Frustum.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Core\Mathematics\MathPCH.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Core\Mathematics\MathConsts.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\SceneNodeLight.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\DXBasicShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\SubMesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11BasicShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11Device.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11GPUBufferManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11InputLayouts.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11PCH.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11RenderModule.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11RenderSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11RenderWindow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11Shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11ShaderManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11Texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11TextureManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11TextureShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\DDSTextureLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\TGATextureLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\WICTextureLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11GPUBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11GPUConstantBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\Sphere.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\Rectangle2D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\Cube.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\Plane.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\Light.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\RenderSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\RenderTarget.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\RenderWindow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\Viewport.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Module\Module.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSystem\XAudio\XAudioModule.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSystem\DSound\DSoundModule.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11ColorShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\Line3D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\Point3D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Launcher.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\SoulPCH.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Resource\ObjLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
