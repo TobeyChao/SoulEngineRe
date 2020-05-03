@@ -10,7 +10,7 @@ namespace Soul
 		Frustum();
 
 		//根据屏幕的深度，投影矩阵和相机矩阵求出相应的视截体的6个平面
-		void BuildFrustum(float sceneDepth, const Core::SMatrix4x4& projMatrix, const Core::SMatrix4x4& viewMatrix);
+		void BuildFrustum(const Core::SMatrix4x4& projMatrix, const Core::SMatrix4x4& viewMatrix);
 
 		//判断一个点是否在视截体内
 		bool CheckPoint(float x, float y, float z);
@@ -26,11 +26,11 @@ namespace Soul
 
 		//判断一个长方体是否在视截体内，用的是8点的方法
 		bool CheckRectangle2(float, float, float, float, float, float);
+
 	private:
 		bool mFirstBuild;
-		float mScreenDepth;
-		Core::SMatrix4x4 mViewMatrix;
-		Core::SMatrix4x4 mProjMatrix;
+		Core::SMatrix4x4 mCacheViewMatrix;
+		Core::SMatrix4x4 mCacheProjMatrix;
 		Core::SVector4 mPlane[6];
 	};
 }

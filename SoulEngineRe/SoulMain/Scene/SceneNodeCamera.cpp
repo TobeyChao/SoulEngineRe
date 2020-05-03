@@ -27,6 +27,11 @@ namespace Soul
 
 		mDefaultForward = Core::SVector3(0.0f, 0.0f, 1.0f);
 		mDefaultRight = Core::SVector3(1.0f, 0.0f, 0.0f);
+
+		mDefaultViewMatrix = Core::MatrixLookAtLH(
+			Core::SVector3(0.0f, 0.0f, -5.0f),
+			Core::SVector3(0.0f, 0.0f, 0.0f),
+			Core::SVector3(0.0f, 1.0f, 0.0f));
 	}
 
 	void SceneNodeCamera::SetProjectionMatrix(const Core::SMatrix4x4& projection)
@@ -38,33 +43,18 @@ namespace Soul
 		mIsOrthogonal = isOrthogonal;
 	}
 
-	const Core::SMatrix4x4 SceneNodeCamera::GetProjectionMatrix() const
+	const Core::SMatrix4x4& SceneNodeCamera::GetProjectionMatrix() const
 	{
-		if (mIsOrthogonal)
-		{
-			if (mViewport)
-			{
-				return Core::MatrixOrthographicLH(
-				(float)mViewport->GetViewportWidth(), (float)mViewport->GetViewportHeight(), mZNear, mZFar);
-			}
-			else
-			{
-				return Core::Matrix4x4Identity();
-			}
-		}
-		return Core::MatrixPerspectiveFovLH(mFovy, mAspect, mZNear, mZFar);
+		return mProjMatrix;
 	}
 
-	const Core::SMatrix4x4 SceneNodeCamera::GetViewMatrix(bool defaultCam) const
+	const Core::SMatrix4x4& SceneNodeCamera::GetViewMatrix(bool defaultCam) const
 	{
 		if (defaultCam)
 		{
-			return Core::MatrixLookAtLH(
-				Core::SVector3(0.0f, 0.0f, -10.0f),
-				Core::SVector3(0.0f, 0.0f, 0.0f),
-				Core::SVector3(0.0f, 1.0f, 0.0f));
+			return mDefaultViewMatrix;
 		}
-		return Core::MatrixLookAtLH(mRelativeTranslation, mLookAt, mUp);
+		return mViewMatrix;
 	}
 
 	float SceneNodeCamera::GetNearValue() const
@@ -117,10 +107,39 @@ namespace Soul
 		mLookAt = mRelativeTranslation + mLookAt;
 	}
 
+	void SceneNodeCamera::UpdateTransformMatrix()
+	{
+		if (mIsOrthogonal)
+		{
+			if (mViewport)
+			{
+				mProjMatrix = Core::MatrixOrthographicLH(
+				(float)mViewport->GetViewportWidth(), (float)mViewport->GetViewportHeight(), mZNear, mZFar);
+			}
+			else
+			{
+				mProjMatrix = Core::Matrix4x4Identity();
+			}
+		}
+		mProjMatrix = Core::MatrixPerspectiveFovLH(mFovy, mAspect, mZNear, mZFar);
+
+		mViewMatrix = Core::MatrixLookAtLH(mRelativeTranslation, mLookAt, mUp);
+	}
+
 	void SceneNodeCamera::Render()
 	{
+		// 更新绝对位置
 		UpdateAbsolutePosition();
+
+		// 更新相机
 		UpdateCameraEyeUpAt();
+
+		// 更新相机的视图和投影变换矩阵
+		UpdateTransformMatrix();
+
+		// 构建Frustum
+		BuildFrustum(mProjMatrix, mViewMatrix);
+
 		// 调用SceneManager.Render(); 
 		mSceneManager->DrawAll(this, mViewport);
 	}

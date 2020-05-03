@@ -15,11 +15,9 @@ namespace Soul
 
 		void SetIsOrthogonal(bool isOrthogonal);
 
-		const Core::SMatrix4x4 GetProjectionMatrix() const;
+		const Core::SMatrix4x4& GetProjectionMatrix() const;
 
-		const Core::SMatrix4x4 GetViewMatrix(bool defaultCam = false) const;
-
-		void UpdateCameraEyeUpAt();
+		const Core::SMatrix4x4& GetViewMatrix(bool defaultCam = false) const;
 
 		float GetNearValue() const;
 
@@ -53,6 +51,10 @@ namespace Soul
 	protected:
 		void UpdateCamera();
 
+		void UpdateCameraEyeUpAt();
+
+		void UpdateTransformMatrix();
+
 	protected:
 		Core::SVector3 mLookAt;
 		Core::SVector3 mUp;
@@ -63,6 +65,10 @@ namespace Soul
 		float mZFar;
 
 		float mMoveSpeed;
+
+		Core::SMatrix4x4 mDefaultViewMatrix;
+		Core::SMatrix4x4 mViewMatrix;
+		Core::SMatrix4x4 mProjMatrix;
 
 		Core::SVector3 mForward;
 		Core::SVector3 mRight;

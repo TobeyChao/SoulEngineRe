@@ -3,6 +3,7 @@
 #include<mmsystem.h>
 #include "CpuUse.h"
 #pragma comment(lib, "Pdh.lib")
+
 namespace Soul
 {
 	CPUUse::CPUUse()

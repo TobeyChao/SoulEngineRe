@@ -161,7 +161,7 @@ namespace Soul
 		SyncFrameEventReceiver();
 		for (auto it = mFrameEventReceivers.begin(); it != mFrameEventReceivers.end(); it++)
 		{
-			if (!(*it)->FrameStarted())
+			if (!(*it)->FrameEnd())
 			{
 				return false;
 			}

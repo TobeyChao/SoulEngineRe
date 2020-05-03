@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "../Platform/Win/WindowsUtils.h"
+#include "../Platform/Win/Timer.h"
 #include "../Input/DXInput/Input.h"
 #include "../RenderSystem/DirectX11/D3D11RenderWindow.h"
 
@@ -12,6 +13,7 @@ namespace Soul
 			mWindow(nullptr)
 		{
 			mAdmin = nullptr;
+			mCPUUse = new CPUUse();
 		}
 
 		Application::~Application()
@@ -26,6 +28,8 @@ namespace Soul
 
 		void Application::UnInitialize()
 		{
+			mCPUUse->ShutDown();
+			delete mCPUUse;
 			Input::DXInput::GetInstance().Shutdown();
 			delete mAdmin;
 			mAdmin = nullptr;
@@ -48,12 +52,22 @@ namespace Soul
 			{
 				return false;
 			}
+
+			mCPUUse->Initialize();
+			
+			Timer::InitTimer();
+			Timer::Start();
 			return true;
 		}
 
 		bool Application::FrameStarted()
 		{
+			// 更新键鼠状态
 			Input::DXInput::GetInstance().Update();
+			// 时间
+			Timer::Tick();
+			// CPU使用情况
+			mCPUUse->Frame();
 			// Process System Message
 			bool res = Platform::WindowsUtils::MsgProcess();
 			return res;
@@ -67,6 +81,11 @@ namespace Soul
 		bool Application::FrameEnd()
 		{
 			return true;
+		}
+
+		int Application::GetCPUUSe()
+		{
+			return mCPUUse->GetCpuPerentage();
 		}
 	}
 }

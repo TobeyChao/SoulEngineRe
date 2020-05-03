@@ -174,10 +174,6 @@ public:
 			ProcessThirdCamera();
 		}
 
-		char chInput[512];
-		sprintf_s(chInput, "PosX:%f PosY:%f PosZ:%f\n", pos.x, pos.y, pos.z);
-		OutputDebugString(chInput);
-
 		camera->SetPosition(cameraPos);
 		camera->SetRotation(cameraRotate);
 
@@ -186,6 +182,14 @@ public:
 
 		node3->SetRotation(sphereRotate);
 		return Application::FrameStarted();
+	}
+
+	bool FrameEnd()
+	{
+		char chInput[512];
+		sprintf_s(chInput, "Timer::DeltaTime:%f\t CPU use:%% %d\n", Timer::DeltaTime(), GetCPUUSe());
+		OutputDebugString(chInput);
+		return Application::FrameEnd();
 	}
 
 	// 第一人称相机

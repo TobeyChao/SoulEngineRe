@@ -4,37 +4,28 @@ namespace Soul
 {
 	Frustum::Frustum()
 		:
-		mFirstBuild(true),
-		mScreenDepth(0)
+		mFirstBuild(true)
 	{
 	}
 
 	//根据屏幕的深度，投影矩阵和相机矩阵求出世界空间的相应的视截体的6个平面
-	void Frustum::BuildFrustum(float sceneDepth, const Core::SMatrix4x4& projMatrix, const Core::SMatrix4x4& viewMatrix)
+	void Frustum::BuildFrustum(const Core::SMatrix4x4& projMatrix, const Core::SMatrix4x4& viewMatrix)
 	{
-		mViewMatrix = viewMatrix;
-		mProjMatrix = projMatrix;
-		mScreenDepth = sceneDepth;
+		mCacheViewMatrix = viewMatrix;
+		mCacheProjMatrix = projMatrix;
 
 		// 如果不是第一次构建并且和上次的矩阵相同就不构建
-		if (!mFirstBuild && (mViewMatrix == viewMatrix || mProjMatrix == projMatrix))
+		if (!mFirstBuild && (mCacheViewMatrix == viewMatrix || mCacheProjMatrix == projMatrix))
 		{
 			return;
 		}
 
-		float zMinimum, r;
+		mFirstBuild = false;
+
 		Core::SMatrix4x4 matrix;
-		Core::SMatrix4x4 tempMatrix = mProjMatrix;
-
-		//计算视截体近裁剪面的距离
-		zMinimum = -tempMatrix.mat[3][2] / tempMatrix.mat[2][2];
-		r = mScreenDepth / (mScreenDepth - zMinimum);
-
-		tempMatrix.mat[2][2] = r;
-		tempMatrix.mat[3][2] = -r * zMinimum;
 
 		//从相机矩阵和投影矩阵计算视截体矩阵
-		matrix = mViewMatrix * tempMatrix;;
+		matrix = mCacheViewMatrix * mCacheProjMatrix;
 
 		//计算视截体的近裁剪面
 		Core::SVector4 nearPlane;

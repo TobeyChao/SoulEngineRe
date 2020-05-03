@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <iostream>
 
+#include "../SoulEngineRe/Platform/Win/Timer.h"
 #include "../SoulEngineRe/App/Application.h"
 #include "../SoulEngineRe/Input/DXInput/Input.h"
 #include "../SoulEngineRe/SoulMain/Core/Mathematics/MathConsts.h"

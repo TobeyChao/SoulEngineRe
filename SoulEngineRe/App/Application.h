@@ -1,6 +1,7 @@
 #pragma once
 #include "../SoulMain/Launcher.h"
 #include "../SoulMain/RenderSystem/FrameEventReceiver.h"
+#include "../Platform/Win/CPUUse.h"
 
 namespace Soul
 {
@@ -22,12 +23,15 @@ namespace Soul
 			bool FrameStarted() override;
 			bool FrameUpdated() override;
 			bool FrameEnd() override;
+		protected:
+			int GetCPUUSe();
 
 		protected:
 			// Render Window
 			RenderWindow* mWindow;
 
 		private:
+			CPUUse* mCPUUse;
 			Launcher* mAdmin;
 		};
 	}

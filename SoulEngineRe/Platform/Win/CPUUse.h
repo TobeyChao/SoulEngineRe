@@ -14,7 +14,7 @@ namespace Soul
 		bool mCanReadCPU;
 		HQUERY mQueryHandle;
 		HCOUNTER mCounterHandle;
-		unsigned long long mLastSampleTime;	//最后的采样时间
+		unsigned long long mLastSampleTime;	//上次的采样时间
 		unsigned long long mCpuUsage;		//CPU使用率
 	};
 }
