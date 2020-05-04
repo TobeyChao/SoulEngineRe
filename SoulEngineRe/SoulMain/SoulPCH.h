@@ -31,15 +31,14 @@ namespace Soul
 	class GPUBufferManager;
 	class ShaderManager;
 
+	class ParticleEmitter;
 	class GameObject;
 	class SubMesh;
-	class Sphere;
 	class Rectangle2D;
 	class Point3D;
-	class Plane;
 	class Line3D;
+	class ParticalList;
 	class Light;
-	class Cube;
 	class SceneNodeRenderable;
 	class SceneNodeLight;
 	class SceneNodeCamera;

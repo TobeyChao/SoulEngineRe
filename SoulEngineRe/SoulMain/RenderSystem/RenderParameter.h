@@ -13,6 +13,7 @@ namespace Soul
 	{
 		BT_DEFAULT,
 		BT_TRANSPARENT,				// Í¸Ã÷»ìºÏ
+		BT_ADD,
 	};
 
 	enum class RasterizerType

@@ -1,7 +1,7 @@
 #include "D3D11ShaderManager.h"
 #include "../../SoulMain/Resource/ResourceGroupManager.h"
 
-#include "D3D11TextureShader.h"
+#include "D3D11SimpleShader.h"
 #include "D3D11BasicShader.h"
 
 namespace Soul

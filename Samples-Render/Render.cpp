@@ -30,7 +30,7 @@ public:
 		cubeSet["depth"] = 2;
 		cubeSet["Rasterizer"] = "RT_CULL_NONE";
 		cube = sceneMgr->CreateGameObject("cube", SIMPLE_GAMEOBJECT::SG_CUBE, cubeSet);
-		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/WireFence.dds"));
+		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks.dds"));
 		nodeCube = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCube->AttachObj(cube);
 		nodeCube->SetPosition({ 3.f, 0.f, 0.f });
@@ -44,7 +44,7 @@ public:
 		cylinderSet["sliceCount"] = 30;
 		cylinderSet["stackCount"] = 60;
 		cylinder = sceneMgr->CreateGameObject("cylinder", SIMPLE_GAMEOBJECT::SG_CYLINDER, cylinderSet);
-		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/braynzar.jpg"));
+		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stone.dds"));
 		nodeCylinder = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCylinder->AttachObj(cylinder);
 		nodeCylinder->SetPosition({ 0.f, 0.f, 3.f });
@@ -63,7 +63,7 @@ public:
 		sky["DepthStencil"] = "DST_LESS_EQUAL";
 		sky["Rasterizer"] = "RT_CULL_CLOCKWISE";
 		sphere = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sky);
-		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/SkyBox.dds"));
+		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/desertcube1024.dds"));
 		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeSky->AttachObj(sphere);
 		nodeSky->SetScale({ 10.0f, 10.0f, 10.0f });
@@ -71,16 +71,21 @@ public:
 
 		// nodePlane
 		json planeSet;
-		planeSet["width"] = 5.0f;
-		planeSet["depth"] = 5.0f;
-		planeSet["m"] = 3.0f;
-		planeSet["n"] = 3.0f;
-		planeSet["Rasterizer"] = "RT_WIREFRAME";
+		planeSet["width"] = 10.0f;
+		planeSet["depth"] = 10.0f;
+		planeSet["m"] = 4.0f;
+		planeSet["n"] = 4.0f;
+		//planeSet["Rasterizer"] = "RT_WIREFRAME";
 		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/catton_grpund.jpg"));
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/floor.dds"));
 		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodePlane->AttachObj(plane);
-		nodePlane->SetPosition({ 0.f, -3.f, 0.f });
+		nodePlane->SetPosition({ 0.f, -1.1f, 0.f });
+
+		particleEmitter = new ParticleEmitter();
+		particleList = sceneMgr->CreateGameObject("particle", particleEmitter);
+		nodeParticles = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		//nodeParticles->AttachObj(particleList);
 
 		camera = sceneMgr->AddCameraSceneNode();
 		camera->SetIsOrthogonal(false);
@@ -92,6 +97,7 @@ public:
 	// 每帧开始处理
 	bool FrameStarted() override
 	{
+		particleEmitter->Update(Timer::DeltaTime());
 		if (Input::DXInput::GetInstance().IsPressed(DIK_ESCAPE))
 		{
 			return false;
@@ -196,7 +202,7 @@ public:
 		pointLight->SetPosition({ 0.0f, 0.0f, -5.0f });
 
 		spotLight1 = sceneMgr->CreateLight("spot light1", LIGHT_TYPE::LT_SPOT);
-		spotLight1->SetPosition({ 2.0f, 5.0f, 2.0f });
+		spotLight1->SetPosition({ 3.0f, 6.0f, 3.0f });
 		spotLight1->SetDirection({ 0.0f, -1.0f, 0.0f });
 		spotLight1->SetAmbient({ 0.0f, 0.0f, 0.0f, 1.0f });
 		spotLight1->SetDiffuse({ 1.0f, 0.0f, 0.0f, 1.0f });
@@ -206,7 +212,7 @@ public:
 		spotLight1->SetRange(100.0f);
 
 		spotLight2 = sceneMgr->CreateLight("spot light2", LIGHT_TYPE::LT_SPOT);
-		spotLight2->SetPosition({ -2.0f, 5.0f, 2.0f });
+		spotLight2->SetPosition({ -3.0f, 6.0f, 3.0f });
 		spotLight2->SetDirection({ 0.0f, -1.0f, 0.0f });
 		spotLight2->SetAmbient({ 0.0f, 0.0f, 0.0f, 1.0f });
 		spotLight2->SetDiffuse({ 0.0f, 1.0f, 0.0f, 1.0f });
@@ -216,7 +222,7 @@ public:
 		spotLight2->SetRange(100.0f);
 
 		spotLight3 = sceneMgr->CreateLight("spot light3", LIGHT_TYPE::LT_SPOT);
-		spotLight3->SetPosition({ 0.0f, 5.0f, -2.0f });
+		spotLight3->SetPosition({ 0.0f, 6.0f, -3.0f });
 		spotLight3->SetDirection({ 0.0f, -1.0f, 0.0f });
 		spotLight3->SetAmbient({ 0.0f, 0.0f, 0.0f, 1.0f });
 		spotLight3->SetDiffuse({ 0.0f, 0.0f, 1.0f, 1.0f });
@@ -286,6 +292,7 @@ private:
 	SceneNode* nodeCube;
 	SceneNode* nodeSky;
 	SceneNode* nodePlane;
+	SceneNode* nodeParticles;
 	Light* pointLight;
 	Light* spotLight1;
 	Light* spotLight2;
@@ -296,9 +303,11 @@ private:
 	GameObject* cylinder;
 	GameObject* mesh;
 	GameObject* plane;
+	GameObject* particleList;
 	SceneNodeCamera* camera;
 	SceneManager* sceneMgr;
-	Core::SVector3 pos;
+	ParticleEmitter* particleEmitter;
+	Core::SVector3 pos = { -3.f, 0.f, 0.f };
 	Core::SVector3 rotate;
 	Core::SVector3 sphereRotate;
 	Core::SVector3 cameraPos = { 0.f, 0.f, -5.f };

@@ -49,21 +49,29 @@ namespace Soul
 
 		const json& config = mShader->GetShaderConfig();
 
-		if (config["input_layout"] == "pos_tex")
+		if (config["input_layout"] == "pos")
 		{
-			CreateBuffer<TextureVertex>();
+			CreateBuffer<PositionVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
+		}
+		else if (config["input_layout"] == "pos_tex")
+		{
+			CreateBuffer<TextureVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
 		}
 		else if (config["input_layout"] == "pos_col")
 		{
-			CreateBuffer<ColorVertex>();
+			CreateBuffer<ColorVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
 		}
 		else if (config["input_layout"] == "pos_tex_normal_col")
 		{
-			CreateBuffer<PosTexNorColVertex>();
+			CreateBuffer<PosTexNorColVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
+		}
+		else if (config["input_layout"] == "pos_tex_col")
+		{
+			// error
 		}
 		else
 		{
-			// error
+
 		}
 	}
 }

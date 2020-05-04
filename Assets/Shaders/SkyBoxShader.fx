@@ -13,7 +13,7 @@ struct VS_OUTPUT
 	float3 texCoord : TEXCOORD;
 };
 
-VS_OUTPUT VS(float3 inPos : POSITION, float2 inTexCoord : TEXCOORD)
+VS_OUTPUT VS(float3 inPos : POSITION)
 {
 	VS_OUTPUT output = (VS_OUTPUT)0;
 

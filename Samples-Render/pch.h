@@ -8,6 +8,7 @@
 #include "../SoulEngineRe/App/Application.h"
 #include "../SoulEngineRe/Input/DXInput/Input.h"
 #include "../SoulEngineRe/SoulMain/Core/Mathematics/MathConsts.h"
+#include "../SoulEngineRe/SoulMain/Scene/ParticleEmitter.h"
 #include "../SoulEngineRe/SoulMain/Scene/SceneManager.h"
 #include "../SoulEngineRe/SoulMain/Scene/GameObject.h"
 #include "../SoulEngineRe/SoulMain/Scene/SubMesh.h"

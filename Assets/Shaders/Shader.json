@@ -13,7 +13,7 @@
     },
     "Particle": {
         "path": "../Assets/Shaders/ParticleShader.fx",
-        "input_layout": "pos_tex_clo"
+        "input_layout": "pos_tex_col"
     },
     "Shape": {
         "path": "../Assets/Shaders/ShapeShader.fx",
@@ -21,7 +21,7 @@
     },
     "SkyBox": {
         "path": "../Assets/Shaders/SkyBoxShader.fx",
-        "input_layout": "pos_tex"
+        "input_layout": "pos"
     },
     "Terrain": {
         "path": "../Assets/Shaders/TerrainShader.fx",

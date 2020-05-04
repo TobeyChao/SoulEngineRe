@@ -5,6 +5,8 @@
 #include "SubMesh.h"
 #include "Line3D.h"
 #include "Point3D.h"
+#include "ParticalList.h"
+#include "ParticleEmitter.h"
 
 #include "Light.h"
 
@@ -12,6 +14,7 @@
 #include "../RenderSystem/RenderSystem.h"
 #include "../Resource/ObjLoader.h"
 #include "GeometryGenerator.h"
+#include "../Resource/TextureManager.h"
 
 namespace Soul
 {
@@ -120,6 +123,23 @@ namespace Soul
 		return taken;
 	}
 
+	GameObject* SceneManager::CreateGameObject(const std::string& name, ParticleEmitter* particleEmmiter)
+	{
+		if (particleEmmiter)
+		{
+			GameObject* newGameObject = new GameObject(name);
+			SubMesh* subMesh = new ParticalList(name);
+			subMesh->SetBlend(BlendType::BT_ADD);
+			subMesh->SetRasterizer(RasterizerType::RT_CULL_NONE);
+			subMesh->SetShader(ShaderManager::GetInstance().GetShaderByName(L"Particle"));
+			subMesh->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/star.dds"));
+			particleEmmiter->Initialize(subMesh);
+			newGameObject->PushSubMesh(subMesh);
+			return newGameObject;
+		}
+		return nullptr;
+	}
+
 	GameObject* SceneManager::CreateGameObject(const std::string& name, SIMPLE_GAMEOBJECT simpleGameObject, const json& createParameters)
 	{
 		GameObject* newGameObject = nullptr;
@@ -194,8 +214,8 @@ namespace Soul
 			newGameObject = new GameObject(name);
 			newGameObject->PushSubMesh(subMesh);
 			float radius = 1.0f;
-			unsigned sliceCount = 60;
-			unsigned stackCount = 30;
+			unsigned sliceCount = 20;
+			unsigned stackCount = 20;
 			if (createParameters.contains("radius"))
 			{
 				radius = createParameters["radius"];
@@ -208,7 +228,7 @@ namespace Soul
 			{
 				stackCount = createParameters["stackCount"];
 			}
-			geoGen.CreateSphere(1.f, 60, 30, *subMesh->GetOriginalMeshDataPtr());
+			geoGen.CreateSphere(radius, sliceCount, stackCount, *subMesh->GetOriginalMeshDataPtr());
 			subMesh->InitializeBuffer();
 			break;
 		}

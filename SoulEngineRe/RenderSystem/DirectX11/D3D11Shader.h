@@ -3,7 +3,7 @@
 #include "../../SoulMain/RenderSystem/GPUBufferManager.h"
 #include "../../SoulMain/Core/Mathematics/SMatrix4x4.h"
 #include "D3D11Device.h"
-#include "D3D11GpuConstantBuffer.h"
+#include "D3D11GPUBuffer.h"
 #include "D3D11InputLayouts.h"
 
 namespace Soul
@@ -45,7 +45,14 @@ namespace Soul
 				mVertexShaderBuffer->GetBufferSize(), nullptr, &mVertexShader);
 			mDevice->CreatePixelShader(mPixelShaderBuffer->GetBufferPointer(),
 				mPixelShaderBuffer->GetBufferSize(), nullptr, &mPixelShader);
-			if (mShaderConfig["input_layout"] == "pos_tex")
+
+			if (mShaderConfig["input_layout"] == "pos")
+			{
+				UINT numElements = sizeof(InputLayouts::inputLayoutPos) / sizeof(InputLayouts::inputLayoutPos[0]);
+				mDevice->CreateInputLayout(InputLayouts::inputLayoutPos, numElements, mVertexShaderBuffer->GetBufferPointer(),
+					mVertexShaderBuffer->GetBufferSize(), &mLayout);
+			}
+			else if (mShaderConfig["input_layout"] == "pos_tex")
 			{
 				UINT numElements = sizeof(InputLayouts::inputLayoutPosTex) / sizeof(InputLayouts::inputLayoutPosTex[0]);
 				mDevice->CreateInputLayout(InputLayouts::inputLayoutPosTex, numElements, mVertexShaderBuffer->GetBufferPointer(),
@@ -67,6 +74,12 @@ namespace Soul
 			{
 				UINT numElements = sizeof(InputLayouts::inputLayoutPosTexNorCol) / sizeof(InputLayouts::inputLayoutPosTexNorCol[0]);
 				mDevice->CreateInputLayout(InputLayouts::inputLayoutPosTexNorCol, numElements, mVertexShaderBuffer->GetBufferPointer(),
+					mVertexShaderBuffer->GetBufferSize(), &mLayout);
+			}
+			else if (mShaderConfig["input_layout"] == "pos_tex_col")
+			{
+				UINT numElements = sizeof(InputLayouts::inputLayoutPosTexCol) / sizeof(InputLayouts::inputLayoutPosTexCol[0]);
+				mDevice->CreateInputLayout(InputLayouts::inputLayoutPosTexCol, numElements, mVertexShaderBuffer->GetBufferPointer(),
 					mVertexShaderBuffer->GetBufferSize(), &mLayout);
 			}
 		}

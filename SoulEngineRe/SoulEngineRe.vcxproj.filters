@@ -204,6 +204,12 @@
     <ClCompile Include="RenderSystem\DirectX11\D2DRenderSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="SoulMain\Scene\ParticalList.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulMain\Scene\ParticleEmitter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SoulMain\Core\Mathematics\SVector2.h">
@@ -419,9 +425,6 @@
     <ClInclude Include="RenderSystem\DirectX11\D3D11TextureManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="RenderSystem\DirectX11\D3D11TextureShader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="RenderSystem\DirectX11\DDSTextureLoader.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -432,9 +435,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RenderSystem\DirectX11\D3D11GPUBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSystem\DirectX11\D3D11GPUConstantBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="SoulMain\Scene\Rectangle2D.h">
@@ -479,9 +479,6 @@
     <ClInclude Include="SoulMain\Resource\ObjLoader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="RenderSystem\DirectX11\D3D11Mapping.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="SoulMain\RenderSystem\RenderSystem2D.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -489,6 +486,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RenderSystem\DirectX11\D2DPCH.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\ParticalList.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11SimpleShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\ParticleEmitter.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

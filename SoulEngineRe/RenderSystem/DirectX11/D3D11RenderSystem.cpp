@@ -113,6 +113,7 @@ namespace Soul
 		mShaderManager->AddShader(L"Basic");
 		mShaderManager->AddShader(L"Color");
 		mShaderManager->AddShader(L"SkyBox");
+		mShaderManager->AddShader(L"Particle");
 	}
 	const std::string& D3D11RenderSystem::GetRenderSystemName() const
 	{
@@ -195,6 +196,22 @@ namespace Soul
 			mBlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 			mBlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 			mBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			mBlendDescChanged = true;
+			break;
+		case BlendType::BT_ADD:
+			ZeroMemory(&mBlendDesc, sizeof(mBlendDesc));
+			// 加法混合模式
+			// Color = SrcColor + DestColor
+			// Alpha = SrcAlpha
+			mBlendDesc.AlphaToCoverageEnable = false;
+			mBlendDesc.RenderTarget[0].BlendEnable = true;
+			mBlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+			mBlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+			mBlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			mBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			mBlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+			mBlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			mBlendDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
 			mBlendDescChanged = true;
 			break;
 		default:

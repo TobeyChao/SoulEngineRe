@@ -31,8 +31,8 @@ namespace Soul
 		D3D11BasicShader(D3D11Device& device, const std::wstring& shaderName, const json& shaderConfig)
 			:
 			D3D11Shader(device, shaderName, shaderConfig),
-			mConstantBufferPerObj(device),
-			mConstantBufferPerFrame(device)
+			mConstantBufferPerObj(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBufferPerObj)),
+			mConstantBufferPerFrame(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBufferPerFrame))
 		{
 		}
 		void SetWorld(const Core::SMatrix4x4& world) override
@@ -97,8 +97,8 @@ namespace Soul
 			deviceContext->PSSetShader(GetPixelShader(), nullptr, 0u);
 			Core::MatrixTranspose(mConstantsPerObj.wvp);
 			Core::MatrixTranspose(mConstantsPerObj.world);
-			mConstantBufferPerObj.UpdateBuffer(mConstantsPerObj);
-			mConstantBufferPerFrame.UpdateBuffer(mConstantsPerFrame);
+			mConstantBufferPerObj.UpdateBuffer(&mConstantsPerObj, sizeof(mConstantsPerObj));
+			mConstantBufferPerFrame.UpdateBuffer(&mConstantsPerFrame, sizeof(mConstantsPerFrame));
 			// Set the constant buffer.
 			ID3D11Buffer* buffer = mConstantBufferPerObj.GetD3D11Buffer();
 			deviceContext->VSSetConstantBuffers(1, 1, &buffer);
@@ -112,8 +112,8 @@ namespace Soul
 		//静态缓存对应的结构体变量
 		BasicCBufferPerFrame mConstantsPerFrame;
 		//静态缓存
-		D3D11GPUConstantBuffer<BasicCBufferPerObj> mConstantBufferPerObj;
+		D3D11GPUBuffer mConstantBufferPerObj;
 		//静态缓存
-		D3D11GPUConstantBuffer<BasicCBufferPerFrame> mConstantBufferPerFrame;
+		D3D11GPUBuffer mConstantBufferPerFrame;
 	};
 }

@@ -34,6 +34,8 @@ namespace Soul
 
 		virtual unsigned int RegisterNode(SceneNode* node, E_SCENENODE_TYPES pass);
 
+		virtual GameObject* CreateGameObject(const std::string& name, ParticleEmitter* particleEmmiter);
+
 		virtual GameObject* CreateGameObject(const std::string& name, SIMPLE_GAMEOBJECT simpleGameObject, const json& createParameters);
 
 		virtual GameObject* CreateGameObject(const std::string& name, const std::wstring& meshFilePath, const json& createParameters);

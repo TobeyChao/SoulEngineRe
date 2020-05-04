@@ -35,10 +35,10 @@ namespace Soul
 		}
 
 		// 顶点缓存
-		void InitializeBuffer();
+		virtual void InitializeBuffer();
 
 		template<typename VertexType>
-		void CreateBuffer()
+		void CreateBuffer(const GPU_BUFFER_TYPE& gbtVertex)
 		{
 			VertexType* vertices = new VertexType[mRenderParameter->mVertexCount];
 			//填充顶点
@@ -70,7 +70,7 @@ namespace Soul
 			//创建顶点缓存
 			mRenderParameter->mVertexBuffer =
 				GPUBufferManager::GetInstance().
-				CreateGPUBuffer(GPU_BUFFER_TYPE::GBT_VERTEX,
+				CreateGPUBuffer(gbtVertex,
 					vertices,
 					sizeof(VertexType) * mRenderParameter->mVertexCount);
 			//创建索引缓存
@@ -82,6 +82,8 @@ namespace Soul
 			delete[] vertices;
 			vertices = nullptr;
 		}
+
+		virtual void UpdateBuffer() {};
 
 		// 纹理
 		void PushTexture(ITexture* texture)

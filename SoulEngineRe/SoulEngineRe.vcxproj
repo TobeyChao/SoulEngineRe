@@ -197,6 +197,8 @@
     <ClCompile Include="SoulMain\Core\Mathematics\SVector4.cpp" />
     <ClCompile Include="SoulMain\Scene\Frustum.cpp" />
     <ClCompile Include="SoulMain\Scene\GeometryGenerator.cpp" />
+    <ClCompile Include="SoulMain\Scene\ParticalList.cpp" />
+    <ClCompile Include="SoulMain\Scene\ParticleEmitter.cpp" />
     <ClCompile Include="SoulMain\Scene\Rectangle2D.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneManager.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneNodeCamera.cpp" />
@@ -226,9 +228,7 @@
     <ClInclude Include="RenderSystem\DirectX11\D3D11Device.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11GPUBuffer.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11GPUBufferManager.h" />
-    <ClInclude Include="RenderSystem\DirectX11\D3D11GPUConstantBuffer.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11InputLayouts.h" />
-    <ClInclude Include="RenderSystem\DirectX11\D3D11Mapping.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11PCH.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11RenderModule.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11RenderSystem.h" />
@@ -237,7 +237,7 @@
     <ClInclude Include="RenderSystem\DirectX11\D3D11ShaderManager.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11Texture.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11TextureManager.h" />
-    <ClInclude Include="RenderSystem\DirectX11\D3D11TextureShader.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11SimpleShader.h" />
     <ClInclude Include="RenderSystem\DirectX11\DDSTextureLoader.h" />
     <ClInclude Include="RenderSystem\DirectX11\DXBasicShader.h" />
     <ClInclude Include="RenderSystem\DirectX11\DXTextureShader.h" />
@@ -287,6 +287,8 @@
     <ClInclude Include="SoulMain\Core\SRect.h" />
     <ClInclude Include="SoulMain\Scene\Frustum.h" />
     <ClInclude Include="SoulMain\Scene\GeometryGenerator.h" />
+    <ClInclude Include="SoulMain\Scene\ParticalList.h" />
+    <ClInclude Include="SoulMain\Scene\ParticleEmitter.h" />
     <ClInclude Include="SoulMain\Scene\PrimitiveTypes.h" />
     <ClInclude Include="SoulMain\Scene\SceneManager.h" />
     <ClInclude Include="SoulMain\Scene\SceneNodeCamera.h" />

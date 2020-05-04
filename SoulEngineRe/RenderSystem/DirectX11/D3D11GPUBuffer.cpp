@@ -16,13 +16,20 @@ namespace Soul
 			dbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 			dbd.ByteWidth = byteSize;
 			break;
+		case GPU_BUFFER_TYPE::GBT_VERTEX_DYNAMIC:
+			//Create VertexBuffer
+			dbd.Usage = D3D11_USAGE_DYNAMIC;
+			dbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			dbd.ByteWidth = byteSize;
+			dbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			break;
 		case GPU_BUFFER_TYPE::GBT_INDEX:
 			//Create IndexBuffer
 			dbd.Usage = D3D11_USAGE_IMMUTABLE;
 			dbd.ByteWidth = byteSize;
 			dbd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 			break;
-		case GPU_BUFFER_TYPE::GBT_CONST:
+		case GPU_BUFFER_TYPE::GBT_CONSTANT:
 			dbd.Usage = D3D11_USAGE_DYNAMIC;
 			dbd.ByteWidth = byteSize;
 			dbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
