@@ -198,6 +198,12 @@
     <ClCompile Include="SoulMain\Resource\ObjLoader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="SoulMain\RenderSystem\RenderSystem2D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem\DirectX11\D2DRenderSystem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SoulMain\Core\Mathematics\SVector2.h">
@@ -474,6 +480,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RenderSystem\DirectX11\D3D11Mapping.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\RenderSystem\RenderSystem2D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D2DRenderSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D2DPCH.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

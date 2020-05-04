@@ -35,7 +35,7 @@ namespace Soul
 		}
 	private:
 		HRESULT CreateSwapChain(const json& createParams);
-		HRESULT CreateDx11RenderResource();
+		HRESULT CreateD3D11RenderResource();
 
 	private:
 		D3D11Device& mDx11Device;
@@ -46,10 +46,10 @@ namespace Soul
 
 		// 交换链
 		Microsoft::WRL::ComPtr<IDXGISwapChain>	mSwapChain;
+		Microsoft::WRL::ComPtr<IDXGISwapChain1> mSwapChain1;// D3D11.1交换链
 		UINT mSampleCount;
 		UINT mMsaaQuality;
-		// 描述交换链
-		DXGI_SWAP_CHAIN_DESC mSwapChainDesc;
+
 		// 垂直同步
 		bool mVSync;
 

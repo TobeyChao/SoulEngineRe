@@ -56,6 +56,7 @@ namespace Soul
 	class RenderParameter;
 	class Shader;
 	class RenderSystem;
+	class RenderSystem2D;
 	class RenderTarget;
 	class RenderWindow;
 	class Viewport;

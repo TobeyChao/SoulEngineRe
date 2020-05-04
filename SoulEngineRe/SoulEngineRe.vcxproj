@@ -155,6 +155,7 @@
     <ClCompile Include="Platform\Win\CPUUse.cpp" />
     <ClCompile Include="Platform\Win\Timer.cpp" />
     <ClCompile Include="Platform\Win\WindowsUtils.cpp" />
+    <ClCompile Include="RenderSystem\DirectX11\D2DRenderSystem.cpp" />
     <ClCompile Include="RenderSystem\DirectX11\D3D11Device.cpp" />
     <ClCompile Include="RenderSystem\DirectX11\D3D11GPUBuffer.cpp" />
     <ClCompile Include="RenderSystem\DirectX11\D3D11GPUBufferManager.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="SoulMain\RenderSystem\GPUBufferManager.cpp" />
     <ClCompile Include="SoulMain\RenderSystem\ITexture.cpp" />
     <ClCompile Include="SoulMain\RenderSystem\RenderSystem.cpp" />
+    <ClCompile Include="SoulMain\RenderSystem\RenderSystem2D.cpp" />
     <ClCompile Include="SoulMain\RenderSystem\RenderTarget.cpp" />
     <ClCompile Include="SoulMain\RenderSystem\RenderWindow.cpp" />
     <ClCompile Include="SoulMain\RenderSystem\ShaderManager.cpp" />
@@ -218,6 +220,8 @@
     <ClInclude Include="Platform\Win\CPUUse.h" />
     <ClInclude Include="Platform\Win\Timer.h" />
     <ClInclude Include="Platform\Win\WindowsUtils.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D2DPCH.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D2DRenderSystem.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11BasicShader.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11Device.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11GPUBuffer.h" />
@@ -255,6 +259,7 @@
     <ClInclude Include="SoulMain\RenderSystem\GPUBuffer.h" />
     <ClInclude Include="SoulMain\RenderSystem\GPUBufferManager.h" />
     <ClInclude Include="SoulMain\RenderSystem\RenderSystem.h" />
+    <ClInclude Include="SoulMain\RenderSystem\RenderSystem2D.h" />
     <ClInclude Include="SoulMain\RenderSystem\RenderTarget.h" />
     <ClInclude Include="SoulMain\RenderSystem\RenderWindow.h" />
     <ClInclude Include="SoulMain\RenderSystem\Shader.h" />

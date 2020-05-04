@@ -140,33 +140,121 @@ namespace Soul
 		switch (simpleGameObject)
 		{
 		case SIMPLE_GAMEOBJECT::SG_CUBE:
+		{
 			newGameObject = new GameObject(name);
 			newGameObject->PushSubMesh(subMesh);
-			geoGen.CreateBox(1.f, 1.f, 1.f, *subMesh->GetOriginalMeshDataPtr());
+			float width = 1.f;
+			float height = 1.f;
+			float depth = 1.f;
+			if (createParameters.contains("width"))
+			{
+				width = createParameters["width"];
+			}
+			if (createParameters.contains("height"))
+			{
+				height = createParameters["height"];
+			}
+			if (createParameters.contains("depth"))
+			{
+				depth = createParameters["depth"];
+			}
+			geoGen.CreateBox(width, height, depth, *subMesh->GetOriginalMeshDataPtr());
 			subMesh->InitializeBuffer();
-			break;
+		}break;
 		case SIMPLE_GAMEOBJECT::SG_PLANE:
+		{
 			newGameObject = new GameObject(name);
 			newGameObject->PushSubMesh(subMesh);
-			geoGen.CreateGrid(1.f, 1.f, 2, 2, *subMesh->GetOriginalMeshDataPtr());
+			float width = 1.f;
+			float depth = 1.f;
+			unsigned m = 2;
+			unsigned n = 2;
+			if (createParameters.contains("width"))
+			{
+				width = createParameters["width"];
+			}
+			if (createParameters.contains("depth"))
+			{
+				depth = createParameters["depth"];
+			}
+			if (createParameters.contains("m"))
+			{
+				m = createParameters["m"];
+			}
+			if (createParameters.contains("n"))
+			{
+				n = createParameters["n"];
+			}
+			geoGen.CreateGrid(width, depth, m, n, *subMesh->GetOriginalMeshDataPtr());
 			subMesh->InitializeBuffer();
 			break;
+		}
 		case SIMPLE_GAMEOBJECT::SG_SPHERE:
+		{
 			newGameObject = new GameObject(name);
 			newGameObject->PushSubMesh(subMesh);
+			float radius = 1.0f;
+			unsigned sliceCount = 60;
+			unsigned stackCount = 30;
+			if (createParameters.contains("radius"))
+			{
+				radius = createParameters["radius"];
+			}
+			if (createParameters.contains("sliceCount"))
+			{
+				sliceCount = createParameters["sliceCount"];
+			}
+			if (createParameters.contains("stackCount"))
+			{
+				stackCount = createParameters["stackCount"];
+			}
 			geoGen.CreateSphere(1.f, 60, 30, *subMesh->GetOriginalMeshDataPtr());
 			subMesh->InitializeBuffer();
 			break;
-			//case SIMPLE_GAMEOBJECT::SG_LINE3D:
-			//	newGameObject = new GameObject(name);
-			//	subMesh = new Line3D(name, { -1, 0, 0 }, { 1, 0, 0 });
-			//	newGameObject->PushSubMesh(subMesh);
-			//	break;
-			//case SIMPLE_GAMEOBJECT::SG_POINT3D:
-			//	newGameObject = new GameObject(name);
-			//	subMesh = new Point3D(name);
-			//	newGameObject->PushSubMesh(subMesh);
-			//	break;
+		}
+		case SIMPLE_GAMEOBJECT::SG_CYLINDER:
+		{
+			newGameObject = new GameObject(name);
+			newGameObject->PushSubMesh(subMesh);
+			float bottomRadius = 1.0f;
+			float topRadius = 1.0f;
+			float height = 3.0f;
+			unsigned sliceCount = 30;
+			unsigned stackCount = 60;
+			if (createParameters.contains("bottomRadius"))
+			{
+				bottomRadius = createParameters["bottomRadius"];
+			}
+			if (createParameters.contains("topRadius"))
+			{
+				topRadius = createParameters["topRadius"];
+			}
+			if (createParameters.contains("height"))
+			{
+				height = createParameters["height"];
+			}
+			if (createParameters.contains("sliceCount"))
+			{
+				sliceCount = createParameters["sliceCount"];
+			}
+			if (createParameters.contains("stackCount"))
+			{
+				stackCount = createParameters["stackCount"];
+			}
+			geoGen.CreateCylinder(bottomRadius, topRadius, height, sliceCount, stackCount, *subMesh->GetOriginalMeshDataPtr());
+			subMesh->InitializeBuffer();
+			break;
+		}
+		//case SIMPLE_GAMEOBJECT::SG_LINE3D:
+		//	newGameObject = new GameObject(name);
+		//	subMesh = new Line3D(name, { -1, 0, 0 }, { 1, 0, 0 });
+		//	newGameObject->PushSubMesh(subMesh);
+		//	break;
+		//case SIMPLE_GAMEOBJECT::SG_POINT3D:
+		//	newGameObject = new GameObject(name);
+		//	subMesh = new Point3D(name);
+		//	newGameObject->PushSubMesh(subMesh);
+		//	break;
 		}
 		return newGameObject;
 	}
@@ -225,7 +313,7 @@ namespace Soul
 	void SceneManager::SetCustomEffect(SubMesh* subMesh, const json& effctSetting)
 	{
 		// DepthStencil
-		if (effctSetting.find("DepthStencil") != effctSetting.end())
+		if (effctSetting.contains("DepthStencil"))
 		{
 			std::string depthStencil = effctSetting["DepthStencil"];
 			if (depthStencil == "DST_LESS_EQUAL")
@@ -235,7 +323,7 @@ namespace Soul
 		}
 
 		// Rasterizer
-		if (effctSetting.find("Rasterizer") != effctSetting.end())
+		if (effctSetting.contains("Rasterizer"))
 		{
 			std::string rasterizer = effctSetting["Rasterizer"];
 			if (rasterizer == "RT_CULL_CLOCKWISE")
@@ -257,7 +345,7 @@ namespace Soul
 		}
 
 		// Rasterizer
-		if (effctSetting.find("Blend") != effctSetting.end())
+		if (effctSetting.contains("Blend"))
 		{
 			std::string rasterizer = effctSetting["Blend"];
 			if (rasterizer == "BT_TRANSPARENT")
@@ -268,7 +356,7 @@ namespace Soul
 
 		// Shader
 		Shader* shader = nullptr;
-		if (effctSetting.find("Shader") != effctSetting.end())
+		if (effctSetting.contains("Shader"))
 		{
 			std::string shaderName = effctSetting["Shader"];
 			shader = ShaderManager::GetInstance().GetShaderByName(StringToWstring(shaderName));

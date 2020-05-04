@@ -2,6 +2,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <iostream>
+#include <sstream>
 
 #include "../SoulEngineRe/Platform/Win/Timer.h"
 #include "../SoulEngineRe/App/Application.h"
@@ -16,6 +17,7 @@
 #include "../SoulEngineRe/SoulMain/Scene/SceneNodeCamera.h"
 #include "../SoulEngineRe/SoulMain/Resource/TextureManager.h"
 #include "../SoulEngineRe/SoulMain/RenderSystem/RenderWindow.h"
+#include "../SoulEngineRe/SoulMain/RenderSystem/RenderSystem2D.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "../bin/SoulEngineRe/Debug/SoulEngineRe_d.lib")

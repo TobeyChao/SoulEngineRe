@@ -22,41 +22,65 @@ public:
 
 		InitLight();
 
+		// Cube
 		json cubeSet;
 		cubeSet["Shader"] = "Basic";
+		cubeSet["width"] = 2;
+		cubeSet["height"] = 2;
+		cubeSet["depth"] = 2;
+		cubeSet["Rasterizer"] = "RT_CULL_NONE";
 		cube = sceneMgr->CreateGameObject("cube", SIMPLE_GAMEOBJECT::SG_CUBE, cubeSet);
-		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/braynzar.jpg"));
+		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/WireFence.dds"));
+		nodeCube = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeCube->AttachObj(cube);
+		nodeCube->SetPosition({ 3.f, 0.f, 0.f });
 
-		json planeSet;
-		planeSet["Shader"] = "Basic";
-		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/catton_grpund.jpg"));
+		// Cylinder
+		json cylinderSet;
+		cylinderSet["Shader"] = "Basic";
+		cylinderSet["bottomRadius"] = 1.0f;
+		cylinderSet["topRadius"] = 1.0f;
+		cylinderSet["height"] = 3.0f;
+		cylinderSet["sliceCount"] = 30;
+		cylinderSet["stackCount"] = 60;
+		cylinder = sceneMgr->CreateGameObject("cylinder", SIMPLE_GAMEOBJECT::SG_CYLINDER, cylinderSet);
+		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/braynzar.jpg"));
+		nodeCylinder = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeCylinder->AttachObj(cylinder);
+		nodeCylinder->SetPosition({ 0.f, 0.f, 3.f });
 
+		// Mesh
 		json meshSet;
-		meshSet["Rasterizer"] = "RT_WIREFRAME";
-		mesh = sceneMgr->CreateGameObject("sphere", L"../Assets/Models/box/box.obj", meshSet);
+		//meshSet["Rasterizer"] = "RT_WIREFRAME";
+		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/box/box.obj", meshSet);
+		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeMesh->SetPosition({ -3.f, 0.f, 0.f });
+		nodeMesh->AttachObj(mesh);
 
 		// sky
 		json sky;
 		sky["Shader"] = "SkyBox";
 		sky["DepthStencil"] = "DST_LESS_EQUAL";
 		sky["Rasterizer"] = "RT_CULL_CLOCKWISE";
-
 		sphere = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sky);
 		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/SkyBox.dds"));
-		skyNode = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		skyNode->AttachObj(sphere);
-		skyNode->SetScale({ 10.0f, 10.0f, 10.0f });
-		skyNode->SetPosition({ 0.f, 0.f, 0.f });
+		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeSky->AttachObj(sphere);
+		nodeSky->SetScale({ 10.0f, 10.0f, 10.0f });
+		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
 
-		node = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		node->SetPosition({ 0.f, 0.f, 0.f });
-		node->AttachObj(mesh);
-
-		node2 = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		node2->AttachObj(plane);
-		node2->SetPosition({ 0.f, -6.f, 0.f });
-		node2->SetScale({ 10.0f, 10.0f, 10.0f });
+		// nodePlane
+		json planeSet;
+		planeSet["width"] = 5.0f;
+		planeSet["depth"] = 5.0f;
+		planeSet["m"] = 3.0f;
+		planeSet["n"] = 3.0f;
+		planeSet["Rasterizer"] = "RT_WIREFRAME";
+		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/catton_grpund.jpg"));
+		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodePlane->AttachObj(plane);
+		nodePlane->SetPosition({ 0.f, -3.f, 0.f });
 
 		camera = sceneMgr->AddCameraSceneNode();
 		camera->SetIsOrthogonal(false);
@@ -135,19 +159,29 @@ public:
 		}
 
 		camera->SetPosition(cameraPos);
-		skyNode->SetPosition(cameraPos);
+		nodeSky->SetPosition(cameraPos);
 		camera->SetRotation(cameraRotate);
 
-		node->SetRotation(rotate);
-		node->SetPosition(pos);
+		nodeMesh->SetRotation(rotate);
+		nodeMesh->SetPosition(pos);
 		return Application::FrameStarted();
+	}
+
+	bool FrameUpdated() override
+	{
+		RenderSystem2D::GetInstance().DrawTextW(L"hello world!", { 10, 10 });
+
+		std::wostringstream buffer;
+		buffer << "Timer::DeltaTime:" << 1.0f / Timer::DeltaTime() << std::endl
+			<< L"CPU占用:" << GetCPUUSe() << std::endl;
+		std::wstring info = buffer.str();
+
+		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 30 });
+		return Application::FrameUpdated();
 	}
 
 	bool FrameEnd()
 	{
-		char chInput[512];
-		sprintf_s(chInput, "Timer::DeltaTime:%f\t CPU use:%% %d\n", Timer::DeltaTime(), GetCPUUSe());
-		OutputDebugString(chInput);
 		return Application::FrameEnd();
 	}
 
@@ -162,7 +196,7 @@ public:
 		pointLight->SetPosition({ 0.0f, 0.0f, -5.0f });
 
 		spotLight1 = sceneMgr->CreateLight("spot light1", LIGHT_TYPE::LT_SPOT);
-		spotLight1->SetPosition({ 2.0f, 0.0f, 2.0f });
+		spotLight1->SetPosition({ 2.0f, 5.0f, 2.0f });
 		spotLight1->SetDirection({ 0.0f, -1.0f, 0.0f });
 		spotLight1->SetAmbient({ 0.0f, 0.0f, 0.0f, 1.0f });
 		spotLight1->SetDiffuse({ 1.0f, 0.0f, 0.0f, 1.0f });
@@ -172,7 +206,7 @@ public:
 		spotLight1->SetRange(100.0f);
 
 		spotLight2 = sceneMgr->CreateLight("spot light2", LIGHT_TYPE::LT_SPOT);
-		spotLight2->SetPosition({ -2.0f, 0.0f, 2.0f });
+		spotLight2->SetPosition({ -2.0f, 5.0f, 2.0f });
 		spotLight2->SetDirection({ 0.0f, -1.0f, 0.0f });
 		spotLight2->SetAmbient({ 0.0f, 0.0f, 0.0f, 1.0f });
 		spotLight2->SetDiffuse({ 0.0f, 1.0f, 0.0f, 1.0f });
@@ -182,7 +216,7 @@ public:
 		spotLight2->SetRange(100.0f);
 
 		spotLight3 = sceneMgr->CreateLight("spot light3", LIGHT_TYPE::LT_SPOT);
-		spotLight3->SetPosition({ 0.0f, 0.0f, -2.0f });
+		spotLight3->SetPosition({ 0.0f, 5.0f, -2.0f });
 		spotLight3->SetDirection({ 0.0f, -1.0f, 0.0f });
 		spotLight3->SetAmbient({ 0.0f, 0.0f, 0.0f, 1.0f });
 		spotLight3->SetDiffuse({ 0.0f, 0.0f, 1.0f, 1.0f });
@@ -212,44 +246,46 @@ public:
 		const Core::SVector3& right = camera->GetRight();
 		if (Input::DXInput::GetInstance().IsPressed(DIK_UP))
 		{
-			cameraPos.x += 0.03f * forward.x;
-			cameraPos.y += 0.03f * forward.y;
-			cameraPos.z += 0.03f * forward.z;
+			cameraPos.x += 0.06f * forward.x;
+			cameraPos.y += 0.06f * forward.y;
+			cameraPos.z += 0.06f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_DOWN))
 		{
-			cameraPos.x -= 0.03f * forward.x;
-			cameraPos.y -= 0.03f * forward.y;
-			cameraPos.z -= 0.03f * forward.z;
+			cameraPos.x -= 0.06f * forward.x;
+			cameraPos.y -= 0.06f * forward.y;
+			cameraPos.z -= 0.06f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_LEFT))
 		{
-			cameraPos.x -= 0.03f * right.x;
-			cameraPos.y -= 0.03f * right.y;
-			cameraPos.z -= 0.03f * right.z;
+			cameraPos.x -= 0.06f * right.x;
+			cameraPos.y -= 0.06f * right.y;
+			cameraPos.z -= 0.06f * right.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_RIGHT))
 		{
-			cameraPos.x += 0.03f * right.x;
-			cameraPos.y += 0.03f * right.y;
-			cameraPos.z += 0.03f * right.z;
+			cameraPos.x += 0.06f * right.x;
+			cameraPos.y += 0.06f * right.y;
+			cameraPos.z += 0.06f * right.z;
 		}
 	}
 
 	// 第三人称相机
 	void ProcessThirdCamera()
 	{
-		float x = node->GetPosition().x + -5 * cosf(cameraRotate.x) * sinf(cameraRotate.y);
-		float z = node->GetPosition().z + -5 * cosf(cameraRotate.x) * cosf(cameraRotate.y);
-		float y = node->GetPosition().y + 5 * sinf(cameraRotate.x);
+		float x = nodeMesh->GetPosition().x + -5 * cosf(cameraRotate.x) * sinf(cameraRotate.y);
+		float z = nodeMesh->GetPosition().z + -5 * cosf(cameraRotate.x) * cosf(cameraRotate.y);
+		float y = nodeMesh->GetPosition().y + 5 * sinf(cameraRotate.x);
 		cameraPos = { x, y, z };
 	}
 
 private:
 	SceneNode* lightNode;
-	SceneNode* node;
-	SceneNode* node2;
-	SceneNode* skyNode;
+	SceneNode* nodeMesh;
+	SceneNode* nodeCylinder;
+	SceneNode* nodeCube;
+	SceneNode* nodeSky;
+	SceneNode* nodePlane;
 	Light* pointLight;
 	Light* spotLight1;
 	Light* spotLight2;
@@ -257,8 +293,9 @@ private:
 	Light* dirLight;
 	GameObject* cube;
 	GameObject* sphere;
-	GameObject* plane;
+	GameObject* cylinder;
 	GameObject* mesh;
+	GameObject* plane;
 	SceneNodeCamera* camera;
 	SceneManager* sceneMgr;
 	Core::SVector3 pos;

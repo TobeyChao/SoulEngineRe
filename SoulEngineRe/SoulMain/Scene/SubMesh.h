@@ -11,6 +11,7 @@ namespace Soul
 		SG_CUBE,
 		SG_SPHERE,
 		SG_PLANE,
+		SG_CYLINDER,
 		SG_LINE3D,
 		SG_POINT3D
 	};

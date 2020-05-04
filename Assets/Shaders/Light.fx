@@ -52,7 +52,13 @@ VertexOut VS(VertexIn vertIn)
 
 float4 PS(VertexOut vertIn) : SV_Target
 {
-    
+    float4 originColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	if(gUseTexture == true)
+	{
+		originColor = gTex.Sample(gSamLinear, vertIn.Tex);
+		clip(originColor.a - 0.1f);
+	}
+
     // 归一化法线
     vertIn.NormalW = normalize(vertIn.NormalW); 
     // 物体顶点到摄像机眼睛，用来计算镜面高光
@@ -93,12 +99,6 @@ float4 PS(VertexOut vertIn) : SV_Target
 		spec += S;
 	}
 
-	float4 originColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	if(gUseTexture == true)
-	{
-		originColor = gTex.Sample(gSamLinear, vertIn.Tex);
-	}
-	
 	float4 finalColor = originColor * (ambient + diffuse) + spec;
 
 	// Common to take alpha from diffuse material.

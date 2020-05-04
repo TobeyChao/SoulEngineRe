@@ -18,6 +18,10 @@ namespace Soul
 		{
 			return mDXGIFactory.Get();
 		}
+		inline IDXGIFactory2* GetDXGIFactory2()
+		{
+			return mDXGIFactory2.Get();
+		}
 		inline IDXGIAdapter* GetDXGIAdapter()
 		{
 			return mDXGIAdapter.Get();
@@ -34,5 +38,9 @@ namespace Soul
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext>		mDeviceContext;
 		Microsoft::WRL::ComPtr<IDXGIFactory1>			mDXGIFactory;
 		Microsoft::WRL::ComPtr<IDXGIAdapter1>			mDXGIAdapter;
+
+		Microsoft::WRL::ComPtr<ID3D11Device1>			mDevice1;			// D3D11.1设备
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext1>	mDeviceContext1;	// D3D11.1设备上下文
+		Microsoft::WRL::ComPtr<IDXGIFactory2>			mDXGIFactory2;
 	};
 }

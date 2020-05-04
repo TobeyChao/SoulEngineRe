@@ -8,7 +8,6 @@ namespace Soul
 		mMsaaQuality(0),
 		mSampleCount(0)
 	{
-		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 		mVSync = false;
 
 		mHWnd = 0;
@@ -39,29 +38,29 @@ namespace Soul
 		std::wstring appName(L"SoulWin");
 		std::wstring icon;
 
-		if (createParams.find("fullscreen") != createParams.end())
+		if (createParams.contains("fullscreen"))
 		{
 			mIsFullScreen = createParams["fullscreen"];
 		}
-		if (createParams.find("window_title") != createParams.end())
+		if (createParams.contains("window_title"))
 		{
 			mName = createParams["window_title"];
 			appName = StringToWstring(mName);
 		}
-		if (createParams.find("icon") != createParams.end())
+		if (createParams.contains("icon"))
 		{
 			std::string iconName = createParams["icon"];
 			icon = StringToWstring(iconName);
 		}
-		if (createParams.find("screen_width") != createParams.end())
+		if (createParams.contains("screen_width"))
 		{
 			mWidth = createParams["screen_width"];
 		}
-		if (createParams.find("screen_height") != createParams.end())
+		if (createParams.contains("screen_height"))
 		{
 			mHeight = createParams["screen_height"];
 		}
-		if (createParams.find("vsync") != createParams.end())
+		if (createParams.contains("vsync"))
 		{
 			mVSync = createParams["vsync"];
 		}
@@ -123,7 +122,7 @@ namespace Soul
 			MessageBoxW(nullptr, L"Create SwapChain Failed", L"Error", MB_OK | MB_ICONWARNING);
 			return false;
 		}
-		if (FAILED(CreateDx11RenderResource()))
+		if (FAILED(CreateD3D11RenderResource()))
 		{
 			MessageBoxW(nullptr, L"Create D3D11 Render Resource Failed", L"Error", MB_OK | MB_ICONWARNING);
 			return false;
@@ -170,7 +169,7 @@ namespace Soul
 		DXGI_MODE_DESC* displayModeList = new DXGI_MODE_DESC[numModes];
 
 		// Now fill the display mode list structures.
-		hr = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList);
+		hr = adapterOutput->GetDisplayModeList(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList);
 		if (FAILED(hr))
 		{
 			return hr;
@@ -193,68 +192,102 @@ namespace Soul
 		}
 		delete[] displayModeList;
 
-		DXGI_MODE_DESC bufferDesc;
-		ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
-		bufferDesc.Width = mWidth;
-		bufferDesc.Height = mHeight;
-		bufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-		// Set the refresh rate of the back buffer.
+		// 刷新率
+		DXGI_RATIONAL dxgiRational;
 		if (mVSync)
 		{
-			bufferDesc.RefreshRate.Numerator = numerator;
-			bufferDesc.RefreshRate.Denominator = denominator;
+			dxgiRational.Numerator = numerator;
+			dxgiRational.Denominator = denominator;
 		}
 		else
 		{
-			bufferDesc.RefreshRate.Numerator = 0;
-			bufferDesc.RefreshRate.Denominator = 1;
+			dxgiRational.Numerator = 0;
+			dxgiRational.Denominator = 1;
 		}
-		bufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-		bufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 
 		// 检测 MSAA支持的质量等级
 		mSampleCount = 0;
-		if (createParams.find("msaa") != createParams.end())
+		if (createParams.contains("msaa"))
 		{
 			mSampleCount = createParams["msaa"];
 			if (mSampleCount > 0)
 			{
-				mDx11Device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, mSampleCount, &mMsaaQuality);
+				mDx11Device->CheckMultisampleQualityLevels(DXGI_FORMAT_B8G8R8A8_UNORM, mSampleCount, &mMsaaQuality);
 			}
 		}
-
-		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-		mSwapChainDesc.BufferCount = 1;
-		mSwapChainDesc.BufferDesc = bufferDesc;
-		mSwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		mSwapChainDesc.OutputWindow = mHWnd;
-		// 当多重采样抗锯齿sampleCount大于0时并且支持才可以开启多重采样抗锯齿
+		DXGI_SAMPLE_DESC dxgiSampleDesc;
 		if (mSampleCount > 0 && mMsaaQuality > 0)
 		{
-			mSwapChainDesc.SampleDesc.Count = mSampleCount;
-			mSwapChainDesc.SampleDesc.Quality = mMsaaQuality - 1;
+			dxgiSampleDesc.Count = mSampleCount;
+			dxgiSampleDesc.Quality = mMsaaQuality - 1;
 		}
 		else
 		{
-			mSwapChainDesc.SampleDesc.Count = 1;
-			mSwapChainDesc.SampleDesc.Quality = 0;
+			dxgiSampleDesc.Count = 1;
+			dxgiSampleDesc.Quality = 0;
 		}
 
-		mSwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-		mSwapChainDesc.Windowed = !mIsFullScreen;
-
-		Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice;
-		hr = mDx11Device->QueryInterface(__uuidof(IDXGIDevice), (void**)dxgiDevice.GetAddressOf());
-		if (FAILED(hr))
+		// 创建交换链
+		// DirectX 11.1
+		if (mDx11Device.GetDXGIFactory2())
 		{
-			return hr;
+			// 填充各种结构体用以描述交换链
+			DXGI_SWAP_CHAIN_DESC1 sd;
+			ZeroMemory(&sd, sizeof(sd));
+			sd.Width = mWidth;
+			sd.Height = mHeight;
+			sd.Format = DXGI_FORMAT_B8G8R8A8_UNORM;		// 注意此处DXGI_FORMAT_B8G8R8A8_UNORM
+			sd.SampleDesc = dxgiSampleDesc;
+			sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+			sd.BufferCount = 1;
+			sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+			sd.Flags = 0;
+
+			DXGI_SWAP_CHAIN_FULLSCREEN_DESC fd;
+			fd.RefreshRate = dxgiRational;
+			fd.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+			fd.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+			fd.Windowed = !mIsFullScreen;
+
+			// 为当前窗口创建交换链
+			hr = mDx11Device.GetDXGIFactory2()->CreateSwapChainForHwnd(mDx11Device.operator->(), mHWnd, &sd, &fd, nullptr, mSwapChain1.GetAddressOf());
+			hr = mSwapChain1.As(&mSwapChain);
+		}
+		else
+		{
+			DXGI_MODE_DESC bufferDesc;
+			ZeroMemory(&bufferDesc, sizeof(DXGI_MODE_DESC));
+			bufferDesc.Width = mWidth;
+			bufferDesc.Height = mHeight;
+			bufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+			bufferDesc.RefreshRate = dxgiRational;
+			bufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+			bufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+
+			DXGI_SWAP_CHAIN_DESC swapChainDesc;
+			ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+			swapChainDesc.BufferCount = 1;
+			swapChainDesc.BufferDesc = bufferDesc;
+			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+			swapChainDesc.OutputWindow = mHWnd;
+			swapChainDesc.SampleDesc = dxgiSampleDesc;
+			swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+			swapChainDesc.Windowed = !mIsFullScreen;
+
+			Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice;
+			hr = mDx11Device->QueryInterface(__uuidof(IDXGIDevice), (void**)dxgiDevice.GetAddressOf());
+			if (FAILED(hr))
+			{
+				return hr;
+			}
+
+			hr = mDx11Device.GetDXGIFactory()->CreateSwapChain(dxgiDevice.Get(), &swapChainDesc, &mSwapChain);
 		}
 
-		hr = mDx11Device.GetDXGIFactory()->CreateSwapChain(dxgiDevice.Get(), &mSwapChainDesc, &mSwapChain);
 		return hr;
 	}
 
-	HRESULT D3D11RenderWindow::CreateDx11RenderResource()
+	HRESULT D3D11RenderWindow::CreateD3D11RenderResource()
 	{
 		mBackBuffer.Reset();
 		HRESULT hr = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(mBackBuffer.ReleaseAndGetAddressOf()));

@@ -4,8 +4,8 @@ cbuffer cbPerObject
 };
 
 //Texture2D ObjTexture;
-SamplerState ObjSamplerState;
-TextureCube Sky;
+SamplerState ObjSamplerState : register(s0);
+TextureCube Sky : register(t0);
 
 struct VS_OUTPUT
 {

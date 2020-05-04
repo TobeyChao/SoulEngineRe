@@ -6,6 +6,7 @@
 #include "D3D11Shader.h"
 #include "D3D11RenderWindow.h"
 #include "D3D11TextureManager.h"
+#include "D2DRenderSystem.h"
 #include <algorithm>
 
 namespace Soul
@@ -130,6 +131,10 @@ namespace Soul
 		{
 			return nullptr;
 		}
+		// 窗体创建完才可以初始化渲染系统
+		mRenderSystem2D = new D2DRenderSystem(*window);
+		mRenderSystem2D->Initialize();
+		// 添加窗口为渲染目标
 		AddRenderTarget(window);
 		return window;
 	}
@@ -355,6 +360,11 @@ namespace Soul
 
 		//像素着色阶段
 		// 纹理
+		if (!mTextureSettingChanged && mTextureNum == 0)
+		{
+			deviceContext->PSSetShaderResources(0u, 0u, nullptr);
+			deviceContext->PSSetSamplers(0, 0, nullptr);
+		}
 		if (mTextureSettingChanged)
 		{
 			mTextureSettingChanged = false;
@@ -370,13 +380,17 @@ namespace Soul
 			if (ros.mTexturesCount > 0)
 			{
 				deviceContext->PSSetShaderResources(0u, (UINT)ros.mTexturesCount, &ros.mTextures[0]);
+				// 采样
+				if (mDefaultSamplerStates)
+				{
+					deviceContext->PSSetSamplers(0, 1, mDefaultSamplerStates.GetAddressOf());
+				}
 			}
-		}
-		
-		// 采样
-		if (mDefaultSamplerStates)
-		{
-			deviceContext->PSSetSamplers(0, 1, mDefaultSamplerStates.GetAddressOf());
+			mTextureNum = 0;
+			for (size_t i = 0; i < MAX_TEXTURES; i++)
+			{
+				mTextures[i] = nullptr;
+			}
 		}
 
 		// 混合

@@ -10,6 +10,9 @@ namespace Soul
 		mDevice.Reset();
 		mDeviceContext.Reset();
 		mDXGIFactory.Reset();
+		mDevice1.Reset();
+		mDeviceContext1.Reset();
+		mDXGIFactory2.Reset();
 	}
 	HRESULT D3D11Device::Initialize()
 	{
@@ -24,9 +27,12 @@ namespace Soul
 		{
 			return result;
 		}
-		UINT flags = 0;
+
+		mDXGIFactory.As(&mDXGIFactory2);
+		
+		UINT flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;;
 #ifdef _DEBUG
-		//flags |= D3D11_CREATE_DEVICE_DEBUG;
+		flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 			// determine feature levels
 		D3D_FEATURE_LEVEL featureLevels[] =
@@ -42,20 +48,60 @@ namespace Soul
 			D3D_FEATURE_LEVEL_9_1
 		};
 
-		D3D_FEATURE_LEVEL maxRequestedFeatureLevel = D3D_FEATURE_LEVEL_9_1;
+		// 驱动类型数组
+		D3D_DRIVER_TYPE driverTypes[] =
+		{
+			D3D_DRIVER_TYPE_HARDWARE,
+			D3D_DRIVER_TYPE_WARP,
+			D3D_DRIVER_TYPE_REFERENCE,
+		};
+		UINT numDriverTypes = ARRAYSIZE(driverTypes);
 
-		result = D3D11CreateDevice(
-			mDXGIAdapter.Get(),
-			D3D_DRIVER_TYPE_UNKNOWN,
-			nullptr,
-			flags,
-			featureLevels,
-			ARRAYSIZE(featureLevels),
-			D3D11_SDK_VERSION,
-			mDevice.ReleaseAndGetAddressOf(),
-			&maxRequestedFeatureLevel,
-			mDeviceContext.ReleaseAndGetAddressOf());
+		D3D_FEATURE_LEVEL maxRequestedFeatureLevel;
 
+		D3D_DRIVER_TYPE d3dDriverType;
+		for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
+		{
+			d3dDriverType = driverTypes[driverTypeIndex];
+			result = D3D11CreateDevice(
+				nullptr,
+				d3dDriverType,
+				nullptr,
+				flags,
+				featureLevels,
+				ARRAYSIZE(featureLevels),
+				D3D11_SDK_VERSION,
+				mDevice.GetAddressOf(),
+				&maxRequestedFeatureLevel,
+				mDeviceContext.ReleaseAndGetAddressOf());
+
+			if (result == E_INVALIDARG)
+			{
+				// Direct3D 11.0 的API不承认D3D_FEATURE_LEVEL_11_1，所以我们需要尝试特性等级11.0以及以下的版本
+				result = D3D11CreateDevice(
+					nullptr,
+					d3dDriverType,
+					nullptr,
+					flags,
+					&featureLevels[1],
+					ARRAYSIZE(featureLevels) - 1,
+					D3D11_SDK_VERSION,
+					mDevice.GetAddressOf(),
+					&maxRequestedFeatureLevel,
+					mDeviceContext.GetAddressOf());
+			}
+
+			if (SUCCEEDED(result))
+				break;
+		}
+		
+
+		// 如果包含，则说明支持D3D11.1
+		if (mDXGIFactory2 != nullptr)
+		{
+			mDevice.As(&mDevice1);
+			mDeviceContext.As(&mDeviceContext1);
+		}
 		return result;
 	}
 }

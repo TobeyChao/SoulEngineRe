@@ -35,7 +35,7 @@ namespace Soul
 		i >> j;
 		i.close();
 		// 1.初始化渲染系统
-		if (j.find("render_system") != j.end())
+		if (j.contains("render_system"))
 		{
 			std::string renderSystemName = j["render_system"];
 			// 当没有激活的渲染系统或者当前的渲染系统不是要设定的渲染系统的时候，设置激活的渲染系统
@@ -48,8 +48,9 @@ namespace Soul
 		mActiveRenderSystem->Initialize(initConfig);
 		const auto config = GetActiveRenderSystem()->GetRenderWindowDescRef();
 		RenderWindow* win = CreateRenderWindow(config);
+
 		// 2.初始化音频系统
-		if (j.find("audio_system") != j.end())
+		if (j.contains("audio_system"))
 		{
 			std::string audioSystemName = j["audio_system"];
 			// 当没有激活的渲染系统或者当前的渲染系统不是要设定的渲染系统的时候，设置激活的渲染系统

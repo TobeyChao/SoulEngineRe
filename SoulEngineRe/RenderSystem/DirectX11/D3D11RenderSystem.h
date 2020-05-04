@@ -28,6 +28,8 @@ constexpr auto MAX_TEXTURES = 8;
 	private:
 		D3D11Device* mD3D11Device;
 
+		RenderSystem2D* mRenderSystem2D;
+
 		D3D_DRIVER_TYPE mDriverType;
 		D3D_FEATURE_LEVEL mFeatureLevel;
 

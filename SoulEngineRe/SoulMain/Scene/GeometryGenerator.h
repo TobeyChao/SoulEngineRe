@@ -13,6 +13,11 @@ namespace Soul
 		// slices and stacks parameters control the degree of tessellation.
 		void CreateSphere(float radius, unsigned sliceCount, unsigned stackCount, MeshData& meshData);
 
+		// Creates a cylinder parallel to the y-axis, and centered about the origin.  
+		// The bottom and top radius can vary to form various cone shapes rather than true
+		// cylinders.  The slices and stacks parameters control the degree of tessellation.
+		void CreateCylinder(float bottomRadius, float topRadius, float height, unsigned sliceCount, unsigned stackCount, MeshData& meshData);
+
 		// Creates an mxn grid in the xz-plane with m rows and n columns, centered
 		// at the origin with the specified width and depth.
 		void CreateGrid(float width, float depth, unsigned m, unsigned n, MeshData& meshData);

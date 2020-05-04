@@ -195,6 +195,201 @@ namespace Soul
 		}
 	}
 
+	void GeometryGenerator::CreateCylinder(float bottomRadius, float topRadius, float height, unsigned sliceCount, unsigned stackCount, MeshData& meshData)
+	{
+		meshData.Vertices.clear();
+		meshData.Indices.clear();
+
+		//
+		// Build Stacks.
+		// 
+
+		float stackHeight = height / stackCount;
+
+		// Amount to increment radius as we move up each stack level from bottom to top.
+		float radiusStep = (topRadius - bottomRadius) / stackCount;
+
+		unsigned ringCount = stackCount + 1;
+
+		// Compute vertices for each stack ring starting at the bottom and moving up.
+		for (unsigned i = 0; i < ringCount; ++i)
+		{
+			float y = -0.5f * height + i * stackHeight;
+			float r = bottomRadius + i * radiusStep;
+
+			// vertices of ring
+			float dTheta = 2.0f * Core::SM_PI / sliceCount;
+			for (unsigned j = 0; j <= sliceCount; ++j)
+			{
+				Vertex vertex;
+
+				float c = cosf(j * dTheta);
+				float s = sinf(j * dTheta);
+
+				vertex.Position = Core::SVector3(r * c, y, r * s);
+
+				vertex.TexCoord.x = (float)j / sliceCount;
+				vertex.TexCoord.y = 1.0f - (float)i / stackCount;
+
+				// Cylinder can be parameterized as follows, where we introduce v
+				// parameter that goes in the same direction as the v tex-coord
+				// so that the bitangent goes in the same direction as the v tex-coord.
+				//   Let r0 be the bottom radius and let r1 be the top radius.
+				//   y(v) = h - hv for v in [0,1].
+				//   r(v) = r1 + (r0-r1)v
+				//
+				//   x(t, v) = r(v)*cos(t)
+				//   y(t, v) = h - hv
+				//   z(t, v) = r(v)*sin(t)
+				// 
+				//  dx/dt = -r(v)*sin(t)
+				//  dy/dt = 0
+				//  dz/dt = +r(v)*cos(t)
+				//
+				//  dx/dv = (r0-r1)*cos(t)
+				//  dy/dv = -h
+				//  dz/dv = (r0-r1)*sin(t)
+
+				// This is unit length.
+				vertex.TangentU = Core::SVector3(-s, 0.0f, c);
+
+				float dr = bottomRadius - topRadius;
+				Core::SVector3 bitangent(dr * c, -height, dr * s);
+
+				vertex.Normal = Core::Cross(vertex.TangentU, bitangent);
+				vertex.Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+				meshData.Vertices.push_back(vertex);
+			}
+		}
+		// Add one because we duplicate the first and last vertex per ring
+		// since the texture coordinates are different.
+		unsigned ringVertexCount = sliceCount + 1;
+
+		// Compute indices for each stack.
+		for (unsigned i = 0; i < stackCount; ++i)
+		{
+			for (unsigned j = 0; j < sliceCount; ++j)
+			{
+				meshData.Indices.push_back(i * ringVertexCount + j);
+				meshData.Indices.push_back((i + 1) * ringVertexCount + j);
+				meshData.Indices.push_back((i + 1) * ringVertexCount + j + 1);
+
+				meshData.Indices.push_back(i * ringVertexCount + j);
+				meshData.Indices.push_back((i + 1) * ringVertexCount + j + 1);
+				meshData.Indices.push_back(i * ringVertexCount + j + 1);
+			}
+		}
+
+		BuildCylinderTopCap(bottomRadius, topRadius, height, sliceCount, stackCount, meshData);
+		BuildCylinderBottomCap(bottomRadius, topRadius, height, sliceCount, stackCount, meshData);
+	}
+
+	void GeometryGenerator::CreateGrid(float width, float depth, unsigned m, unsigned n, MeshData& meshData)
+	{
+		unsigned vertexCount = m * n;
+		unsigned faceCount = (m - 1) * (n - 1) * 2;
+
+		//
+		// Create the vertices.
+		//
+
+		float halfWidth = 0.5f * width;
+		float halfDepth = 0.5f * depth;
+
+		float dx = width / (n - 1);
+		float dz = depth / (m - 1);
+
+		float du = 1.0f / (n - 1);
+		float dv = 1.0f / (m - 1);
+
+		meshData.Vertices.resize(vertexCount);
+		for (unsigned i = 0; i < m; ++i)
+		{
+			float z = halfDepth - i * dz;
+			for (unsigned j = 0; j < n; ++j)
+			{
+				float x = -halfWidth + j * dx;
+
+				meshData.Vertices[i * n + j].Position = Core::SVector3(x, 0.0f, z);
+				meshData.Vertices[i * n + j].Normal = Core::SVector3(0.0f, 1.0f, 0.0f);
+				meshData.Vertices[i * n + j].TangentU = Core::SVector3(1.0f, 0.0f, 0.0f);
+				meshData.Vertices[i * n + j].Color = Core::SVector4(1.0f, 1.0f, 1.0f, 1.0f);
+
+				// Stretch texture over grid.
+				meshData.Vertices[i * n + j].TexCoord.x = j * du;
+				meshData.Vertices[i * n + j].TexCoord.y = i * dv;
+			}
+		}
+
+		//
+		// Create the indices.
+		//
+
+		meshData.Indices.resize(faceCount * 3); // 3 indices per face
+
+												// Iterate over each quad and compute indices.
+		unsigned k = 0;
+		for (unsigned i = 0; i < m - 1; ++i)
+		{
+			for (unsigned j = 0; j < n - 1; ++j)
+			{
+				meshData.Indices[k] = i * n + j;
+				meshData.Indices[k + 1] = i * n + j + 1;
+				meshData.Indices[k + 2] = (i + 1) * n + j;
+
+				meshData.Indices[k + 3] = (i + 1) * n + j;
+				meshData.Indices[k + 4] = i * n + j + 1;
+				meshData.Indices[k + 5] = (i + 1) * n + j + 1;
+
+				k += 6; // next quad
+			}
+		}
+	}
+
+	void GeometryGenerator::CreateFullscreenQuad(MeshData& meshData)
+	{
+		meshData.Vertices.resize(4);
+		meshData.Indices.resize(6);
+
+		// Position coordinates specified in NDC space.
+		meshData.Vertices[0] = Vertex(
+			-1.0f, -1.0f, 0.0f,
+			0.0f, 0.0f, -1.0f,
+			1.0f, 0.0f, 0.0f,
+			0.0f, 1.0f,
+			1.0f, 1.0f, 1.0f, 1.0f);
+
+		meshData.Vertices[1] = Vertex(
+			-1.0f, +1.0f, 0.0f,
+			0.0f, 0.0f, -1.0f,
+			1.0f, 0.0f, 0.0f,
+			0.0f, 0.0f,
+			1.0f, 1.0f, 1.0f, 1.0f);
+
+		meshData.Vertices[2] = Vertex(
+			+1.0f, +1.0f, 0.0f,
+			0.0f, 0.0f, -1.0f,
+			1.0f, 0.0f, 0.0f,
+			1.0f, 0.0f,
+			1.0f, 1.0f, 1.0f, 1.0f);
+
+		meshData.Vertices[3] = Vertex(
+			+1.0f, -1.0f, 0.0f,
+			0.0f, 0.0f, -1.0f,
+			1.0f, 0.0f, 0.0f,
+			1.0f, 1.0f,
+			1.0f, 1.0f, 1.0f, 1.0f);
+
+		meshData.Indices[0] = 0;
+		meshData.Indices[1] = 1;
+		meshData.Indices[2] = 2;
+
+		meshData.Indices[3] = 0;
+		meshData.Indices[4] = 2;
+		meshData.Indices[5] = 3;
+	}
+
 	void GeometryGenerator::Subdivide(MeshData& meshData)
 	{
 		// Save a copy of the input geometry.
@@ -347,110 +542,5 @@ namespace Soul
 			meshData.Indices.push_back(baseIndex + i);
 			meshData.Indices.push_back(baseIndex + i + 1);
 		}
-	}
-
-	void GeometryGenerator::CreateGrid(float width, float depth, unsigned m, unsigned n, MeshData& meshData)
-	{
-		unsigned vertexCount = m * n;
-		unsigned faceCount = (m - 1) * (n - 1) * 2;
-
-		//
-		// Create the vertices.
-		//
-
-		float halfWidth = 0.5f * width;
-		float halfDepth = 0.5f * depth;
-
-		float dx = width / (n - 1);
-		float dz = depth / (m - 1);
-
-		float du = 1.0f / (n - 1);
-		float dv = 1.0f / (m - 1);
-
-		meshData.Vertices.resize(vertexCount);
-		for (unsigned i = 0; i < m; ++i)
-		{
-			float z = halfDepth - i * dz;
-			for (unsigned j = 0; j < n; ++j)
-			{
-				float x = -halfWidth + j * dx;
-
-				meshData.Vertices[i * n + j].Position = Core::SVector3(x, 0.0f, z);
-				meshData.Vertices[i * n + j].Normal = Core::SVector3(0.0f, 1.0f, 0.0f);
-				meshData.Vertices[i * n + j].TangentU = Core::SVector3(1.0f, 0.0f, 0.0f);
-				meshData.Vertices[i * n + j].Color = Core::SVector4(1.0f, 1.0f, 1.0f, 1.0f);
-
-				// Stretch texture over grid.
-				meshData.Vertices[i * n + j].TexCoord.x = j * du;
-				meshData.Vertices[i * n + j].TexCoord.y = i * dv;
-			}
-		}
-
-		//
-		// Create the indices.
-		//
-
-		meshData.Indices.resize(faceCount * 3); // 3 indices per face
-
-												// Iterate over each quad and compute indices.
-		unsigned k = 0;
-		for (unsigned i = 0; i < m - 1; ++i)
-		{
-			for (unsigned j = 0; j < n - 1; ++j)
-			{
-				meshData.Indices[k] = i * n + j;
-				meshData.Indices[k + 1] = i * n + j + 1;
-				meshData.Indices[k + 2] = (i + 1) * n + j;
-
-				meshData.Indices[k + 3] = (i + 1) * n + j;
-				meshData.Indices[k + 4] = i * n + j + 1;
-				meshData.Indices[k + 5] = (i + 1) * n + j + 1;
-
-				k += 6; // next quad
-			}
-		}
-	}
-
-	void GeometryGenerator::CreateFullscreenQuad(MeshData& meshData)
-	{
-		meshData.Vertices.resize(4);
-		meshData.Indices.resize(6);
-
-		// Position coordinates specified in NDC space.
-		meshData.Vertices[0] = Vertex(
-			-1.0f, -1.0f, 0.0f,
-			0.0f, 0.0f, -1.0f,
-			1.0f, 0.0f, 0.0f,
-			0.0f, 1.0f,
-			1.0f, 1.0f, 1.0f, 1.0f);
-
-		meshData.Vertices[1] = Vertex(
-			-1.0f, +1.0f, 0.0f,
-			0.0f, 0.0f, -1.0f,
-			1.0f, 0.0f, 0.0f,
-			0.0f, 0.0f,
-			1.0f, 1.0f, 1.0f, 1.0f);
-
-		meshData.Vertices[2] = Vertex(
-			+1.0f, +1.0f, 0.0f,
-			0.0f, 0.0f, -1.0f,
-			1.0f, 0.0f, 0.0f,
-			1.0f, 0.0f,
-			1.0f, 1.0f, 1.0f, 1.0f);
-
-		meshData.Vertices[3] = Vertex(
-			+1.0f, -1.0f, 0.0f,
-			0.0f, 0.0f, -1.0f,
-			1.0f, 0.0f, 0.0f,
-			1.0f, 1.0f,
-			1.0f, 1.0f, 1.0f, 1.0f);
-
-		meshData.Indices[0] = 0;
-		meshData.Indices[1] = 1;
-		meshData.Indices[2] = 2;
-
-		meshData.Indices[3] = 0;
-		meshData.Indices[4] = 2;
-		meshData.Indices[5] = 3;
 	}
 }
