@@ -22,18 +22,18 @@ public:
 
 		InitLight();
 
-		json terrainSet;
-		terrainSet["width"] = 1025.0f;
-		terrainSet["depth"] = 1025.0f;
-		terrainSet["m"] = 1025;
-		terrainSet["n"] = 1025;
-		terrainSet["scale"] = 0.003f;
-		terrainSet["heightMap"] = "../Assets/Terrain/heightmap.raw";
-		terrainSet["Shader"] = "Basic";
-		terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
-		terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
-		nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeTerrain->AttachObj(terrain);
+		//json terrainSet;
+		//terrainSet["width"] = 1025.0f;
+		//terrainSet["depth"] = 1025.0f;
+		//terrainSet["m"] = 1025;
+		//terrainSet["n"] = 1025;
+		//terrainSet["scale"] = 0.003f;
+		//terrainSet["heightMap"] = "../Assets/Terrain/heightmap.raw";
+		//terrainSet["Shader"] = "Basic";
+		//terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
+		//terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
+		//nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		//nodeTerrain->AttachObj(terrain);
 
 		// Cube
 		json cubeSet;
@@ -43,7 +43,7 @@ public:
 		cubeSet["depth"] = 2;
 		cubeSet["Rasterizer"] = "RT_CULL_NONE";
 		cube = sceneMgr->CreateGameObject("cube", SIMPLE_GAMEOBJECT::SG_CUBE, cubeSet);
-		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks.dds"));
+		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/WireFence.dds"));
 		nodeCube = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCube->AttachObj(cube);
 		nodeCube->SetPosition({ 3.f, 0.f, 0.f });
@@ -83,21 +83,41 @@ public:
 
 		// nodePlane
 		json planeSet;
-		planeSet["width"] = 10.0f;
-		planeSet["depth"] = 14.0f;
-		planeSet["m"] = 7.0f;
+		planeSet["width"] = 30.0f;
+		planeSet["depth"] = 30.0f;
+		planeSet["m"] = 5.0f;
 		planeSet["n"] = 5.0f;
+		planeSet["maxU"] = 10.0f;
+		planeSet["maxV"] = 10.0f;
 		//planeSet["Rasterizer"] = "RT_WIREFRAME";
 		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/floor.dds"));
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/checkboard.dds"));
 		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodePlane->AttachObj(plane);
 		nodePlane->SetPosition({ 0.f, -1.1f, 0.f });
 
+		// nodeWater
+		json waterSet;
+		waterSet["width"] = 30.0f;
+		waterSet["depth"] = 30.0f;
+		waterSet["m"] = 5.0f;
+		waterSet["n"] = 5.0f;
+		waterSet["maxU"] = 15.0f;
+		waterSet["maxV"] = 15.0f;
+		waterSet["alpha"] = 0.7f;
+		waterSet["Blend"] = "BT_TRANSPARENT";
+		water = sceneMgr->CreateGameObject("water", SIMPLE_GAMEOBJECT::SG_PLANE, waterSet);
+		water->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/water.dds"));
+		nodeWater = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeWater->AttachObj(water);
+		nodeWater->SetPosition({ 0.f, -0.5f, 0.f });
+
 		particleEmitter = new ParticleEmitter();
-		particleList = sceneMgr->CreateGameObject("particle", particleEmitter);
+		json particleSet;
+		particleSet["texture"] = "../Assets/Images/snowflake.png";
+		particleList = sceneMgr->CreateGameObject("particle", particleEmitter, particleSet);
 		nodeParticles = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		//nodeParticles->AttachObj(particleList);
+		nodeParticles->AttachObj(particleList);
 
 		camera = sceneMgr->AddCameraSceneNode();
 		camera->SetIsOrthogonal(false);
@@ -187,14 +207,14 @@ public:
 
 	bool FrameUpdated() override
 	{
-		RenderSystem2D::GetInstance().DrawTextW(L"hello world!", { 10, 10 });
-
+		RenderSystem2D::GetInstance().DrawTextW(L"按1切换自由视角摄像机!", { 10, 10 });
+		RenderSystem2D::GetInstance().DrawTextW(L"按2切换第三人称摄像机!", { 10, 30 });
 		std::wostringstream buffer;
-		buffer << "Timer::DeltaTime:" << 1.0f / Timer::DeltaTime() << std::endl
+		buffer << "FPS:" << 1.0f / Timer::DeltaTime() << std::endl
 			<< L"CPU占用:" << GetCPUUSe() << std::endl;
 		std::wstring info = buffer.str();
 
-		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 30 });
+		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 50 });
 		return Application::FrameUpdated();
 	}
 
@@ -250,11 +270,11 @@ public:
 		dirLight->SetDirection({ -0.577f, -0.577f, 0.577f });
 
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
-		lightNode->AttachObj(dirLight);
-		//lightNode->AttachObj(pointLight);
-		//lightNode->AttachObj(spotLight1);
-		//lightNode->AttachObj(spotLight2);
-		//lightNode->AttachObj(spotLight3);
+		//lightNode->AttachObj(dirLight);
+		lightNode->AttachObj(pointLight);
+		lightNode->AttachObj(spotLight1);
+		lightNode->AttachObj(spotLight2);
+		lightNode->AttachObj(spotLight3);
 	}
 
 	// 第一人称相机
@@ -306,11 +326,9 @@ private:
 	SceneNode* nodePlane;
 	SceneNode* nodeParticles;
 	SceneNode* nodeTerrain;
-	Light* pointLight;
-	Light* spotLight1;
-	Light* spotLight2;
-	Light* spotLight3;
-	Light* dirLight;
+	SceneNode* nodeWater;
+
+	GameObject* water;
 	GameObject* cube;
 	GameObject* sphere;
 	GameObject* cylinder;
@@ -318,6 +336,13 @@ private:
 	GameObject* plane;
 	GameObject* particleList;
 	GameObject* terrain;
+
+	Light* pointLight;
+	Light* spotLight1;
+	Light* spotLight2;
+	Light* spotLight3;
+	Light* dirLight;
+
 	SceneNodeCamera* camera;
 	SceneManager* sceneMgr;
 	ParticleEmitter* particleEmitter;

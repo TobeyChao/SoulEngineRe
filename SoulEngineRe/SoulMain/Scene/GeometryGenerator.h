@@ -21,7 +21,7 @@ namespace Soul
 
 		// Creates an mxn grid in the xz-plane with m rows and n columns, centered
 		// at the origin with the specified width and depth.
-		void CreateGrid(float width, float depth, unsigned m, unsigned n, MeshData& meshData);
+		void CreateGrid(float width, float depth, unsigned m, unsigned n, const Core::SVector2& maxTexCoord, MeshData& meshData);
 
 		// Creates an mxn terrain in the xz-plane with m rows and n columns, centered
 		// at the origin with the specified width and depth.

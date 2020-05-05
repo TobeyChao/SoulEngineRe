@@ -124,8 +124,18 @@ namespace Soul
 		return taken;
 	}
 
-	GameObject* SceneManager::CreateGameObject(const std::string& name, ParticleEmitter* particleEmmiter)
+	GameObject* SceneManager::CreateGameObject(const std::string& name, ParticleEmitter* particleEmmiter, const json& createParameters)
 	{
+		std::wstring textureNameW;
+		if (createParameters.contains("texture"))
+		{
+			std::string textureName = createParameters["texture"];
+			textureNameW = StringToWstring(textureName);
+		}
+		else
+		{
+			return nullptr;
+		}
 		if (particleEmmiter)
 		{
 			GameObject* newGameObject = new GameObject(name);
@@ -133,7 +143,7 @@ namespace Soul
 			subMesh->SetBlend(BlendType::BT_ADD);
 			subMesh->SetRasterizer(RasterizerType::RT_CULL_NONE);
 			subMesh->SetShader(ShaderManager::GetInstance().GetShaderByName(L"Particle"));
-			subMesh->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/star.dds"));
+			subMesh->PushTexture(TextureManager::GetInstance().GetTexture(textureNameW));
 			particleEmmiter->Initialize(subMesh);
 			newGameObject->PushSubMesh(subMesh);
 			return newGameObject;
@@ -170,6 +180,10 @@ namespace Soul
 		Material* material = new Material();
 		material->ambient = { 0.7250f, 0.7100f, 0.6800f, 1.0f };
 		material->diffuse = { 0.7250f, 0.7100f, 0.6800f, 1.0f };
+		if (createParameters.contains("alpha"))
+		{
+			material->diffuse.w = createParameters["alpha"];
+		}
 		material->specular = { 0.5f, 0.5f, 0.5f, 5.0f };
 		subMesh->SetMaterial(material);
 
@@ -209,6 +223,8 @@ namespace Soul
 			float depth = 1.f;
 			unsigned m = 2;
 			unsigned n = 2;
+			float maxU = 1.0f;
+			float maxV = 1.0f;
 			if (createParameters.contains("width"))
 			{
 				width = createParameters["width"];
@@ -225,7 +241,16 @@ namespace Soul
 			{
 				n = createParameters["n"];
 			}
-			geoGen.CreateGrid(width, depth, m, n, *subMesh->GetOriginalMeshDataPtr());
+			if (createParameters.contains("maxU"))
+			{
+				maxU = createParameters["maxU"];
+			}
+			if (createParameters.contains("maxV"))
+			{
+				maxV = createParameters["maxV"];
+			}
+
+			geoGen.CreateGrid(width, depth, m, n, { maxU, maxV }, *subMesh->GetOriginalMeshDataPtr());
 			subMesh->InitializeBuffer();
 			break;
 		}
@@ -384,11 +409,11 @@ namespace Soul
 			}
 		}
 
-		// Rasterizer
+		// Blend
 		if (effctSetting.contains("Blend"))
 		{
-			std::string rasterizer = effctSetting["Blend"];
-			if (rasterizer == "BT_TRANSPARENT")
+			std::string blend = effctSetting["Blend"];
+			if (blend == "BT_TRANSPARENT")
 			{
 				subMesh->SetBlend(BlendType::BT_TRANSPARENT);
 			}

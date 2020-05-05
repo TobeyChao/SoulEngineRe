@@ -285,7 +285,7 @@ namespace Soul
 		BuildCylinderBottomCap(bottomRadius, topRadius, height, sliceCount, stackCount, meshData);
 	}
 
-	void GeometryGenerator::CreateGrid(float width, float depth, unsigned m, unsigned n, MeshData& meshData)
+	void GeometryGenerator::CreateGrid(float width, float depth, unsigned m, unsigned n, const Core::SVector2& maxTexCoord, MeshData& meshData)
 	{
 		unsigned vertexCount = m * n;
 		unsigned faceCount = (m - 1) * (n - 1) * 2;
@@ -300,8 +300,8 @@ namespace Soul
 		float dx = width / (n - 1);
 		float dz = depth / (m - 1);
 
-		float du = 1.0f / (n - 1);
-		float dv = 1.0f / (m - 1);
+		float du = maxTexCoord.x / (n - 1);
+		float dv = maxTexCoord.y / (m - 1);
 
 		meshData.Vertices.resize(vertexCount);
 		for (unsigned i = 0; i < m; ++i)

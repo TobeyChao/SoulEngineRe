@@ -102,6 +102,6 @@ float4 PS(VertexOut vertIn) : SV_Target
 	float4 finalColor = originColor * (ambient + diffuse) + spec;
 
 	// Common to take alpha from diffuse material.
-	finalColor.a = gMaterial.Diffuse.a;
+	finalColor.a = originColor.a * gMaterial.Diffuse.a;
     return finalColor;
 }
