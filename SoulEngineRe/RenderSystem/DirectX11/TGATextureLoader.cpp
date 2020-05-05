@@ -85,8 +85,6 @@ namespace Soul
 		k = (width * height * 4) - (width * 4);
 
 		// Now copy the targa image data into the targa destination array in the correct order since the targa format is stored upside down.
-		std::ofstream out(L"image.txt");
-		std::ostringstream buffer;
 		for (j = 0; j < height; j++)
 		{
 			for (i = 0; i < width; i++)
@@ -96,17 +94,13 @@ namespace Soul
 				(*targaData)[index + 2] = targaImage[k + 0];  // Blue
 				(*targaData)[index + 3] = targaImage[k + 3];  // Alpha
 				
-				buffer << "Pixel" << targaImage[k + 2] - '0' << " " << targaImage[k + 1] - '0'
-					<< " " << targaImage[k + 0] - '0' << " " << targaImage[k + 3] - '0' << std::endl;
-															 // Increment the indexes into the targa data.
-			
+				// Increment the indexes into the targa data.
 				k += 4;
 				index += 4;
 			}
 			// Set the targa image data index back to the preceding row at the beginning of the column since its reading it in upside down.
 			k -= (width * 8);
 		}
-		out << buffer.str();
 		// Release the targa image data now that it was copied into the destination array.
 		delete[] targaImage;
 		targaImage = 0;

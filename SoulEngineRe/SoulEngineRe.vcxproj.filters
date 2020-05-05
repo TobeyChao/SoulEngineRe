@@ -210,6 +210,9 @@
     <ClCompile Include="SoulMain\Scene\ParticleEmitter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="SoulMain\Scene\TerrainCreator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SoulMain\Core\Mathematics\SVector2.h">
@@ -495,6 +498,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="SoulMain\Scene\ParticleEmitter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulMain\Scene\TerrainCreator.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

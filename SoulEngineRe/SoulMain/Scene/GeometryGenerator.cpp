@@ -347,6 +347,163 @@ namespace Soul
 		}
 	}
 
+	void GeometryGenerator::CreateTerrain(float width, float depth, unsigned m, unsigned n, MeshData& meshData,
+		const std::function<float(int, int)>& heightFunc,
+		const std::function<Core::SVector4(int, int)>& colorFunc)
+	{
+		size_t vertexCount = (m - 1u) * (n - 1u) * 4u;
+		size_t faceCount = (m - 1u) * (n - 1u) * 2u;
+
+		//
+		// Create the vertices.
+		//
+
+		float halfWidth = 0.5f * width;
+		float halfDepth = 0.5f * depth;
+
+		float dx = width / (n - 1);
+		float dz = depth / (m - 1);
+
+		meshData.Vertices.resize(vertexCount);
+		meshData.Indices.resize(faceCount * 3u);
+
+		// 面的法向量
+		std::vector<Core::SVector3> faceNormals;
+		faceNormals.resize(faceCount / 2);
+
+		int index = 0, index1, index2, index3, index4;
+		size_t k = 0;
+		float z;
+		float x;
+		for (unsigned i = 0; i < (m - 1); i++)
+		{
+			for (unsigned j = 0; j < (n - 1); j++)
+			{
+				// Upper left.
+				index1 = index;
+				z = halfDepth - i * dz;
+				x = -halfWidth + j * dx;
+				meshData.Vertices[index].Position = Core::SVector3(x, heightFunc(i, j), z);
+				meshData.Vertices[index].TexCoord = { 0.0f, 0.0f };
+				meshData.Vertices[index].TangentU = Core::SVector3(1.0f, 0.0f, 0.0f);
+				meshData.Vertices[index].Color = colorFunc(i, j);
+				index++;
+
+				// Upper right.
+				index2 = index;
+				z = halfDepth - i * dz;
+				x = -halfWidth + (j + 1) * dx;
+				meshData.Vertices[index].Position = Core::SVector3(x, heightFunc(i, j + 1), z);
+				meshData.Vertices[index].TexCoord = { 1.0f, 0.0f };
+				meshData.Vertices[index].TangentU = Core::SVector3(1.0f, 0.0f, 0.0f);
+				meshData.Vertices[index].Color = colorFunc(i, j);
+				index++;
+
+				// Bottom left.
+				index3 = index;
+				z = halfDepth - (i + 1) * dz;
+				x = -halfWidth + j * dx;
+				meshData.Vertices[index].Position = Core::SVector3(x, heightFunc(i + 1, j), z);
+				meshData.Vertices[index].TexCoord = { 0.0f, 1.0f };
+				meshData.Vertices[index].TangentU = Core::SVector3(1.0f, 0.0f, 0.0f);
+				meshData.Vertices[index].Color = colorFunc(i, j);
+
+				index++;
+
+				// Bottom Right.
+				index4 = index;
+				z = halfDepth - (i + 1) * dz;
+				x = -halfWidth + (j + 1) * dx;
+				meshData.Vertices[index].Position = Core::SVector3(x, heightFunc(i + 1, j + 1), z);
+				meshData.Vertices[index].TexCoord = { 1.0f, 1.0f };
+				meshData.Vertices[index].TangentU = Core::SVector3(1.0f, 0.0f, 0.0f);
+				meshData.Vertices[index].Color = colorFunc(i, j);
+				index++;
+
+				//
+				// Create the indices.
+				//
+				meshData.Indices[k] = (index1);
+				meshData.Indices[k + 1u] = (index2);
+				meshData.Indices[k + 2u] = (index3);
+				meshData.Indices[k + 3u] = (index3);
+				meshData.Indices[k + 4u] = (index2);
+				meshData.Indices[k + 5u] = (index4);
+
+				k += 6u;	// next quad
+
+				//
+				// Compute Face Normal
+				//
+				ComputeNormal(
+					meshData.Vertices[index2].Position,
+					meshData.Vertices[index1].Position,
+					meshData.Vertices[index3].Position,
+					faceNormals[i * (n - 1u) + j]);
+			}
+		}
+
+		// Normal Averaging
+		std::vector<Core::SVector3> normalSum;
+		normalSum.resize(m * n);
+		unsigned normalSumIndex;
+		for (int i = 0; i < m; i++)	//row
+		{
+			for (int j = 0; j < n; j++)	//col
+			{
+				normalSumIndex = (i * n) + j;
+				// 按左上为基点(0, 0)
+
+				// 左上是否有三角形
+				if ((j - 1) >= 0 && (i - 1) >= 0)
+				{
+					index = ((i - 1) * (n - 1)) + (j - 1);
+					normalSum[normalSumIndex] += faceNormals[index];
+				}
+
+				// 右上是否有三角形
+				if ((j < (n - 1)) && (i - 1) >= 0)
+				{
+					index = ((i - 1) * (n - 1)) + j;
+					normalSum[normalSumIndex] += faceNormals[index];
+				}
+
+				// 左下是否有三角形
+				if ((j - 1) >= 0 && i < (m - 1))
+				{
+					index = (i * (n - 1)) + (j - 1);
+					normalSum[normalSumIndex] += faceNormals[index];
+				}
+
+				// 右下是否有三角形
+				if ((j < (n - 1)) && i < (m - 1))
+				{
+					index = (i * (n - 1)) + j;
+					normalSum[normalSumIndex] += faceNormals[index];
+				}
+
+				normalSum[normalSumIndex].Normalize();
+			}
+		}
+
+		index = 0;
+		for (unsigned i = 0; i < (m - 1); i++)
+		{
+			for (unsigned j = 0; j < (n - 1); j++)
+			{
+				index1 = (n * i) + j;
+				index2 = (n * i) + (j + 1);
+				index3 = (n * (i + 1)) + j;
+				index4 = (n * (i + 1)) + (j + 1);
+
+				meshData.Vertices[index++].Normal = normalSum[index1];
+				meshData.Vertices[index++].Normal = normalSum[index2];
+				meshData.Vertices[index++].Normal = normalSum[index3];
+				meshData.Vertices[index++].Normal = normalSum[index4];
+			}
+		}
+	}
+
 	void GeometryGenerator::CreateFullscreenQuad(MeshData& meshData)
 	{
 		meshData.Vertices.resize(4);
@@ -542,5 +699,18 @@ namespace Soul
 			meshData.Indices.push_back(baseIndex + i);
 			meshData.Indices.push_back(baseIndex + i + 1);
 		}
+	}
+
+	void GeometryGenerator::ComputeNormal(
+		const Core::SVector3& posA,
+		const Core::SVector3& posB,
+		const Core::SVector3& posC, Core::SVector3& outNormal)
+	{
+		Core::SVector3 vector1, vector2;
+		//Compute normals
+		vector1 = posA - posB;
+		vector2 = posC - posB;
+		outNormal = Core::Cross(vector1, vector2);
+		outNormal.Normalize();
 	}
 }

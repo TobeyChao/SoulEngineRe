@@ -209,6 +209,7 @@
     <ClCompile Include="SoulMain\Scene\Line3D.cpp" />
     <ClCompile Include="SoulMain\Scene\Point3D.cpp" />
     <ClCompile Include="SoulMain\Scene\SubMesh.cpp" />
+    <ClCompile Include="SoulMain\Scene\TerrainCreator.cpp" />
     <ClCompile Include="SoulMain\Utils\StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -302,6 +303,7 @@
     <ClInclude Include="SoulMain\Scene\Point3D.h" />
     <ClInclude Include="SoulMain\Scene\Rectangle2D.h" />
     <ClInclude Include="SoulMain\Scene\SubMesh.h" />
+    <ClInclude Include="SoulMain\Scene\TerrainCreator.h" />
     <ClInclude Include="SoulMain\SoulPCH.h" />
     <ClInclude Include="SoulMain\Utils\json.hpp" />
     <ClInclude Include="SoulMain\Utils\Singleton.h" />

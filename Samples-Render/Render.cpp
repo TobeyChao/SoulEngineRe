@@ -22,6 +22,19 @@ public:
 
 		InitLight();
 
+		json terrainSet;
+		terrainSet["width"] = 1025.0f;
+		terrainSet["depth"] = 1025.0f;
+		terrainSet["m"] = 1025;
+		terrainSet["n"] = 1025;
+		terrainSet["scale"] = 0.003f;
+		terrainSet["heightMap"] = "../Assets/Terrain/heightmap.raw";
+		terrainSet["Shader"] = "Basic";
+		terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
+		terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
+		nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeTerrain->AttachObj(terrain);
+
 		// Cube
 		json cubeSet;
 		cubeSet["Shader"] = "Basic";
@@ -63,18 +76,17 @@ public:
 		sky["DepthStencil"] = "DST_LESS_EQUAL";
 		sky["Rasterizer"] = "RT_CULL_CLOCKWISE";
 		sphere = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sky);
-		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/SkyBox.dds"));
+		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/space.dds"));
 		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeSky->AttachObj(sphere);
-		nodeSky->SetScale({ 10.0f, 10.0f, 10.0f });
 		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
 
 		// nodePlane
 		json planeSet;
 		planeSet["width"] = 10.0f;
-		planeSet["depth"] = 10.0f;
-		planeSet["m"] = 4.0f;
-		planeSet["n"] = 4.0f;
+		planeSet["depth"] = 14.0f;
+		planeSet["m"] = 7.0f;
+		planeSet["n"] = 5.0f;
 		//planeSet["Rasterizer"] = "RT_WIREFRAME";
 		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
 		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/floor.dds"));
@@ -199,7 +211,7 @@ public:
 		pointLight->SetSpecular({ 0.7f, 0.7f, 0.7f, 1.0f });
 		pointLight->SetAtt({ 0.0f, 0.5f, 0.0f });
 		pointLight->SetRange(25.0f);
-		pointLight->SetPosition({ 0.0f, 0.0f, -5.0f });
+		pointLight->SetPosition({ 0.0f, 3.0f, 0.0f });
 
 		spotLight1 = sceneMgr->CreateLight("spot light1", LIGHT_TYPE::LT_SPOT);
 		spotLight1->SetPosition({ 3.0f, 6.0f, 3.0f });
@@ -240,9 +252,9 @@ public:
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
 		lightNode->AttachObj(dirLight);
 		//lightNode->AttachObj(pointLight);
-		lightNode->AttachObj(spotLight1);
-		lightNode->AttachObj(spotLight2);
-		lightNode->AttachObj(spotLight3);
+		//lightNode->AttachObj(spotLight1);
+		//lightNode->AttachObj(spotLight2);
+		//lightNode->AttachObj(spotLight3);
 	}
 
 	// 第一人称相机
@@ -252,27 +264,27 @@ public:
 		const Core::SVector3& right = camera->GetRight();
 		if (Input::DXInput::GetInstance().IsPressed(DIK_UP))
 		{
-			cameraPos.x += 0.06f * forward.x;
-			cameraPos.y += 0.06f * forward.y;
-			cameraPos.z += 0.06f * forward.z;
+			cameraPos.x += 0.5f * forward.x;
+			cameraPos.y += 0.5f * forward.y;
+			cameraPos.z += 0.5f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_DOWN))
 		{
-			cameraPos.x -= 0.06f * forward.x;
-			cameraPos.y -= 0.06f * forward.y;
-			cameraPos.z -= 0.06f * forward.z;
+			cameraPos.x -= 0.5f * forward.x;
+			cameraPos.y -= 0.5f * forward.y;
+			cameraPos.z -= 0.5f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_LEFT))
 		{
-			cameraPos.x -= 0.06f * right.x;
-			cameraPos.y -= 0.06f * right.y;
-			cameraPos.z -= 0.06f * right.z;
+			cameraPos.x -= 0.5f * right.x;
+			cameraPos.y -= 0.5f * right.y;
+			cameraPos.z -= 0.5f * right.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_RIGHT))
 		{
-			cameraPos.x += 0.06f * right.x;
-			cameraPos.y += 0.06f * right.y;
-			cameraPos.z += 0.06f * right.z;
+			cameraPos.x += 0.5f * right.x;
+			cameraPos.y += 0.5f * right.y;
+			cameraPos.z += 0.5f * right.z;
 		}
 	}
 
@@ -293,6 +305,7 @@ private:
 	SceneNode* nodeSky;
 	SceneNode* nodePlane;
 	SceneNode* nodeParticles;
+	SceneNode* nodeTerrain;
 	Light* pointLight;
 	Light* spotLight1;
 	Light* spotLight2;
@@ -304,6 +317,7 @@ private:
 	GameObject* mesh;
 	GameObject* plane;
 	GameObject* particleList;
+	GameObject* terrain;
 	SceneNodeCamera* camera;
 	SceneManager* sceneMgr;
 	ParticleEmitter* particleEmitter;

@@ -7,6 +7,7 @@
 #include "Point3D.h"
 #include "ParticalList.h"
 #include "ParticleEmitter.h"
+#include "TerrainCreator.h"
 
 #include "Light.h"
 
@@ -138,6 +139,25 @@ namespace Soul
 			return newGameObject;
 		}
 		return nullptr;
+	}
+
+	GameObject* SceneManager::CreateGameObject(const std::string& name, const json& createParameters)
+	{
+		SubMesh* subMesh = new SubMesh(name);
+		// Material
+		Material* material = new Material();
+		material->ambient = { 0.7250f, 0.7100f, 0.6800f, 1.0f };
+		material->diffuse = { 0.7250f, 0.7100f, 0.6800f, 1.0f };
+		material->specular = { 0.0f, 0.0f, 0.0f, 1.0f };
+		subMesh->SetMaterial(material);
+
+		SetCustomEffect(subMesh, createParameters);
+
+		TerrainCreator::CreateTerrainWithHeightMap(createParameters, subMesh);
+		subMesh->InitializeBuffer();
+		GameObject* newGameObject = new GameObject(name);
+		newGameObject->PushSubMesh(subMesh);
+		return newGameObject;
 	}
 
 	GameObject* SceneManager::CreateGameObject(const std::string& name, SIMPLE_GAMEOBJECT simpleGameObject, const json& createParameters)

@@ -1,6 +1,7 @@
 #pragma once
-#include <vector>
+#include <functional>
 #include "PrimitiveTypes.h"
+
 namespace Soul
 {
 	class GeometryGenerator
@@ -22,6 +23,13 @@ namespace Soul
 		// at the origin with the specified width and depth.
 		void CreateGrid(float width, float depth, unsigned m, unsigned n, MeshData& meshData);
 
+		// Creates an mxn terrain in the xz-plane with m rows and n columns, centered
+		// at the origin with the specified width and depth.
+		void CreateTerrain(float width, float depth, unsigned m, unsigned n, MeshData& meshData,
+			const std::function<float(int, int)>& heightFunc = [](int x, int z) { return 0.0f; },
+			const std::function<Core::SVector4(int, int)>& colorFunc = [](int x, int z) { return Core::SVector4(1.0f, 1.0f, 1.0f, 1.0f); }
+		);
+
 		// Creates a quad covering the screen in NDC coordinates.  This is useful for
 		// postprocessing effects.
 		void CreateFullscreenQuad(MeshData& meshData);
@@ -30,5 +38,6 @@ namespace Soul
 		void Subdivide(MeshData& meshData);
 		void BuildCylinderTopCap(float bottomRadius, float topRadius, float height, unsigned sliceCount, unsigned stackCount, MeshData& meshData);
 		void BuildCylinderBottomCap(float bottomRadius, float topRadius, float height, unsigned sliceCount, unsigned stackCount, MeshData& meshData);
+		void ComputeNormal(const Core::SVector3& posA, const Core::SVector3& posB, const Core::SVector3& posC, Core::SVector3& outNormal);
 	};
 }
