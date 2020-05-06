@@ -3,8 +3,6 @@
 #include "GameObject.h"
 
 #include "SubMesh.h"
-#include "Line3D.h"
-#include "Point3D.h"
 #include "ParticalList.h"
 #include "ParticleEmitter.h"
 #include "TerrainCreator.h"
@@ -144,7 +142,7 @@ namespace Soul
 			subMesh->SetRasterizer(RasterizerType::RT_CULL_NONE);
 			subMesh->SetShader(ShaderManager::GetInstance().GetShaderByName(L"Particle"));
 			subMesh->PushTexture(TextureManager::GetInstance().GetTexture(textureNameW));
-			particleEmmiter->Initialize(subMesh);
+			particleEmmiter->Initialize(subMesh, createParameters);
 			newGameObject->PushSubMesh(subMesh);
 			return newGameObject;
 		}
@@ -158,7 +156,7 @@ namespace Soul
 		Material* material = new Material();
 		material->ambient = { 0.7250f, 0.7100f, 0.6800f, 1.0f };
 		material->diffuse = { 0.7250f, 0.7100f, 0.6800f, 1.0f };
-		material->specular = { 0.0f, 0.0f, 0.0f, 1.0f };
+		material->specular = { 0.5f, 0.5f, 0.5f, 5.0f };
 		subMesh->SetMaterial(material);
 
 		SetCustomEffect(subMesh, createParameters);
@@ -310,16 +308,63 @@ namespace Soul
 			subMesh->InitializeBuffer();
 			break;
 		}
-		//case SIMPLE_GAMEOBJECT::SG_LINE3D:
-		//	newGameObject = new GameObject(name);
-		//	subMesh = new Line3D(name, { -1, 0, 0 }, { 1, 0, 0 });
-		//	newGameObject->PushSubMesh(subMesh);
-		//	break;
-		//case SIMPLE_GAMEOBJECT::SG_POINT3D:
-		//	newGameObject = new GameObject(name);
-		//	subMesh = new Point3D(name);
-		//	newGameObject->PushSubMesh(subMesh);
-		//	break;
+		case SIMPLE_GAMEOBJECT::SG_LINE3D:
+		{
+			float x1 = 0.f, y1 = 0.f, z1 = 0.f;
+			float x2 = 1.f, y2 = 1.f, z2 = 1.f;
+			if (createParameters.contains("x1"))
+			{
+				x1 = createParameters["x1"];
+			}
+			if (createParameters.contains("y1"))
+			{
+				y1 = createParameters["y1"];
+			}
+			if (createParameters.contains("z1"))
+			{
+				z1 = createParameters["z1"];
+			}
+			if (createParameters.contains("x2"))
+			{
+				x2 = createParameters["x2"];
+			}
+			if (createParameters.contains("y2"))
+			{
+				y2 = createParameters["y2"];
+			}
+			if (createParameters.contains("z2"))
+			{
+				z2 = createParameters["z2"];
+			}
+			newGameObject = new GameObject(name);
+			newGameObject->PushSubMesh(subMesh);
+			geoGen.CreateLine3D({ x1, y1, z1 }, { x2, y2, z2 }, *subMesh->GetOriginalMeshDataPtr());
+			subMesh->GetRenderParameter()->mPrimitiveTopology = PrimitiveTopology::PT_LINELIST;
+			subMesh->InitializeBuffer();
+			break;
+		}
+		case SIMPLE_GAMEOBJECT::SG_POINT3D:
+		{
+			float x = 0.f, y = 0.f, z = 0.f;
+			if (createParameters.contains("x"))
+			{
+				x = createParameters["x"];
+			}
+			if (createParameters.contains("y"))
+			{
+				y = createParameters["y"];
+			}
+			if (createParameters.contains("z"))
+			{
+				z = createParameters["z"];
+			}
+			newGameObject = new GameObject(name);
+			newGameObject->PushSubMesh(subMesh);
+			geoGen.CreatePoint3D({ x, y, z }, *subMesh->GetOriginalMeshDataPtr());
+			subMesh->GetRenderParameter()->mPrimitiveTopology = PrimitiveTopology::PT_POINTLIST;
+			subMesh->InitializeBuffer();
+			break;
+		}
 		}
 		return newGameObject;
 	}

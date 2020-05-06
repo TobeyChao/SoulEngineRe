@@ -16,9 +16,9 @@ public:
 			return false;
 		}
 
-		Launcher* admin = GetAdmin();
+		Launcher* launcher = GetLauncher();
 		// SceneManager也是根节点
-		sceneMgr = admin->CreateSceneManager();
+		sceneMgr = launcher->CreateSceneManager();
 
 		InitLight();
 
@@ -33,7 +33,33 @@ public:
 		//terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
 		//terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
 		//nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		//nodeTerrain->SetPosition({ 0.0f, -80.0f, 0.0f });
 		//nodeTerrain->AttachObj(terrain);
+
+		// Line
+		//json lineSet;
+		//lineSet["x1"] = 0;
+		//lineSet["y1"] = 0;
+		//lineSet["z1"] = 0;
+		//lineSet["x2"] = 6;
+		//lineSet["y2"] = 6;
+		//lineSet["z2"] = 6;
+		//lineSet["Shader"] = "Color";
+		//line = sceneMgr->CreateGameObject("line", SIMPLE_GAMEOBJECT::SG_LINE3D, lineSet);
+		//nodeLine = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		//nodeLine->AttachObj(line);
+		//nodeLine->SetPosition({ 0.f, 0.f, 0.f });
+
+		// Point
+		//json lineSet;
+		//lineSet["x"] = 0;
+		//lineSet["y"] = 0;
+		//lineSet["z"] = 0;
+		//lineSet["Shader"] = "Color";
+		//line = sceneMgr->CreateGameObject("point", SIMPLE_GAMEOBJECT::SG_POINT3D, lineSet);
+		//nodeLine = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		//nodeLine->AttachObj(line);
+		//nodeLine->SetPosition({ 0.f, 0.f, 0.f });
 
 		// Cube
 		json cubeSet;
@@ -76,7 +102,7 @@ public:
 		sky["DepthStencil"] = "DST_LESS_EQUAL";
 		sky["Rasterizer"] = "RT_CULL_CLOCKWISE";
 		sphere = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sky);
-		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/space.dds"));
+		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/desertcube1024.dds"));
 		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeSky->AttachObj(sphere);
 		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
@@ -87,8 +113,8 @@ public:
 		planeSet["depth"] = 30.0f;
 		planeSet["m"] = 5.0f;
 		planeSet["n"] = 5.0f;
-		planeSet["maxU"] = 10.0f;
-		planeSet["maxV"] = 10.0f;
+		planeSet["maxU"] = 5.0f;
+		planeSet["maxV"] = 5.0f;
 		//planeSet["Rasterizer"] = "RT_WIREFRAME";
 		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
 		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/checkboard.dds"));
@@ -102,21 +128,39 @@ public:
 		waterSet["depth"] = 30.0f;
 		waterSet["m"] = 5.0f;
 		waterSet["n"] = 5.0f;
-		waterSet["maxU"] = 15.0f;
-		waterSet["maxV"] = 15.0f;
+		waterSet["maxU"] = 5.0f;
+		waterSet["maxV"] = 5.0f;
 		waterSet["alpha"] = 0.7f;
 		waterSet["Blend"] = "BT_TRANSPARENT";
+		waterSet["Rasterizer"] = "RT_CULL_NONE";
 		water = sceneMgr->CreateGameObject("water", SIMPLE_GAMEOBJECT::SG_PLANE, waterSet);
 		water->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/water.dds"));
 		nodeWater = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeWater->AttachObj(water);
+		//nodeWater->AttachObj(water);
 		nodeWater->SetPosition({ 0.f, -0.5f, 0.f });
 
 		particleEmitter = new ParticleEmitter();
 		json particleSet;
-		particleSet["texture"] = "../Assets/Images/snowflake.png";
+		particleSet["texture"] = "../Assets/Images/star.dds";
+		particleSet["particle_emit_center_x"] = 0.0f;
+		particleSet["particle_emit_center_y"] = 0.0f;
+		particleSet["particle_emit_center_z"] = 0.0f;
+		particleSet["particle_emit_deviation_x"] = 0.2f;
+		particleSet["particle_emit_deviation_y"] = 0.2f;
+		particleSet["particle_emit_deviation_z"] = 0.2f;
+		particleSet["particle_velocity_x"] = 0.0f;
+		particleSet["particle_velocity_y"] = -2.0f;
+		particleSet["particle_velocity_z"] = 0.0f;
+		particleSet["particle_velocity_variation_angle_x"] = 0;
+		particleSet["particle_velocity_variation_angle_y"] = 0;
+		particleSet["particle_lifetime_min"] = 1.0f;
+		particleSet["particle_lifetime_max"] = 3.0f;
+		particleSet["particles_max_num"] = 50.0f;
+		particleSet["particle_size"] = 0.2f;
+		particleSet["particles_per_second"] = 30;
 		particleList = sceneMgr->CreateGameObject("particle", particleEmitter, particleSet);
 		nodeParticles = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeParticles->SetPosition({ 6.0f, 2.0f, 0.0f });
 		nodeParticles->AttachObj(particleList);
 
 		camera = sceneMgr->AddCameraSceneNode();
@@ -270,7 +314,7 @@ public:
 		dirLight->SetDirection({ -0.577f, -0.577f, 0.577f });
 
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
-		//lightNode->AttachObj(dirLight);
+		lightNode->AttachObj(dirLight);
 		lightNode->AttachObj(pointLight);
 		lightNode->AttachObj(spotLight1);
 		lightNode->AttachObj(spotLight2);
@@ -327,7 +371,9 @@ private:
 	SceneNode* nodeParticles;
 	SceneNode* nodeTerrain;
 	SceneNode* nodeWater;
+	SceneNode* nodeLine;
 
+	GameObject* line;
 	GameObject* water;
 	GameObject* cube;
 	GameObject* sphere;
@@ -366,7 +412,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	{
 		return 1;
 	}
-	renderSample.GetAdmin()->Run();
+	renderSample.GetLauncher()->Run();
 	renderSample.UnInitialize();
 	return 0;
 }

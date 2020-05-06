@@ -13,13 +13,108 @@ namespace Soul
 	{
 	}
 
-	bool ParticleEmitter::Initialize(SubMesh* particlesMesh)
+	bool ParticleEmitter::Initialize(SubMesh* particlesMesh, const json& createParameters)
 	{
 		mParticlesMesh = particlesMesh;
-		bool result;
-		result = InitializeParticleSystem();
-		result = InitializeBuffer();
-		return true;
+
+		mParticleEmitCenter = { 0.f, 0.f , 0.f };
+		if (createParameters.contains("particle_emit_center_x"))
+		{
+			mParticleEmitCenter.x = createParameters["particle_emit_center_x"];
+		}
+		if (createParameters.contains("particle_emit_center_y"))
+		{
+			mParticleEmitCenter.y = createParameters["particle_emit_center_y"];
+		}
+		if (createParameters.contains("particle_emit_center_z"))
+		{
+			mParticleEmitCenter.z = createParameters["particle_emit_center_z"];
+		}
+
+		// Set the random deviation of where the particles can be located when emitted.
+		mParticleDeviation = { 1.0f, 1.0f, 1.0f };
+		if (createParameters.contains("particle_emit_deviation_x"))
+		{
+			mParticleDeviation.x = createParameters["particle_emit_deviation_x"];
+		}
+		if (createParameters.contains("particle_emit_deviation_y"))
+		{
+			mParticleDeviation.y = createParameters["particle_emit_deviation_y"];
+		}
+		if (createParameters.contains("particle_emit_deviation_z"))
+		{
+			mParticleDeviation.z = createParameters["particle_emit_deviation_z"];
+		}
+
+		// Set the speed and speed variation of particles.
+		mParticleVelocityVariationAngle = { 0.0f, 0.0f };
+		mParticleVelocity = { 0.0f, 0.0f, 1.0f };
+		if (createParameters.contains("particle_velocity_x"))
+		{
+			mParticleVelocity.x = createParameters["particle_velocity_x"];
+		}
+		if (createParameters.contains("particle_velocity_y"))
+		{
+			mParticleVelocity.y = createParameters["particle_velocity_y"];
+		}
+		if (createParameters.contains("particle_velocity_z"))
+		{
+			mParticleVelocity.z = createParameters["particle_velocity_z"];
+		}
+		if (createParameters.contains("particle_velocity_variation_angle_x"))
+		{
+			mParticleVelocityVariationAngle.x = createParameters["particle_velocity_variation_angle_x"];
+		}
+		if (createParameters.contains("particle_velocity_variation_angle_y"))
+		{
+			mParticleVelocityVariationAngle.y = createParameters["particle_velocity_variation_angle_y"];
+		}
+
+		mParticleLifeTimeMin = 2.0f;
+		mParticleLifeTimeMax = 4.0f;
+		if (createParameters.contains("particle_lifetime_min"))
+		{
+			mParticleLifeTimeMin = createParameters["particle_lifetime_min"];
+		}
+		if (createParameters.contains("particle_lifetime_max"))
+		{
+			mParticleLifeTimeMax = createParameters["particle_lifetime_max"];
+		}
+
+		// Set the physical size of the particles.
+		mParticleSize = 0.2f;
+		if (createParameters.contains("particle_size"))
+		{
+			mParticleSize = createParameters["particle_size"];
+		}
+
+		// Set the number of particles to emit per second.
+		mParticlesPerSecond = 30.0f;
+		if (createParameters.contains("particles_per_second"))
+		{
+			mParticlesPerSecond = createParameters["particles_per_second"];
+		}
+
+		// Set the number of seconds to emit per particle.
+		mSecondsPerParticle = 1.0f / mParticlesPerSecond;
+
+		// Set the maximum number of particles allowed in the particle system.
+		mMaxParticles = 100;
+		if (createParameters.contains("particles_max_num"))
+		{
+			mMaxParticles = createParameters["particles_max_num"];
+		}
+
+		// Create the particle list.
+		mParticleList.resize(mMaxParticles);
+
+		// Initialize the current particle count to zero since none are emitted yet.
+		mCurrentParticleCount = 0;
+
+		// Clear the initial accumulated time for the particle per second emission rate.
+		mAccumulatedTime = 0.0f;
+
+		return InitializeBuffer();
 	}
 
 	bool ParticleEmitter::Update(float deltaTime)
@@ -33,44 +128,6 @@ namespace Soul
 		EmitParticles(deltaTime);
 		UpdateParticles(deltaTime);
 		result = UpdateBuffers();
-		return true;
-	}
-
-	bool ParticleEmitter::InitializeParticleSystem()
-	{
-		// Set the random deviation of where the particles can be located when emitted.
-		mParticleDeviationX = 1.0f;
-		mParticleDeviationY = 0.1f;
-		m_particleDeviationZ = 1.0f;
-
-		// Set the speed and speed variation of particles.
-		mParticleVelocity = { 0.0f, 1.0f, 0.0f };
-		mParticleVelocityVariation = { 0.0f, 0.2f, 0.0f };
-
-		// Set the physical size of the particles.
-		mParticleSize = 0.2f;
-
-		// Set the number of particles to emit per second.
-		mParticlesPerSecond = 2.0f;
-
-		// Set the maximum number of particles allowed in the particle system.
-		mMaxParticles = 100;
-
-		// Create the particle list.
-		mParticleList.resize(mMaxParticles);
-
-		// Initialize the particle list.
-		for (int i = 0; i < mMaxParticles; i++)
-		{
-			mParticleList[i].active = false;
-		}
-
-		// Initialize the current particle count to zero since none are emitted yet.
-		mCurrentParticleCount = 0;
-
-		// Clear the initial accumulated time for the particle per second emission rate.
-		mAccumulatedTime = 0.0f;
-
 		return true;
 	}
 
@@ -92,14 +149,15 @@ namespace Soul
 		bool emitParticle, found;
 		float positionX, positionY, positionZ;
 		Core::SVector3 velocity;
+		float lifeTime;
 		float red, green, blue;
 		int index;
 
-		mAccumulatedTime += deltaTime * 1000;
+		mAccumulatedTime += deltaTime;
 
 		emitParticle = false;
 
-		if (mAccumulatedTime > (1000.0f / mParticlesPerSecond))
+		if (mAccumulatedTime > (mSecondsPerParticle))
 		{
 			mAccumulatedTime = 0.0f;
 			emitParticle = true;
@@ -109,15 +167,35 @@ namespace Soul
 		{
 			mCurrentParticleCount++;
 
-			std::uniform_real_distribution<float> XDist(-mParticleDeviationX, mParticleDeviationX);
-			std::uniform_real_distribution<float> YDist(0.0f, mParticleDeviationY);
-			std::uniform_real_distribution<float> ZDist(-m_particleDeviationZ, m_particleDeviationZ);
+			std::uniform_real_distribution<float> XDist(
+				mParticleEmitCenter.x - mParticleDeviation.x,
+				mParticleEmitCenter.x + mParticleDeviation.x);
+			std::uniform_real_distribution<float> YDist(
+				mParticleEmitCenter.y - mParticleDeviation.y,
+				mParticleEmitCenter.y + mParticleDeviation.y);
+			std::uniform_real_distribution<float> ZDist(
+				mParticleEmitCenter.z - mParticleDeviation.z,
+				mParticleEmitCenter.z + mParticleDeviation.z);
 
 			positionX = XDist(rng);
 			positionY = YDist(rng);
 			positionZ = ZDist(rng);
 
-			velocity = mParticleVelocity + mParticleVelocityVariation * (((float)rand() - (float)rand()) / RAND_MAX);
+			std::uniform_real_distribution<float> angleXDist(
+				-mParticleVelocityVariationAngle.x,
+				mParticleVelocityVariationAngle.x);
+			std::uniform_real_distribution<float> angleYDist(
+				-mParticleVelocityVariationAngle.y,
+				mParticleVelocityVariationAngle.y);
+			
+			float theta = angleYDist(rng);
+			float phi = angleXDist(rng);
+
+			velocity = mParticleVelocity * Core::MatrixRotationRollPitchYaw(theta, phi, 0.0f);
+
+			lifeTime = mParticleLifeTimeMin +
+				(mParticleLifeTimeMax - mParticleLifeTimeMin) *
+				fabsf(((float)rand() - (float)rand()) / RAND_MAX);
 
 			red = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
 			green = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
@@ -150,6 +228,7 @@ namespace Soul
 				mParticleList[i].color.z = mParticleList[j].color.z;
 				mParticleList[i].color.w = mParticleList[j].color.w;
 				mParticleList[i].velocity = mParticleList[j].velocity;
+				mParticleList[i].lifeTime = mParticleList[j].lifeTime;
 				mParticleList[i].active = mParticleList[j].active;
 				i--;
 				j--;
@@ -162,8 +241,9 @@ namespace Soul
 			mParticleList[index].color.x = red;
 			mParticleList[index].color.y = green;
 			mParticleList[index].color.z = blue;
-			mParticleList[index].color.w = 1.0f;
+			mParticleList[index].color.w = 0.5f;
 			mParticleList[index].velocity = velocity;
+			mParticleList[index].lifeTime = lifeTime;
 			mParticleList[index].active = true;
 		}
 	}
@@ -171,11 +251,11 @@ namespace Soul
 	void ParticleEmitter::UpdateParticles(float deltaTime)
 	{
 		int i;
-
 		// Each frame we update all the particles by making them move downwards using their position, velocity, and the frame time.
 		for (i = 0; i < mCurrentParticleCount; i++)
 		{
-			mParticleList[i].position.y = mParticleList[i].position.y - (mParticleList[i].velocity.y * deltaTime);
+			mParticleList[i].position = mParticleList[i].position + (mParticleList[i].velocity * deltaTime);
+			mParticleList[i].lifeTime -= deltaTime;
 		}
 	}
 
@@ -184,7 +264,7 @@ namespace Soul
 		// Kill all the particles that have gone below a certain height range.
 		for (int i = 0; i < mMaxParticles; i++)
 		{
-			if ((mParticleList[i].active == true) && (mParticleList[i].position.y < -5.0f))
+			if ((mParticleList[i].active == true) && (mParticleList[i].lifeTime <= 0.0f))
 			{
 				mParticleList[i].active = false;
 				mCurrentParticleCount--;
@@ -200,6 +280,7 @@ namespace Soul
 					mParticleList[j].color.z = mParticleList[j + 1].color.z;
 					mParticleList[j].color.w = mParticleList[j + 1].color.w;
 					mParticleList[j].velocity = mParticleList[j + 1].velocity;
+					mParticleList[j].lifeTime = mParticleList[j + 1].lifeTime;
 					mParticleList[j].active = mParticleList[j + 1].active;
 				}
 			}

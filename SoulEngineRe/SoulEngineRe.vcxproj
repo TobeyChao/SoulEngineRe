@@ -199,15 +199,12 @@
     <ClCompile Include="SoulMain\Scene\GeometryGenerator.cpp" />
     <ClCompile Include="SoulMain\Scene\ParticalList.cpp" />
     <ClCompile Include="SoulMain\Scene\ParticleEmitter.cpp" />
-    <ClCompile Include="SoulMain\Scene\Rectangle2D.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneManager.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneNodeCamera.cpp" />
     <ClCompile Include="SoulMain\Scene\GameObject.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneNode.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneNodeLight.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneNodeRenderable.cpp" />
-    <ClCompile Include="SoulMain\Scene\Line3D.cpp" />
-    <ClCompile Include="SoulMain\Scene\Point3D.cpp" />
     <ClCompile Include="SoulMain\Scene\SubMesh.cpp" />
     <ClCompile Include="SoulMain\Scene\TerrainCreator.cpp" />
     <ClCompile Include="SoulMain\Utils\StringUtils.cpp" />
@@ -299,9 +296,6 @@
     <ClInclude Include="SoulMain\Scene\SceneNodeLight.h" />
     <ClInclude Include="SoulMain\Scene\SceneNodeRenderable.h" />
     <ClInclude Include="SoulMain\Scene\Light.h" />
-    <ClInclude Include="SoulMain\Scene\Line3D.h" />
-    <ClInclude Include="SoulMain\Scene\Point3D.h" />
-    <ClInclude Include="SoulMain\Scene\Rectangle2D.h" />
     <ClInclude Include="SoulMain\Scene\SubMesh.h" />
     <ClInclude Include="SoulMain\Scene\TerrainCreator.h" />
     <ClInclude Include="SoulMain\SoulPCH.h" />

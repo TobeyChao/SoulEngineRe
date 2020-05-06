@@ -12,7 +12,7 @@ namespace Soul
 			:
 			mWindow(nullptr)
 		{
-			mAdmin = nullptr;
+			mLauncher = nullptr;
 			mCPUUse = new CPUUse();
 		}
 
@@ -22,7 +22,7 @@ namespace Soul
 
 		bool Application::Initialize()
 		{
-			mAdmin = new Launcher("../Assets/Config/boot_modules.json");
+			mLauncher = new Launcher("../Assets/Config/boot_modules.json");
 			return Setup();
 		}
 
@@ -31,18 +31,18 @@ namespace Soul
 			mCPUUse->ShutDown();
 			delete mCPUUse;
 			Input::DXInput::GetInstance().Shutdown();
-			delete mAdmin;
-			mAdmin = nullptr;
+			delete mLauncher;
+			mLauncher = nullptr;
 		}
 
 		bool Application::Setup()
 		{
-			mWindow = mAdmin->Initialize("../Assets/Config/boot_config.json");
+			mWindow = mLauncher->Initialize("../Assets/Config/boot_config.json");
 			if (!mWindow)
 			{
 				return false;
 			}
-			mAdmin->AddFrameEventReceiver(this);
+			mLauncher->AddFrameEventReceiver(this);
 			D3D11RenderWindow* window = dynamic_cast<D3D11RenderWindow*>(mWindow);
 			if (!window)
 			{

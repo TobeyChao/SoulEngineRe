@@ -504,6 +504,31 @@ namespace Soul
 		}
 	}
 
+	void GeometryGenerator::CreateLine3D(const Core::SVector3& start, const Core::SVector3& end, MeshData& meshData)
+	{
+		//定义顶点
+		meshData.Vertices.resize(2);
+		meshData.Vertices[0].Position = start;
+		meshData.Vertices[0].Color = { 1.0, 1.0, 1.0, 1.0 };
+		meshData.Vertices[1].Position = end;
+		meshData.Vertices[1].Color = { 1.0, 1.0, 1.0, 1.0 };
+		//定义索引
+		meshData.Indices.resize(2);
+		meshData.Indices[0] = 0;
+		meshData.Indices[1] = 1;
+	}
+
+	void GeometryGenerator::CreatePoint3D(const Core::SVector3& pos, MeshData& meshData)
+	{
+		//定义顶点
+		meshData.Vertices.resize(1);
+		meshData.Vertices[0].Position = pos;
+		meshData.Vertices[0].Color = { 1.0, 1.0, 1.0, 1.0 };
+		//定义索引
+		meshData.Indices.resize(1);
+		meshData.Indices[0] = 0;
+	}
+
 	void GeometryGenerator::CreateFullscreenQuad(MeshData& meshData)
 	{
 		meshData.Vertices.resize(4);

@@ -16,9 +16,9 @@ namespace Soul
 			void UnInitialize();
 
 			virtual bool Setup();
-			Launcher* GetAdmin() const
+			Launcher* GetLauncher() const
 			{
-				return mAdmin;
+				return mLauncher;
 			}
 			bool FrameStarted() override;
 			bool FrameUpdated() override;
@@ -32,7 +32,7 @@ namespace Soul
 
 		private:
 			CPUUse* mCPUUse;
-			Launcher* mAdmin;
+			Launcher* mLauncher;
 		};
 	}
 }

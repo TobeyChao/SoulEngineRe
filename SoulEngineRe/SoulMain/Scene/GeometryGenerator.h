@@ -30,6 +30,12 @@ namespace Soul
 			const std::function<Core::SVector4(int, int)>& colorFunc = [](int x, int z) { return Core::SVector4(1.0f, 1.0f, 1.0f, 1.0f); }
 		);
 
+		// Creates a line
+		void CreateLine3D(const Core::SVector3& start, const Core::SVector3& end, MeshData& meshData);
+
+		// Creates a point
+		void CreatePoint3D(const Core::SVector3& pos, MeshData& meshData);
+
 		// Creates a quad covering the screen in NDC coordinates.  This is useful for
 		// postprocessing effects.
 		void CreateFullscreenQuad(MeshData& meshData);
