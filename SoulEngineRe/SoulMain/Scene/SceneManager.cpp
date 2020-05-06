@@ -138,7 +138,8 @@ namespace Soul
 		{
 			GameObject* newGameObject = new GameObject(name);
 			SubMesh* subMesh = new ParticalList(name);
-			subMesh->SetBlend(BlendType::BT_ADD);
+			subMesh->SetBlend(BlendType::BT_TRANSPARENT);
+			subMesh->SetDepthStencil(DepthStencilType::DST_NO_DEPTH_WRITE);
 			subMesh->SetRasterizer(RasterizerType::RT_CULL_NONE);
 			subMesh->SetShader(ShaderManager::GetInstance().GetShaderByName(L"Particle"));
 			subMesh->PushTexture(TextureManager::GetInstance().GetTexture(textureNameW));
@@ -429,6 +430,10 @@ namespace Soul
 			if (depthStencil == "DST_LESS_EQUAL")
 			{
 				subMesh->SetDepthStencil(DepthStencilType::DST_LESS_EQUAL);
+			}
+			else if (depthStencil == "DST_NO_DEPTH_WRITE")
+			{
+				subMesh->SetDepthStencil(DepthStencilType::DST_NO_DEPTH_WRITE);
 			}
 		}
 

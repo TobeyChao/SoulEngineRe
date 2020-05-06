@@ -12,8 +12,8 @@ namespace Soul
 	enum class BlendType
 	{
 		BT_DEFAULT,
-		BT_TRANSPARENT,				// 透明混合
-		BT_ADD,
+		BT_TRANSPARENT,	// 透明混合
+		BT_ADD,			//颜色加法
 	};
 
 	enum class RasterizerType
@@ -28,7 +28,8 @@ namespace Soul
 	enum class DepthStencilType
 	{
 		DST_DEFAULT,
-		DST_LESS_EQUAL,				// 深度测试小于等于，用于天空盒
+		DST_LESS_EQUAL,		// 深度测试小于等于，用于天空盒
+		DST_NO_DEPTH_WRITE	// 深度测试开启，但是不写入深度值
 	};
 
 	class RenderParameter

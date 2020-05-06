@@ -197,9 +197,9 @@ namespace Soul
 				(mParticleLifeTimeMax - mParticleLifeTimeMin) *
 				fabsf(((float)rand() - (float)rand()) / RAND_MAX);
 
-			red = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
-			green = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
-			blue = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
+			red = 1.f/*(((float)rand() - (float)rand()) / RAND_MAX) + 0.5f*/;
+			green = 1.f/*(((float)rand() - (float)rand()) / RAND_MAX) + 0.5f*/;
+			blue = 1.f/*(((float)rand() - (float)rand()) / RAND_MAX) + 0.5f*/;
 
 			index = 0;
 			found = false;
@@ -241,7 +241,7 @@ namespace Soul
 			mParticleList[index].color.x = red;
 			mParticleList[index].color.y = green;
 			mParticleList[index].color.z = blue;
-			mParticleList[index].color.w = 0.5f;
+			mParticleList[index].color.w = 0.7f;
 			mParticleList[index].velocity = velocity;
 			mParticleList[index].lifeTime = lifeTime;
 			mParticleList[index].active = true;
@@ -299,36 +299,42 @@ namespace Soul
 			// Bottom left.
 			vertices[index].Position = Core::SVector3(mParticleList[i].position.x - mParticleSize, mParticleList[i].position.y - mParticleSize, mParticleList[i].position.z);
 			vertices[index].TexCoord = Core::SVector2(0.0f, 1.0f);
+			vertices[index].Normal = Core::SVector3(0.0f, 0.0f, -1.0f);
 			vertices[index].Color = mParticleList[i].color;
 			index++;
 
 			// Top left.
 			vertices[index].Position = Core::SVector3(mParticleList[i].position.x - mParticleSize, mParticleList[i].position.y + mParticleSize, mParticleList[i].position.z);
 			vertices[index].TexCoord = Core::SVector2(0.0f, 0.0f);
+			vertices[index].Normal = Core::SVector3(0.0f, 0.0f, -1.0f);
 			vertices[index].Color = mParticleList[i].color;
 			index++;
 
 			// Bottom right.
 			vertices[index].Position = Core::SVector3(mParticleList[i].position.x + mParticleSize, mParticleList[i].position.y - mParticleSize, mParticleList[i].position.z);
 			vertices[index].TexCoord = Core::SVector2(1.0f, 1.0f);
+			vertices[index].Normal = Core::SVector3(0.0f, 0.0f, -1.0f);
 			vertices[index].Color = mParticleList[i].color;
 			index++;
 
 			// Bottom right.
 			vertices[index].Position = Core::SVector3(mParticleList[i].position.x + mParticleSize, mParticleList[i].position.y - mParticleSize, mParticleList[i].position.z);
 			vertices[index].TexCoord = Core::SVector2(1.0f, 1.0f);
+			vertices[index].Normal = Core::SVector3(0.0f, 0.0f, -1.0f);
 			vertices[index].Color = mParticleList[i].color;
 			index++;
 
 			// Top left.
 			vertices[index].Position = Core::SVector3(mParticleList[i].position.x - mParticleSize, mParticleList[i].position.y + mParticleSize, mParticleList[i].position.z);
 			vertices[index].TexCoord = Core::SVector2(0.0f, 0.0f);
+			vertices[index].Normal = Core::SVector3(0.0f, 0.0f, -1.0f);
 			vertices[index].Color = mParticleList[i].color;
 			index++;
 
 			// Top right.
 			vertices[index].Position = Core::SVector3(mParticleList[i].position.x + mParticleSize, mParticleList[i].position.y + mParticleSize, mParticleList[i].position.z);
 			vertices[index].TexCoord = Core::SVector2(1.0f, 0.0f);
+			vertices[index].Normal = Core::SVector3(0.0f, 0.0f, -1.0f);
 			vertices[index].Color = mParticleList[i].color;
 			index++;
 		}

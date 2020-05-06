@@ -102,7 +102,7 @@ public:
 		sky["DepthStencil"] = "DST_LESS_EQUAL";
 		sky["Rasterizer"] = "RT_CULL_CLOCKWISE";
 		sphere = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sky);
-		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/desertcube1024.dds"));
+		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/space.dds"));
 		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeSky->AttachObj(sphere);
 		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
@@ -120,7 +120,31 @@ public:
 		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/checkboard.dds"));
 		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodePlane->AttachObj(plane);
-		nodePlane->SetPosition({ 0.f, -1.1f, 0.f });
+		nodePlane->SetPosition({ 0.f, -2.f, 0.f });
+
+		particleEmitter = new ParticleEmitter();
+		json particleSet;
+		particleSet["texture"] = "../Assets/Images/particle_texture.png";
+		particleSet["particle_emit_center_x"] = 0.0f;
+		particleSet["particle_emit_center_y"] = 0.0f;
+		particleSet["particle_emit_center_z"] = 0.0f;
+		particleSet["particle_emit_deviation_x"] = 10.f;
+		particleSet["particle_emit_deviation_y"] = 0.1f;
+		particleSet["particle_emit_deviation_z"] = 10.f;
+		particleSet["particle_velocity_x"] = 0.0f;
+		particleSet["particle_velocity_y"] = -2.0f;
+		particleSet["particle_velocity_z"] = 0.0f;
+		particleSet["particle_velocity_variation_angle_x"] = 0;
+		particleSet["particle_velocity_variation_angle_y"] = 0;
+		particleSet["particle_lifetime_min"] = 3.0f;
+		particleSet["particle_lifetime_max"] = 4.0f;
+		particleSet["particles_max_num"] = 100.0f;
+		particleSet["particle_size"] = 0.2f;
+		particleSet["particles_per_second"] = 40;
+		particleList = sceneMgr->CreateGameObject("particle", particleEmitter, particleSet);
+		nodeParticles = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeParticles->SetPosition({ 0.0f, 3.0f, 0.0f });
+		nodeParticles->AttachObj(particleList);
 
 		// nodeWater
 		json waterSet;
@@ -133,35 +157,13 @@ public:
 		waterSet["alpha"] = 0.7f;
 		waterSet["Blend"] = "BT_TRANSPARENT";
 		waterSet["Rasterizer"] = "RT_CULL_NONE";
+		waterSet["DepthStencil"] = "DST_NO_DEPTH_WRITE";
+
 		water = sceneMgr->CreateGameObject("water", SIMPLE_GAMEOBJECT::SG_PLANE, waterSet);
 		water->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/water.dds"));
 		nodeWater = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		//nodeWater->AttachObj(water);
-		nodeWater->SetPosition({ 0.f, -0.5f, 0.f });
-
-		particleEmitter = new ParticleEmitter();
-		json particleSet;
-		particleSet["texture"] = "../Assets/Images/star.dds";
-		particleSet["particle_emit_center_x"] = 0.0f;
-		particleSet["particle_emit_center_y"] = 0.0f;
-		particleSet["particle_emit_center_z"] = 0.0f;
-		particleSet["particle_emit_deviation_x"] = 0.2f;
-		particleSet["particle_emit_deviation_y"] = 0.2f;
-		particleSet["particle_emit_deviation_z"] = 0.2f;
-		particleSet["particle_velocity_x"] = 0.0f;
-		particleSet["particle_velocity_y"] = -2.0f;
-		particleSet["particle_velocity_z"] = 0.0f;
-		particleSet["particle_velocity_variation_angle_x"] = 0;
-		particleSet["particle_velocity_variation_angle_y"] = 0;
-		particleSet["particle_lifetime_min"] = 1.0f;
-		particleSet["particle_lifetime_max"] = 3.0f;
-		particleSet["particles_max_num"] = 50.0f;
-		particleSet["particle_size"] = 0.2f;
-		particleSet["particles_per_second"] = 30;
-		particleList = sceneMgr->CreateGameObject("particle", particleEmitter, particleSet);
-		nodeParticles = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeParticles->SetPosition({ 6.0f, 2.0f, 0.0f });
-		nodeParticles->AttachObj(particleList);
+		nodeWater->AttachObj(water);
+		nodeWater->SetPosition({ 0.f, 0.1f, 0.f });
 
 		camera = sceneMgr->AddCameraSceneNode();
 		camera->SetIsOrthogonal(false);
@@ -315,7 +317,7 @@ public:
 
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
 		lightNode->AttachObj(dirLight);
-		lightNode->AttachObj(pointLight);
+		//lightNode->AttachObj(pointLight);
 		lightNode->AttachObj(spotLight1);
 		lightNode->AttachObj(spotLight2);
 		lightNode->AttachObj(spotLight3);
@@ -372,7 +374,8 @@ private:
 	SceneNode* nodeTerrain;
 	SceneNode* nodeWater;
 	SceneNode* nodeLine;
-
+	SceneNode* nodeWater2;
+	GameObject* water2;
 	GameObject* line;
 	GameObject* water;
 	GameObject* cube;
@@ -395,7 +398,7 @@ private:
 	Core::SVector3 pos = { -3.f, 0.f, 0.f };
 	Core::SVector3 rotate;
 	Core::SVector3 sphereRotate;
-	Core::SVector3 cameraPos = { 0.f, 0.f, -5.f };
+	Core::SVector3 cameraPos = { 0.f, 2.f, -5.f };
 	Core::SVector3 cameraRotate = { 0.f, 0.f, 0.f };
 	int cameraChoose = 1;
 };

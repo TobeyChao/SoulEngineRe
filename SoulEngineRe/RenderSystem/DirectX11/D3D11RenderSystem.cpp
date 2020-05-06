@@ -286,6 +286,18 @@ namespace Soul
 			mDepthStencilDesc.StencilEnable = false;
 			mDepthStencilDescChanged = true;
 			break;
+		case DepthStencilType::DST_NO_DEPTH_WRITE:
+			// 进行深度测试，但不写入深度值的状态
+			// 若绘制非透明物体时，应使用默认状态
+			// 绘制透明物体时，使用该状态可以有效确保混合状态的进行
+			// 并且确保较前的非透明物体可以阻挡较后的一切物体
+			mDepthStencilDesc.DepthEnable = true;
+			mDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+			mDepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+			mDepthStencilDesc.StencilEnable = false;
+			mDepthStencilDescChanged = true;
+			break;
 		default:
 			break;
 		}
@@ -419,7 +431,7 @@ namespace Soul
 		}
 		else
 		{
-			deviceContext->OMSetBlendState(mDefaultBlendState.Get(), 0, 0xffffffff);
+			deviceContext->OMSetBlendState(nullptr, 0, 0xffffffff);
 		}
 
 		// 光栅化
@@ -439,7 +451,7 @@ namespace Soul
 		}
 		else
 		{
-			deviceContext->OMSetDepthStencilState(mDefaultDepthStencilState.Get(), mStencilRef);
+			deviceContext->OMSetDepthStencilState(nullptr, mStencilRef);
 		}
 
 		deviceContext->DrawIndexed(rp.mIndicesCount, 0u, 0);
