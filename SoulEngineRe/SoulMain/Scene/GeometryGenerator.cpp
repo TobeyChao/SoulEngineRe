@@ -53,6 +53,9 @@ namespace Soul
 
 		meshData.Vertices.assign(&v[0], &v[24]);
 
+		meshData.Min = v[0].Position;
+		meshData.Max = v[10].Position;
+
 		//
 		// Create the indices.
 		//
@@ -141,6 +144,9 @@ namespace Soul
 		}
 
 		meshData.Vertices.push_back(bottomVertex);
+
+		meshData.Min = { -radius, -radius, -radius };
+		meshData.Max = { radius, radius, radius };
 
 		//
 		// Compute indices for top stack.  The top stack was written first to the vertex buffer
@@ -281,6 +287,11 @@ namespace Soul
 			}
 		}
 
+
+		float maxRadius = topRadius > bottomRadius ? topRadius : bottomRadius;
+		meshData.Min = { -maxRadius, -height * 0.5f, -maxRadius };
+		meshData.Max = { maxRadius, height * 0.5f, maxRadius };
+
 		BuildCylinderTopCap(bottomRadius, topRadius, height, sliceCount, stackCount, meshData);
 		BuildCylinderBottomCap(bottomRadius, topRadius, height, sliceCount, stackCount, meshData);
 	}
@@ -322,6 +333,9 @@ namespace Soul
 			}
 		}
 
+		meshData.Min = { -halfWidth, 0.f, -halfDepth };
+		meshData.Max = { halfWidth, 0.f, halfDepth };
+
 		//
 		// Create the indices.
 		//
@@ -351,8 +365,8 @@ namespace Soul
 		const std::function<float(int, int)>& heightFunc,
 		const std::function<Core::SVector4(int, int)>& colorFunc)
 	{
-		size_t vertexCount = (m - 1u) * (n - 1u) * 4u;
-		size_t faceCount = (m - 1u) * (n - 1u) * 2u;
+		size_t vertexCount = ((size_t)m - 1u) * ((size_t)n - 1u) * 4u;
+		size_t faceCount = ((size_t)m - 1u) * ((size_t)n - 1u) * 2u;
 
 		//
 		// Create the vertices.
@@ -361,8 +375,8 @@ namespace Soul
 		float halfWidth = 0.5f * width;
 		float halfDepth = 0.5f * depth;
 
-		float dx = width / (n - 1);
-		float dz = depth / (m - 1);
+		float dx = width / float(n - 1);
+		float dz = depth / float(m - 1);
 
 		meshData.Vertices.resize(vertexCount);
 		meshData.Indices.resize(faceCount * 3u);
@@ -443,13 +457,16 @@ namespace Soul
 			}
 		}
 
+		meshData.Min = { -halfWidth, 0.f, -halfDepth };
+		meshData.Max = { halfWidth, 0.f, halfDepth };
+
 		// Normal Averaging
 		std::vector<Core::SVector3> normalSum;
-		normalSum.resize(m * n);
+		normalSum.resize((size_t)m * n);
 		unsigned normalSumIndex;
-		for (int i = 0; i < m; i++)	//row
+		for (int i = 0; i < (int)m; i++)	//row
 		{
-			for (int j = 0; j < n; j++)	//col
+			for (int j = 0; j < (int)n; j++)	//col
 			{
 				normalSumIndex = (i * n) + j;
 				// 按左上为基点(0, 0)
@@ -462,23 +479,23 @@ namespace Soul
 				}
 
 				// 右上是否有三角形
-				if ((j < (n - 1)) && (i - 1) >= 0)
+				if ((j < ((int)n - 1)) && (i - 1) >= 0)
 				{
-					index = ((i - 1) * (n - 1)) + j;
+					index = ((i - 1) * ((int)n - 1)) + j;
 					normalSum[normalSumIndex] += faceNormals[index];
 				}
 
 				// 左下是否有三角形
-				if ((j - 1) >= 0 && i < (m - 1))
+				if ((j - 1) >= 0 && i < ((int)m - 1))
 				{
-					index = (i * (n - 1)) + (j - 1);
+					index = (i * ((int)n - 1)) + (j - 1);
 					normalSum[normalSumIndex] += faceNormals[index];
 				}
 
 				// 右下是否有三角形
-				if ((j < (n - 1)) && i < (m - 1))
+				if ((j < ((int)n - 1)) && i < ((int)m - 1))
 				{
-					index = (i * (n - 1)) + j;
+					index = (i * ((int)n - 1)) + j;
 					normalSum[normalSumIndex] += faceNormals[index];
 				}
 

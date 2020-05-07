@@ -23,17 +23,17 @@ namespace Soul
 			RIGHT_HAND_SYSTEM
 		};
 	public:
-		bool LoadObjModel(std::wstring objFileName, int nHandSystem = RIGHT_HAND_SYSTEM);
+		bool LoadObjModel(const std::wstring& objFileName, int nHandSystem = RIGHT_HAND_SYSTEM);
 		std::vector<SubMesh*>& GetSubMeshes()
 		{
 			return mSubMesh;
 		}
 		void Clean();
 	private:
-		bool LoadObjFile(std::wstring objFileName, int nHandSystem = RIGHT_HAND_SYSTEM);
-		bool ParseVertices(std::wstring objFileName, int nHandSystem);
-		bool ParseMaterialFile(std::wstring matFileName);
-		bool ParseSubset(std::wstring objFileName, int nHandSystem);
+		bool LoadObjFile(const std::wstring& objFileName, int nHandSystem = RIGHT_HAND_SYSTEM);
+		bool ParseVertices(const std::wstring& objFileName, int nHandSystem);
+		bool ParseMaterialFile(const std::wstring& matFileName);
+		bool ParseSubset(const std::wstring& objFileName, int nHandSystem);
 		void AddVertex(SubMesh* subMesh, const Vertex& vertex, size_t vpi, size_t vti, size_t vni);
 
 	private:
@@ -44,7 +44,8 @@ namespace Soul
 		std::vector<Core::SVector3> mNormals;
 		std::vector<ObjMaterial> mMaterial;
 		std::unordered_map<std::wstring, unsigned> mVertexCache;
-
+		Core::SVector3 mMin;
+		Core::SVector3 mMax;
 		std::vector<SubMesh*> mSubMesh;
 	};
 }

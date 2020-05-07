@@ -128,6 +128,10 @@ namespace Soul
 				(vec3L.z * vec3R.x) - (vec3L.x * vec3R.z),
 				(vec3L.x * vec3R.y) - (vec3L.y * vec3R.x));
 		}
+		SVector3 Multiply(const SVector3& vec3L, const SVector3& vec3R)
+		{
+			return { vec3L.x * vec3R.x, vec3L.y * vec3R.y, vec3L.z * vec3R.z };
+		}
 		float Magnitude(const SVector3& vec3)
 		{
 			return sqrt(vec3.x * vec3.x + vec3.y * vec3.y + vec3.z * vec3.z);

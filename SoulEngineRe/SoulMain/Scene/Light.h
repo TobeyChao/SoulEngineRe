@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "../Core/Mathematics/SVector3.h"
 #include "../Core/Mathematics/SVector4.h"
+
 namespace Soul
 {
 	enum class LIGHT_TYPE

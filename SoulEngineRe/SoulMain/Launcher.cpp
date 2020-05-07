@@ -6,6 +6,7 @@
 
 #include "RenderSystem/FrameEventReceiver.h"
 #include "Scene/SceneManager.h"
+#include <locale>
 
 namespace Soul
 {
@@ -30,9 +31,13 @@ namespace Soul
 
 	RenderWindow* Launcher::Initialize(const std::string& initConfig)
 	{
-		std::ifstream i(initConfig);
-		json j;
-		i >> j;
+		std::wifstream i(initConfig);
+		std::locale china("zh_CN.UTF-8");
+		i.imbue(china);
+		std::wstringstream buffer;
+		buffer << i.rdbuf();
+		std::wstring contents(buffer.str());
+		json j = json::parse(contents);
 		i.close();
 		// 1.初始化渲染系统
 		if (j.contains("render_system"))

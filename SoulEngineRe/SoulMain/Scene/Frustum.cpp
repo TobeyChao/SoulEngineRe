@@ -192,8 +192,18 @@ namespace Soul
 		return true;
 	}
 
+	bool Frustum::CheckRectangle(const BoundingBox& boundingBox)
+	{
+		return CheckRectangle(boundingBox.mCenter, boundingBox.mLengthToSides);
+	}
+
 	//算法和正方体的算法一样
 	//xSize,ySize,zSize分别为长方体长宽高的一半
+	bool Frustum::CheckRectangle(const Core::SVector3& center, const Core::SVector3& lengthToSides)
+	{
+		return CheckRectangle(center.x, center.y, center.z, lengthToSides.x, lengthToSides.y, lengthToSides.z);
+	}
+
 	bool Frustum::CheckRectangle(float xCenter, float yCenter, float zCenter, float xSize, float ySize, float zSize)
 	{
 		Core::SVector3 Point[8];

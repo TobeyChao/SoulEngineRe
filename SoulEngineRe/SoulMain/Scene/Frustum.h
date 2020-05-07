@@ -1,7 +1,8 @@
 #pragma once
+#include "BoundingBox.h"
 #include "../Core/Mathematics/SMatrix4x4.h"
 #include "../Core/Mathematics/SVector4.h"
-#include "../Core/Mathematics/SVector3.h"
+
 namespace Soul
 {
 	class Frustum
@@ -22,6 +23,8 @@ namespace Soul
 		bool CheckSphere(float xCenter, float yCenter, float zCenter, float radius);
 
 		//判断一个长方体是否在视截体内，用的也是包围球的的方法
+		bool CheckRectangle(const BoundingBox& boundingBox);
+		bool CheckRectangle(const Core::SVector3& center, const Core::SVector3& lengthToSides);
 		bool CheckRectangle(float xCenter, float yCenter, float zCenter, float xSize, float ySize, float zSize);
 
 		//判断一个长方体是否在视截体内，用的是8点的方法

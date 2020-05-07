@@ -6,6 +6,7 @@
 #include <queue>
 #include <set>
 #include <fstream>
+#include <sstream>
 #include "Utils\UtilsPCH.h"
 
 namespace Soul
@@ -26,17 +27,16 @@ namespace Soul
 	class IAudioBuffer;
 	class SoundResourceExtraData;
 	class SoundResourceManager;
-	class Frustum;
 
 	class GPUBufferManager;
 	class ShaderManager;
-
-	class ParticleEmitter;
+	// Scene
+	class BoundingBox;
+	class Frustum;
 	class GameObject;
+	class GeometryGenerator;
+	class ParticleEmitter;
 	class SubMesh;
-	class Rectangle2D;
-	class Point3D;
-	class Line3D;
 	class ParticalList;
 	class Light;
 	class SceneNodeRenderable;
@@ -44,7 +44,6 @@ namespace Soul
 	class SceneNodeCamera;
 	class SceneNode;
 	class SceneManager;
-	class GeometryGenerator;
 	enum class LIGHT_TYPE;
 	enum class SIMPLE_GAMEOBJECT;
 	enum class E_SCENENODE_TYPES;

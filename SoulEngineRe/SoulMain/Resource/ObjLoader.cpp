@@ -3,12 +3,14 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
-#include <assert.h>
+#include <algorithm>
+#undef min
+#undef max
 
 namespace Soul
 {
 	using namespace std::filesystem;
-	bool ObjLoader::LoadObjModel(std::wstring objFileName, int nHandSystem)
+	bool ObjLoader::LoadObjModel(const std::wstring& objFileName, int nHandSystem)
 	{
 
 		LoadObjFile(objFileName, nHandSystem);
@@ -25,18 +27,23 @@ namespace Soul
 		mSubMesh.clear();
 	}
 
-	bool ObjLoader::LoadObjFile(std::wstring objFileName, int nHandSystem)
+	bool ObjLoader::LoadObjFile(const std::wstring& objFileName, int nHandSystem)
 	{
 		path pathObj(objFileName);
 		mParentPath = pathObj.parent_path().wstring();
-
+		mMin = { 3.402823466e+38F, 3.402823466e+38F, 3.402823466e+38F };
+		mMax = { -3.402823466e+38F, -3.402823466e+38F, -3.402823466e+38F };
 		ParseVertices(objFileName, nHandSystem);
 		ParseSubset(objFileName, nHandSystem);
-
+		if (!mSubMesh.empty())
+		{
+			mSubMesh[0]->GetOriginalMeshDataPtr()->Min = mMin;
+			mSubMesh[0]->GetOriginalMeshDataPtr()->Max = mMax;
+		}
 		return true;
 	}
 
-	bool ObjLoader::ParseVertices(std::wstring objFileName, int nHandSystem)
+	bool ObjLoader::ParseVertices(const std::wstring& objFileName, int nHandSystem)
 	{
 		std::wifstream in(objFileName);
 		if (!in)
@@ -66,6 +73,8 @@ namespace Soul
 				float PosZ = std::stof(word);
 				if (RIGHT_HAND_SYSTEM == nHandSystem)
 					PosZ = -PosZ;
+				mMin = { std::min(PosX, mMin.x), std::min(PosY, mMin.y), std::min(PosZ, mMin.z) };
+				mMax = { std::max(PosX, mMax.x), std::max(PosY, mMax.y), std::max(PosZ, mMax.z) };
 				mVertices.push_back(Core::SVector3(PosX, PosY, PosZ));
 			}
 			else if (word == L"vn")//vn:normal
@@ -99,7 +108,7 @@ namespace Soul
 		return true;
 	}
 
-	bool ObjLoader::ParseMaterialFile(std::wstring matFileName)
+	bool ObjLoader::ParseMaterialFile(const std::wstring& matFileName)
 	{
 		ObjMaterial* pMat = nullptr;
 
@@ -205,7 +214,7 @@ namespace Soul
 		return true;
 	}
 
-	bool ObjLoader::ParseSubset(std::wstring objFileName, int nHandSystem)
+	bool ObjLoader::ParseSubset(const std::wstring& objFileName, int nHandSystem)
 	{
 		std::wifstream in;
 		in.open(objFileName);

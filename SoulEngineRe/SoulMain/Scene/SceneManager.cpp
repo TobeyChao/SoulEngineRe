@@ -380,15 +380,16 @@ namespace Soul
 			loader.Clean();
 			return nullptr;
 		}
-		GameObject* newGameObject = new GameObject(name);
+		GameObject* gameObject = new GameObject(name);
 		for (auto it : subMeshes)
 		{
 			SetCustomEffect(it, createParameters);
 			it->InitializeBuffer();
-			newGameObject->PushSubMesh(it);
+			gameObject->PushSubMesh(it);
 		}
+		gameObject->BuildBoundingBox();
 		loader.Clean();
-		return newGameObject;
+		return gameObject;
 	}
 
 	Light* SceneManager::CreateLight(const std::string& name, LIGHT_TYPE lightType)
@@ -473,7 +474,7 @@ namespace Soul
 		Shader* shader = nullptr;
 		if (effctSetting.contains("Shader"))
 		{
-			std::string shaderName = effctSetting["Shader"];
+			const std::string shaderName = effctSetting["Shader"];
 			shader = ShaderManager::GetInstance().GetShaderByName(StringToWstring(shaderName));
 		}
 		else

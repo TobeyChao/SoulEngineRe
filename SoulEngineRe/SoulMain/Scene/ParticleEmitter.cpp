@@ -5,7 +5,16 @@ namespace Soul
 {
 	ParticleEmitter::ParticleEmitter()
 		:
-		rng(std::random_device()())
+		mParticleLifeTimeMin(0),
+		mParticleLifeTimeMax(0),
+		mParticleSize(0),
+		mParticlesPerSecond(0),
+		mSecondsPerParticle(0),
+		mMaxParticles(0),
+		mCurrentParticleCount(0),
+		mAccumulatedTime(0),
+		rng(std::random_device()()),
+		mParticlesMesh(nullptr)
 	{
 	}
 
@@ -123,11 +132,10 @@ namespace Soul
 		{
 			return true;
 		}
-		bool result;
 		KillParticles();
 		EmitParticles(deltaTime);
 		UpdateParticles(deltaTime);
-		result = UpdateBuffers();
+		UpdateBuffers();
 		return true;
 	}
 
@@ -187,7 +195,7 @@ namespace Soul
 			std::uniform_real_distribution<float> angleYDist(
 				-mParticleVelocityVariationAngle.y,
 				mParticleVelocityVariationAngle.y);
-			
+
 			float theta = angleYDist(rng);
 			float phi = angleXDist(rng);
 

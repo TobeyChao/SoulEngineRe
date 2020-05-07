@@ -195,6 +195,7 @@
     <ClCompile Include="SoulMain\Core\Mathematics\SVector2.cpp" />
     <ClCompile Include="SoulMain\Core\Mathematics\SVector3.cpp" />
     <ClCompile Include="SoulMain\Core\Mathematics\SVector4.cpp" />
+    <ClCompile Include="SoulMain\Scene\BoundingBox.cpp" />
     <ClCompile Include="SoulMain\Scene\Frustum.cpp" />
     <ClCompile Include="SoulMain\Scene\GeometryGenerator.cpp" />
     <ClCompile Include="SoulMain\Scene\ParticalList.cpp" />
@@ -283,6 +284,7 @@
     <ClInclude Include="SoulMain\Core\Mathematics\SVector4.h" />
     <ClInclude Include="SoulMain\Core\SColorf.h" />
     <ClInclude Include="SoulMain\Core\SRect.h" />
+    <ClInclude Include="SoulMain\Scene\BoundingBox.h" />
     <ClInclude Include="SoulMain\Scene\Frustum.h" />
     <ClInclude Include="SoulMain\Scene\GeometryGenerator.h" />
     <ClInclude Include="SoulMain\Scene\ParticalList.h" />

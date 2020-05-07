@@ -72,7 +72,7 @@ public:
 		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/WireFence.dds"));
 		nodeCube = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCube->AttachObj(cube);
-		nodeCube->SetPosition({ 3.f, 0.f, 0.f });
+		nodeCube->SetPosition({ 3.f, 1.1f, 0.f });
 
 		// Cylinder
 		json cylinderSet;
@@ -86,15 +86,21 @@ public:
 		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stone.dds"));
 		nodeCylinder = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCylinder->AttachObj(cylinder);
-		nodeCylinder->SetPosition({ 0.f, 0.f, 3.f });
+		nodeCylinder->SetPosition({ 0.f, 1.1f, 3.f });
 
 		// Mesh
 		json meshSet;
 		//meshSet["Rasterizer"] = "RT_WIREFRAME";
 		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/box/box.obj", meshSet);
 		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeMesh->SetPosition({ -3.f, 0.f, 0.f });
+		nodeMesh->SetPosition({ -3.f, 0.2f, 0.f });
 		nodeMesh->AttachObj(mesh);
+
+		//meshSet["Rasterizer"] = "RT_WIREFRAME";
+		mesh2 = sceneMgr->CreateGameObject("mesh2", L"../Assets/Models/box/box.obj", meshSet);
+		nodeMesh2 = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeMesh2->SetPosition({ 0.f, 0.2f, -3.f });
+		nodeMesh2->AttachObj(mesh2);
 
 		// sky
 		json sky;
@@ -116,11 +122,24 @@ public:
 		planeSet["maxU"] = 5.0f;
 		planeSet["maxV"] = 5.0f;
 		//planeSet["Rasterizer"] = "RT_WIREFRAME";
-		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/checkboard.dds"));
-		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodePlane->AttachObj(plane);
-		nodePlane->SetPosition({ 0.f, -2.f, 0.f });
+
+		for (size_t i = 0; i < 1; i++)
+		{
+			plane[i] = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
+			plane[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/checkboard.dds"));
+			nodePlane[i] = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+			nodePlane[i]->AttachObj(plane[i]);
+		}
+
+		nodePlane[0]->SetPosition({ 0.f, 0.f, 0.f });
+		//nodePlane[1]->SetPosition({ 0.f, 15.f, 15.f });
+		//nodePlane[2]->SetPosition({ -15.f, 15.f, 0.f });
+		//nodePlane[3]->SetPosition({ 0.f, 15.f, -15.f });
+		//nodePlane[4]->SetPosition({ 15.f, 15.f, 0.f });
+		//nodePlane[1]->SetRotation({ -Core::SM_PIDIV2, 0.f, 0.f });
+		//nodePlane[2]->SetRotation({ 0.f, 0.f, -Core::SM_PIDIV2 });
+		//nodePlane[3]->SetRotation({ Core::SM_PIDIV2, 0.f, 0.f });
+		//nodePlane[4]->SetRotation({ 0.f, 0.f, Core::SM_PIDIV2 });
 
 		particleEmitter = new ParticleEmitter();
 		json particleSet;
@@ -163,7 +182,7 @@ public:
 		water->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/water.dds"));
 		nodeWater = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeWater->AttachObj(water);
-		nodeWater->SetPosition({ 0.f, 0.1f, 0.f });
+		nodeWater->SetPosition({ 0.f, 1.1f, 0.f });
 
 		camera = sceneMgr->AddCameraSceneNode();
 		camera->SetIsOrthogonal(false);
@@ -176,11 +195,13 @@ public:
 	bool FrameStarted() override
 	{
 		particleEmitter->Update(Timer::DeltaTime());
+
+		intersects = mesh->GetBoundingBox().Intersects(mesh2->GetBoundingBox());
+
 		if (Input::DXInput::GetInstance().IsPressed(DIK_ESCAPE))
 		{
 			return false;
 		}
-
 		if (Input::DXInput::GetInstance().IsPressed(DIK_S))
 		{
 			pos.z -= 0.03f;
@@ -248,6 +269,9 @@ public:
 
 		nodeMesh->SetRotation(rotate);
 		nodeMesh->SetPosition(pos);
+
+		
+		
 		return Application::FrameStarted();
 	}
 
@@ -261,10 +285,18 @@ public:
 		std::wstring info = buffer.str();
 
 		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 50 });
+		if (intersects)
+		{
+			RenderSystem2D::GetInstance().DrawTextW(L"相交", { 10, 90 });
+		}
+		else
+		{
+			RenderSystem2D::GetInstance().DrawTextW(L"未相交", { 10, 90 });
+		}
 		return Application::FrameUpdated();
 	}
 
-	bool FrameEnd()
+	bool FrameEnd() override
 	{
 		return Application::FrameEnd();
 	}
@@ -364,43 +396,46 @@ public:
 	}
 
 private:
-	SceneNode* lightNode;
-	SceneNode* nodeMesh;
-	SceneNode* nodeCylinder;
-	SceneNode* nodeCube;
-	SceneNode* nodeSky;
-	SceneNode* nodePlane;
-	SceneNode* nodeParticles;
-	SceneNode* nodeTerrain;
-	SceneNode* nodeWater;
-	SceneNode* nodeLine;
-	SceneNode* nodeWater2;
-	GameObject* water2;
-	GameObject* line;
-	GameObject* water;
-	GameObject* cube;
-	GameObject* sphere;
-	GameObject* cylinder;
-	GameObject* mesh;
-	GameObject* plane;
-	GameObject* particleList;
-	GameObject* terrain;
+	SceneNode* lightNode{};
+	SceneNode* nodeMesh{};
+	SceneNode* nodeMesh2{};
+	SceneNode* nodeCylinder{};
+	SceneNode* nodeCube{};
+	SceneNode* nodeSky{};
+	SceneNode* nodePlane[5]{};
+	SceneNode* nodeParticles{};
+	//SceneNode* nodeTerrain{};
+	SceneNode* nodeWater{};
+	//SceneNode* nodeLine{};
 
-	Light* pointLight;
-	Light* spotLight1;
-	Light* spotLight2;
-	Light* spotLight3;
-	Light* dirLight;
+	//GameObject* line{};
+	GameObject* water{};
+	GameObject* cube{};
+	GameObject* sphere{};
+	GameObject* cylinder{};
+	GameObject* mesh{};
+	GameObject* mesh2{};
+	GameObject* plane[5]{};
+	GameObject* particleList{};
+	//GameObject* terrain{};
 
-	SceneNodeCamera* camera;
-	SceneManager* sceneMgr;
-	ParticleEmitter* particleEmitter;
-	Core::SVector3 pos = { -3.f, 0.f, 0.f };
+	Light* pointLight{};
+	Light* spotLight1{};
+	Light* spotLight2{};
+	Light* spotLight3{};
+	Light* dirLight{};
+
+	SceneNodeCamera* camera{};
+	SceneManager* sceneMgr{};
+	ParticleEmitter* particleEmitter{};
+	Core::SVector3 pos = { -3.f, 0.2f, 0.f };
 	Core::SVector3 rotate;
 	Core::SVector3 sphereRotate;
 	Core::SVector3 cameraPos = { 0.f, 2.f, -5.f };
 	Core::SVector3 cameraRotate = { 0.f, 0.f, 0.f };
 	int cameraChoose = 1;
+
+	bool intersects;
 };
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,

@@ -226,5 +226,8 @@ namespace Soul
 	{
 		std::vector<Vertex> Vertices;
 		std::vector<unsigned> Indices;
+		// 最大最小点不一定在几何体面上，而是取x\y\z的最大最小值组合而成
+		Core::SVector3 Min;
+		Core::SVector3 Max;
 	};
 }

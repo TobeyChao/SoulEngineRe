@@ -39,8 +39,10 @@ namespace Soul
 			float y;
 			float z;
 		};
+
 		float Dot(const SVector3& vec3L, const SVector3& vec3R);
 		SVector3 Cross(const SVector3& vec3L, const SVector3& vec3R);
+		SVector3 Multiply(const SVector3& vec3L, const SVector3& vec3R);
 		float Magnitude(const SVector3& vec3);
 		void Normalize(SVector3& vec3);
 	}

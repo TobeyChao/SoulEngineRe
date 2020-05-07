@@ -4,7 +4,7 @@
     "audio_system" : "dsound",
     "d3d_feature_level" : "11.1",
     "d3d_driver_type" : "hardware",
-    "window_title" : "render demo",
+    "window_title" : "渲染 demo",
     "icon" : "Soul.ico",
     "fullscreen" : false,
     "screen_width" : 1280,
