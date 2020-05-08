@@ -72,7 +72,7 @@ public:
 		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/WireFence.dds"));
 		nodeCube = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCube->AttachObj(cube);
-		nodeCube->SetPosition({ 3.f, 1.1f, 0.f });
+		nodeCube->SetPosition({ 0.f, 1.1f, 3.f });
 
 		// Cylinder
 		json cylinderSet;
@@ -86,7 +86,7 @@ public:
 		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stone.dds"));
 		nodeCylinder = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCylinder->AttachObj(cylinder);
-		nodeCylinder->SetPosition({ 0.f, 1.1f, 3.f });
+		nodeCylinder->SetPosition({ 3.f, 1.1f, 0.f });
 
 		// Mesh
 		json meshSet;
@@ -243,25 +243,26 @@ public:
 		}
 
 
-		if ((Input::DXInput::GetInstance().GetMouseState().lX != Input::DXInput::GetInstance().GetLastMouseState().lX) ||
-			(Input::DXInput::GetInstance().GetMouseState().lY != Input::DXInput::GetInstance().GetLastMouseState().lY))
-		{
-			cameraRotate.x += Input::DXInput::GetInstance().GetMouseState().lY * 0.001f;
-			cameraRotate.y += Input::DXInput::GetInstance().GetMouseState().lX * 0.001f;
+		//if ((Input::DXInput::GetInstance().GetMouseState().lX != Input::DXInput::GetInstance().GetLastMouseState().lX) ||
+		//	(Input::DXInput::GetInstance().GetMouseState().lY != Input::DXInput::GetInstance().GetLastMouseState().lY))
+		//{
+		//	cameraRotate.x += Input::DXInput::GetInstance().GetMouseState().lY * 0.001f;
+		//	cameraRotate.y += Input::DXInput::GetInstance().GetMouseState().lX * 0.001f;
 
-			if (cameraRotate.x > Core::SM_PIDIV4)
-				cameraRotate.x = Core::SM_PIDIV4;
-			if (cameraRotate.x < -Core::SM_PIDIV4)
-				cameraRotate.x = -Core::SM_PIDIV4;
-		}
-		if (cameraChoose == 1)
-		{
+		//	if (cameraRotate.x > Core::SM_PIDIV4)
+		//		cameraRotate.x = Core::SM_PIDIV4;
+		//	if (cameraRotate.x < -Core::SM_PIDIV4)
+		//		cameraRotate.x = -Core::SM_PIDIV4;
+		//}
+
+		//if (cameraChoose == 1)
+		//{
 			ProcessFreeLookCamera();
-		}
-		else if (cameraChoose == 2)
-		{
-			ProcessThirdCamera();
-		}
+		//}
+		//else if (cameraChoose == 2)
+		//{
+			//ProcessThirdCamera();
+		//}
 
 		camera->SetPosition(cameraPos);
 		nodeSky->SetPosition(cameraPos);
@@ -270,29 +271,48 @@ public:
 		nodeMesh->SetRotation(rotate);
 		nodeMesh->SetPosition(pos);
 
-		
-		
 		return Application::FrameStarted();
 	}
 
 	bool FrameUpdated() override
 	{
-		RenderSystem2D::GetInstance().DrawTextW(L"按1切换自由视角摄像机!", { 10, 10 });
-		RenderSystem2D::GetInstance().DrawTextW(L"按2切换第三人称摄像机!", { 10, 30 });
+
+		const Core::SVector2 pos = Input::DXInput::GetInstance().GetMouseLocation();
+		Ray ray = Ray::ScreenToRay(*camera, pos);
+		if (ray.Hit(cube->GetBoundingBox()))
+		{
+			RenderSystem2D::GetInstance().DrawTextW(L"选中Cube", { 300, 10 });
+		}
+		if (ray.Hit(mesh->GetBoundingBox()))
+		{
+			RenderSystem2D::GetInstance().DrawTextW(L"选中mesh", { 300, 10 });
+		}
+		if (ray.Hit(mesh2->GetBoundingBox()))
+		{
+			RenderSystem2D::GetInstance().DrawTextW(L"选中mesh2", { 300, 10 });
+		}
+		if (ray.Hit(cylinder->GetBoundingBox()))
+		{
+			RenderSystem2D::GetInstance().DrawTextW(L"选中cylinder", { 300, 10 });
+		}
+		
 		std::wostringstream buffer;
 		buffer << "FPS:" << 1.0f / Timer::DeltaTime() << std::endl
-			<< L"CPU占用:" << GetCPUUSe() << std::endl;
+			<< L"CPU占用:" << GetCPUUSe() << std::endl
+			<< L"按1切换自由视角摄像机!" << std::endl
+			<< L"按2切换第三人称摄像机!" << std::endl
+			<< L"CameraPos:(" << cameraPos.x << "," << cameraPos.y << "," << cameraPos.z << ")" << std::endl;
 		std::wstring info = buffer.str();
-
-		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 50 });
-		if (intersects)
-		{
-			RenderSystem2D::GetInstance().DrawTextW(L"相交", { 10, 90 });
-		}
-		else
-		{
-			RenderSystem2D::GetInstance().DrawTextW(L"未相交", { 10, 90 });
-		}
+		
+		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 10 });
+		//if (intersects)
+		//{
+		//	RenderSystem2D::GetInstance().DrawTextW(L"相交", { 10, 90 });
+		//}
+		//else
+		//{
+		//	RenderSystem2D::GetInstance().DrawTextW(L"未相交", { 10, 90 });
+		//}
 		return Application::FrameUpdated();
 	}
 
@@ -431,8 +451,8 @@ private:
 	Core::SVector3 pos = { -3.f, 0.2f, 0.f };
 	Core::SVector3 rotate;
 	Core::SVector3 sphereRotate;
-	Core::SVector3 cameraPos = { 0.f, 2.f, -5.f };
-	Core::SVector3 cameraRotate = { 0.f, 0.f, 0.f };
+	Core::SVector3 cameraPos = { 0.f, 8.6f, -10.f };
+	Core::SVector3 cameraRotate = { Core::SM_PIDIV4, 0.f, 0.f };
 	int cameraChoose = 1;
 
 	bool intersects;

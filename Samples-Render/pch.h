@@ -13,6 +13,7 @@
 #include "../SoulEngineRe/SoulMain/Scene/GameObject.h"
 #include "../SoulEngineRe/SoulMain/Scene/SubMesh.h"
 #include "../SoulEngineRe/SoulMain/Scene/Light.h"
+#include "../SoulEngineRe/SoulMain/Scene/Ray.h"
 #include "../SoulEngineRe/SoulMain/Scene/SceneNodeRenderable.h"
 #include "../SoulEngineRe/SoulMain/Scene/SceneNodeLight.h"
 #include "../SoulEngineRe/SoulMain/Scene/SceneNodeCamera.h"

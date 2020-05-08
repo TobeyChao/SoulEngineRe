@@ -200,6 +200,7 @@
     <ClCompile Include="SoulMain\Scene\GeometryGenerator.cpp" />
     <ClCompile Include="SoulMain\Scene\ParticalList.cpp" />
     <ClCompile Include="SoulMain\Scene\ParticleEmitter.cpp" />
+    <ClCompile Include="SoulMain\Scene\Ray.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneManager.cpp" />
     <ClCompile Include="SoulMain\Scene\SceneNodeCamera.cpp" />
     <ClCompile Include="SoulMain\Scene\GameObject.cpp" />
@@ -290,6 +291,7 @@
     <ClInclude Include="SoulMain\Scene\ParticalList.h" />
     <ClInclude Include="SoulMain\Scene\ParticleEmitter.h" />
     <ClInclude Include="SoulMain\Scene\PrimitiveTypes.h" />
+    <ClInclude Include="SoulMain\Scene\Ray.h" />
     <ClInclude Include="SoulMain\Scene\SceneManager.h" />
     <ClInclude Include="SoulMain\Scene\SceneNodeCamera.h" />
     <ClInclude Include="SoulMain\Scene\GameObject.h" />

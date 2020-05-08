@@ -367,6 +367,7 @@ namespace Soul
 			break;
 		}
 		}
+		newGameObject->BuildBoundingBox();
 		return newGameObject;
 	}
 
