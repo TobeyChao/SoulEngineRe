@@ -66,6 +66,10 @@ namespace Soul
 		std::vector<IAudio*> mAudioSystems;
 		// 当前激活的音频系统
 		IAudio* mActiveAudioSystems;
+		// 音频资源管理器
+		SoundResourceManager* mSoundResourceManager;
+		// 资源组管理器
+		ResourceGroupManager* mResourceGroupManager;
 		// 模组设置
 		std::string mModuleConfig;
 		// 控制游戏循环

@@ -1,7 +1,7 @@
 {
     "render_system" : "dx11_render_system",
     "shader_manager_config" : "../Assets/Shaders/Shader.json",
-    "audio_system" : "dsound",
+    "audio_system" : "xaudio2",
     "d3d_feature_level" : "11.1",
     "d3d_driver_type" : "hardware",
     "window_title" : "渲染 demo",

@@ -4,6 +4,7 @@
 #include "../AudioSystem/DSound/DSoundModule.h"
 #include "../AudioSystem/XAudio/XAudioModule.h"
 
+#include "Audio/SoundResourceManager.h"
 #include "RenderSystem/FrameEventReceiver.h"
 #include "Scene/SceneManager.h"
 #include <locale>
@@ -16,6 +17,8 @@ namespace Soul
 		:
 		mActiveRenderSystem(nullptr),
 		mActiveAudioSystems(nullptr),
+		mResourceGroupManager(nullptr),
+		mSoundResourceManager(nullptr),
 		mQuit(false)
 	{
 		if (!moduleConfig.empty())
@@ -27,10 +30,23 @@ namespace Soul
 	Launcher::~Launcher()
 	{
 		UnLoadModules();
+		// Ïú»ÙmSoundResourceManager
+		if (mSoundResourceManager)
+		{
+			delete mSoundResourceManager;
+			mSoundResourceManager = nullptr;
+		}
+		// Ïú»ÙmResourceGroupManager
+		if (mResourceGroupManager)
+		{
+			delete mResourceGroupManager;
+			mResourceGroupManager = nullptr;
+		}
 	}
 
 	RenderWindow* Launcher::Initialize(const std::string& initConfig)
 	{
+		mResourceGroupManager = new ResourceGroupManager();
 		std::wifstream i(initConfig);
 		std::locale china("zh_CN.UTF-8");
 		i.imbue(china);
@@ -64,6 +80,7 @@ namespace Soul
 				mActiveAudioSystems = GetAudioSystemByName(audioSystemName);
 			}
 		}
+		mSoundResourceManager = new SoundResourceManager();
 		assert(mActiveAudioSystems != nullptr);
 		mActiveAudioSystems->Initialize();
 
@@ -257,7 +274,7 @@ namespace Soul
 				{
 					AddModule(new DSoundModule());
 				}
-				else if (module == "xaudio")
+				else if (module == "xaudio2")
 				{
 					AddModule(new XAudioModule());
 				}

@@ -9,7 +9,6 @@ namespace Soul
 		mActiveViewport(nullptr),
 		mShaderManager(nullptr),
 		mTextureManager(nullptr),
-		mResourceGroupManager(nullptr),
 		mGpuBufferManager(nullptr)
 	{
 	}
@@ -57,13 +56,6 @@ namespace Soul
 			delete mGpuBufferManager;
 			mGpuBufferManager = nullptr;
 		}
-
-		// Ïú»ÙmResourceGroupManager
-		if (mResourceGroupManager)
-		{
-			delete mResourceGroupManager;
-			mResourceGroupManager = nullptr;
-		}
 	}
 	void RenderSystem::Initialize(const std::string& initConfig)
 	{
@@ -71,7 +63,6 @@ namespace Soul
 		std::ifstream i(initConfig);
 		i >> mConfig;
 		i.close();
-		mResourceGroupManager = new ResourceGroupManager();
 	}
 	json& RenderSystem::GetRenderWindowDescRef()
 	{

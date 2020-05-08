@@ -57,8 +57,6 @@ namespace Soul
 		ShaderManager* mShaderManager;
 		// 纹理管理器
 		TextureManager* mTextureManager;
-		// 资源组管理器
-		ResourceGroupManager* mResourceGroupManager;
 		// GPUBuffer管理器
 		GPUBufferManager* mGpuBufferManager;
 	};

@@ -7,12 +7,7 @@
 
 namespace Soul
 {
-	SoundResourceManager& SoundResourceManager::GetInstance()
-	{
-		static SoundResourceManager instance;
-		return instance;
-	}
-
+	template<> SoundResourceManager* Singleton<SoundResourceManager>::mSingleton = nullptr;
 	SoundResourceManager::SoundResourceManager()
 	{
 		ResourceGroupManager::GetInstance().RegisterResourceManager(L"Sound", this);

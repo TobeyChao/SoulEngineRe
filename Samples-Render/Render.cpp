@@ -91,9 +91,10 @@ public:
 		// Mesh
 		json meshSet;
 		//meshSet["Rasterizer"] = "RT_WIREFRAME";
-		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/box/box.obj", meshSet);
+		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/mouse/mouse.obj", meshSet);
 		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeMesh->SetPosition({ -3.f, 0.2f, 0.f });
+		nodeMesh->SetScale({ 5.f, 5.f, 5.f });
+		nodeMesh->SetPosition({ -3.f, 10.2f, 0.f });
 		nodeMesh->AttachObj(mesh);
 
 		//meshSet["Rasterizer"] = "RT_WIREFRAME";
@@ -188,6 +189,9 @@ public:
 		camera->SetIsOrthogonal(false);
 		mWindow->AddViewport(camera);
 
+		audio = SoundResourceManager::GetInstance().LoadSound(L"倩女幽魂", L"../Assets/Sounds/邓紫棋+-+喜欢你.wav");
+		audio->Play(100, false);
+
 		return true;
 	}
 
@@ -257,7 +261,7 @@ public:
 
 		//if (cameraChoose == 1)
 		//{
-			ProcessFreeLookCamera();
+		ProcessFreeLookCamera();
 		//}
 		//else if (cameraChoose == 2)
 		//{
@@ -295,7 +299,7 @@ public:
 		{
 			RenderSystem2D::GetInstance().DrawTextW(L"选中cylinder", { 300, 10 });
 		}
-		
+
 		std::wostringstream buffer;
 		buffer << "FPS:" << 1.0f / Timer::DeltaTime() << std::endl
 			<< L"CPU占用:" << GetCPUUSe() << std::endl
@@ -303,7 +307,7 @@ public:
 			<< L"按2切换第三人称摄像机!" << std::endl
 			<< L"CameraPos:(" << cameraPos.x << "," << cameraPos.y << "," << cameraPos.z << ")" << std::endl;
 		std::wstring info = buffer.str();
-		
+
 		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 10 });
 		//if (intersects)
 		//{
@@ -370,9 +374,9 @@ public:
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
 		lightNode->AttachObj(dirLight);
 		//lightNode->AttachObj(pointLight);
-		lightNode->AttachObj(spotLight1);
-		lightNode->AttachObj(spotLight2);
-		lightNode->AttachObj(spotLight3);
+		//lightNode->AttachObj(spotLight1);
+		//lightNode->AttachObj(spotLight2);
+		//lightNode->AttachObj(spotLight3);
 	}
 
 	// 第一人称相机
@@ -382,27 +386,27 @@ public:
 		const Core::SVector3& right = camera->GetRight();
 		if (Input::DXInput::GetInstance().IsPressed(DIK_UP))
 		{
-			cameraPos.x += 0.5f * forward.x;
-			cameraPos.y += 0.5f * forward.y;
-			cameraPos.z += 0.5f * forward.z;
+			cameraPos.x += 0.05f * forward.x;
+			cameraPos.y += 0.05f * forward.y;
+			cameraPos.z += 0.05f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_DOWN))
 		{
-			cameraPos.x -= 0.5f * forward.x;
-			cameraPos.y -= 0.5f * forward.y;
-			cameraPos.z -= 0.5f * forward.z;
+			cameraPos.x -= 0.05f * forward.x;
+			cameraPos.y -= 0.05f * forward.y;
+			cameraPos.z -= 0.05f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_LEFT))
 		{
-			cameraPos.x -= 0.5f * right.x;
-			cameraPos.y -= 0.5f * right.y;
-			cameraPos.z -= 0.5f * right.z;
+			cameraPos.x -= 0.05f * right.x;
+			cameraPos.y -= 0.05f * right.y;
+			cameraPos.z -= 0.05f * right.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_RIGHT))
 		{
-			cameraPos.x += 0.5f * right.x;
-			cameraPos.y += 0.5f * right.y;
-			cameraPos.z += 0.5f * right.z;
+			cameraPos.x += 0.05f * right.x;
+			cameraPos.y += 0.05f * right.y;
+			cameraPos.z += 0.05f * right.z;
 		}
 	}
 
@@ -438,7 +442,7 @@ private:
 	GameObject* plane[5]{};
 	GameObject* particleList{};
 	//GameObject* terrain{};
-
+	IAudioBuffer* audio;
 	Light* pointLight{};
 	Light* spotLight1{};
 	Light* spotLight2{};

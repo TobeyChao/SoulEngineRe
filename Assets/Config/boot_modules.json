@@ -2,7 +2,7 @@
     "modules": [
         "dx11_render_system",
         "dsound",
-        "xaudio",
+        "xaudio2",
         "dxinput"
     ]
 }

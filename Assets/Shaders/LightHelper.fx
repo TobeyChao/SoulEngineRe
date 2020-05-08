@@ -68,7 +68,8 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
         float3 lightReflect = reflect(L.Direction, normal);
         float specFactor = pow(max(dot(lightReflect, toEye), 0), mat.Specular.w);
         diffuse = diffuseFactor * mat.Diffuse * L.Diffuse;
-        spec = specFactor * mat.Specular * L.Specular;
+        if(specFactor > 0)
+            spec = specFactor * mat.Specular * L.Specular;
     }
 }
 
@@ -102,7 +103,8 @@ void ComputePointLight(Material mat, PointLight L, float3 pos, float3 normal, fl
         float3 lightReflect = reflect(-lightVec, normal);
         float specFactor = pow(max(dot(lightReflect, toEye), 0), mat.Specular.w);
         diffuse = diffuseFactor * mat.Diffuse * L.Diffuse;
-        spec = specFactor * mat.Specular * L.Specular;
+        if(specFactor > 0)
+            spec = specFactor * mat.Specular * L.Specular;
     }
 
     // 衰减
@@ -139,7 +141,8 @@ void ComputeSpotLight(Material mat, SpotLight L, float3 pos, float3 normal, floa
         float3 lightReflect = reflect(-lightVec, normal);
         float specFactor = pow(max(dot(lightReflect, toEye), 0.0f), mat.Specular.w);
         diffuse = diffuseFactor * mat.Diffuse * L.Diffuse;
-        spec = specFactor * mat.Specular * L.Specular;
+        if(specFactor > 0)
+            spec = specFactor * mat.Specular * L.Specular;
     }
 
     // 汇聚强度

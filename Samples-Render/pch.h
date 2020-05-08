@@ -4,6 +4,9 @@
 #include <iostream>
 #include <sstream>
 
+#include "../SoulEngineRe/SoulMain/Audio/IAudio.h"
+#include "../SoulEngineRe/SoulMain/Audio/IAudioBuffer.h"
+#include "../SoulEngineRe/SoulMain/Audio/SoundResourceManager.h"
 #include "../SoulEngineRe/Platform/Win/Timer.h"
 #include "../SoulEngineRe/App/Application.h"
 #include "../SoulEngineRe/Input/DXInput/Input.h"

@@ -3,14 +3,12 @@
 #include "../Resource/ResourceManager.h"
 namespace Soul
 {
-	class SoundResourceManager : public ResourceManager
+	class SoundResourceManager : public ResourceManager, public Singleton<SoundResourceManager>
 	{
 	public:
+		SoundResourceManager();
 		~SoundResourceManager();
-		static SoundResourceManager & GetInstance();
 		IAudioBuffer * LoadSound(std::wstring soundName, std::wstring fileName);
 		IAudioBuffer * GetSound(std::wstring soundName);
-	private:
-		SoundResourceManager();
 	};
 }
