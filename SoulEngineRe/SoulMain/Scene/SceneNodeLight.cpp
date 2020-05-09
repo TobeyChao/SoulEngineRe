@@ -13,11 +13,8 @@ namespace Soul
 	{
 		if (mIsVisible)
 		{
-			if (!mIsRegister)
-			{
-				if (mSceneManager->RegisterNode(this, E_SCENENODE_TYPES::EST_LIGHT))
-					mIsRegister = true;
-			}
+			if (mSceneManager->RegisterNode(this, E_SCENENODE_TYPES::EST_LIGHT))
+				mIsRegister = true;
 		}
 		SceneNode::OnRegisterSceneNode();
 	}

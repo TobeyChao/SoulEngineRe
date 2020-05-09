@@ -79,12 +79,8 @@ namespace Soul
 
 	void SceneNodeCamera::OnRegisterSceneNode()
 	{
-		if (!mIsRegister)
-		{
-			if (mSceneManager->RegisterNode(this, E_SCENENODE_TYPES::EST_CAMERA))
-				mIsRegister = true;
-		}
-
+		if (mSceneManager->RegisterNode(this, E_SCENENODE_TYPES::EST_CAMERA))
+			mIsRegister = true;
 		SceneNode::OnRegisterSceneNode();
 	}
 

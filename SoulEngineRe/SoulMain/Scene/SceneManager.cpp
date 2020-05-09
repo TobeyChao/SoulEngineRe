@@ -615,6 +615,10 @@ namespace Soul
 			mAllAttachedGameObject.pop();
 		}
 		mLightList.clear();
+		mCameraNodeList.clear();
+		mSkyBoxNodeList.clear();
+		mLightNodeList.clear();
+		mSolidNodeList.clear();
 	}
 
 	void SceneManager::Clear()

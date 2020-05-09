@@ -64,9 +64,9 @@ public:
 		// Cube
 		json cubeSet;
 		cubeSet["Shader"] = "Basic";
-		cubeSet["width"] = 2;
-		cubeSet["height"] = 2;
-		cubeSet["depth"] = 2;
+		cubeSet["width"] = 1;
+		cubeSet["height"] = 1;
+		cubeSet["depth"] = 1;
 		cubeSet["Rasterizer"] = "RT_CULL_NONE";
 		cube = sceneMgr->CreateGameObject("cube", SIMPLE_GAMEOBJECT::SG_CUBE, cubeSet);
 		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/WireFence.dds"));
@@ -91,7 +91,7 @@ public:
 		// Mesh
 		json meshSet;
 		//meshSet["Rasterizer"] = "RT_WIREFRAME";
-		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/mouse/mouse.obj", meshSet);
+		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/mouse/mouse1.obj", meshSet);
 		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeMesh->SetScale({ 5.f, 5.f, 5.f });
 		nodeMesh->SetPosition({ -3.f, 10.2f, 0.f });
@@ -246,27 +246,29 @@ public:
 			cameraChoose = 2;
 		}
 
+		if (Input::DXInput::GetInstance().IsButtonDown(1))
+		{
+			if ((Input::DXInput::GetInstance().GetMouseState().lX != Input::DXInput::GetInstance().GetLastMouseState().lX) ||
+				(Input::DXInput::GetInstance().GetMouseState().lY != Input::DXInput::GetInstance().GetLastMouseState().lY))
+			{
+				cameraRotate.x += Input::DXInput::GetInstance().GetMouseState().lY * 0.001f;
+				cameraRotate.y += Input::DXInput::GetInstance().GetMouseState().lX * 0.001f;
 
-		//if ((Input::DXInput::GetInstance().GetMouseState().lX != Input::DXInput::GetInstance().GetLastMouseState().lX) ||
-		//	(Input::DXInput::GetInstance().GetMouseState().lY != Input::DXInput::GetInstance().GetLastMouseState().lY))
-		//{
-		//	cameraRotate.x += Input::DXInput::GetInstance().GetMouseState().lY * 0.001f;
-		//	cameraRotate.y += Input::DXInput::GetInstance().GetMouseState().lX * 0.001f;
+				if (cameraRotate.x > Core::SM_PIDIV4)
+					cameraRotate.x = Core::SM_PIDIV4;
+				if (cameraRotate.x < -Core::SM_PIDIV4)
+					cameraRotate.x = -Core::SM_PIDIV4;
+			}
+		}
 
-		//	if (cameraRotate.x > Core::SM_PIDIV4)
-		//		cameraRotate.x = Core::SM_PIDIV4;
-		//	if (cameraRotate.x < -Core::SM_PIDIV4)
-		//		cameraRotate.x = -Core::SM_PIDIV4;
-		//}
-
-		//if (cameraChoose == 1)
-		//{
-		ProcessFreeLookCamera();
-		//}
-		//else if (cameraChoose == 2)
-		//{
-			//ProcessThirdCamera();
-		//}
+		if (cameraChoose == 1)
+		{
+			ProcessFreeLookCamera();
+		}
+		else if (cameraChoose == 2)
+		{
+			ProcessThirdCamera();
+		}
 
 		camera->SetPosition(cameraPos);
 		nodeSky->SetPosition(cameraPos);
@@ -280,7 +282,6 @@ public:
 
 	bool FrameUpdated() override
 	{
-
 		const Core::SVector2 pos = Input::DXInput::GetInstance().GetMouseLocation();
 		Ray ray = Ray::ScreenToRay(*camera, pos);
 		if (ray.Hit(cube->GetBoundingBox()))
@@ -309,14 +310,14 @@ public:
 		std::wstring info = buffer.str();
 
 		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 10 });
-		//if (intersects)
-		//{
-		//	RenderSystem2D::GetInstance().DrawTextW(L"相交", { 10, 90 });
-		//}
-		//else
-		//{
-		//	RenderSystem2D::GetInstance().DrawTextW(L"未相交", { 10, 90 });
-		//}
+		if (intersects)
+		{
+			RenderSystem2D::GetInstance().DrawTextW(L"相交", { 10, 90 });
+		}
+		else
+		{
+			RenderSystem2D::GetInstance().DrawTextW(L"未相交", { 10, 90 });
+		}
 		return Application::FrameUpdated();
 	}
 
