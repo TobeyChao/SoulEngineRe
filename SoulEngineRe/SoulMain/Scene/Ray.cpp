@@ -139,7 +139,7 @@ namespace Soul
 			if (tmin > tmax) return false;
 		}// end for perpendicular to z-axie
 
-		Core::SVector3 hitPosInCamera = mOrigin + mDirection * tmin;
+		Core::SVector3 hitPosInCamera = mDirection * tmin;
 		// æ‡¿Î
 		float dist = hitPosInCamera.Magnitude();
 		if (pOutDist)
