@@ -306,7 +306,8 @@ public:
 			<< L"CPU占用:" << GetCPUUSe() << std::endl
 			<< L"按1切换自由视角摄像机!" << std::endl
 			<< L"按2切换第三人称摄像机!" << std::endl
-			<< L"CameraPos:(" << cameraPos.x << "," << cameraPos.y << "," << cameraPos.z << ")" << std::endl;
+			<< L"CameraPos:(" << cameraPos.x << "," << cameraPos.y << "," << cameraPos.z << ")" << std::endl
+			<< L"RayDir:(" << ray.mDirection.x << "," << ray.mDirection.y << "," << ray.mDirection.z << ")" << std::endl;
 		std::wstring info = buffer.str();
 
 		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 10 });

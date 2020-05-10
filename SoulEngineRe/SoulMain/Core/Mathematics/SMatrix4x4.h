@@ -35,6 +35,7 @@ namespace Soul
 		SMatrix4x4 MatrixPerspectiveFovLH(float fovy, float aspect, float nearZ, float farZ);
 		SMatrix4x4 MatrixOrthographicLH(float width, float height, float nearZ, float farZ);
 		SMatrix4x4 MatrixLookAtLH(const SVector3& eye, const SVector3& at, const SVector3& up);
+		SMatrix4x4 MatrixInvViewMatrix(const SMatrix4x4& matrix);
 		void MatrixTranspose(SMatrix4x4& mat4x4);
 		SMatrix4x4 MatrixTranslation(const SVector3& pos);
 		SMatrix4x4 MatrixTranslation(float offset_x, float offset_y, float offset_z);

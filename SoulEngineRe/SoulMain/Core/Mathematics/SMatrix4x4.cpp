@@ -247,6 +247,24 @@ namespace Soul
 			MatrixTranspose(mat4x4);
 			return mat4x4;
 		}
+		SMatrix4x4 MatrixInvViewMatrix(const SMatrix4x4& matrix)
+		{
+			SMatrix4x4 mat4x4 = matrix;
+			mat4x4.mat[0][0] = matrix.mat[0][0];
+			mat4x4.mat[0][1] = matrix.mat[1][0];
+			mat4x4.mat[0][2] = matrix.mat[2][0];
+			mat4x4.mat[1][0] = matrix.mat[0][1];
+			mat4x4.mat[1][1] = matrix.mat[1][1];
+			mat4x4.mat[1][2] = matrix.mat[2][1];
+			mat4x4.mat[2][0] = matrix.mat[0][2];
+			mat4x4.mat[2][1] = matrix.mat[1][2];
+			mat4x4.mat[2][2] = matrix.mat[2][2];
+			mat4x4.mat[3][0] = 0;
+			mat4x4.mat[3][1] = 0;
+			mat4x4.mat[3][2] = 0;
+			mat4x4.mat[3][3] = 1;
+			return mat4x4;
+		}
 		void MatrixTranspose(SMatrix4x4& mat4x4)
 		{
 			float tmp;

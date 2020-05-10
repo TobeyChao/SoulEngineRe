@@ -24,7 +24,6 @@ namespace Soul
 	}
 	Ray Ray::ScreenToRay(const SceneNodeCamera& camera, float mouseX, float mouseY)
 	{
-		Core::SVector3 origin;
 		Core::SVector3 direction;
 
 		Viewport* viewport = camera.GetViewport();
@@ -32,22 +31,23 @@ namespace Soul
 		// 计算在相机空间的射线
 		float vx = (2.0f * (float)mouseX / viewport->GetViewportWidth() - 1.0f) / projectionMatrix.mat[0][0];
 		float vy = (-2.0f * (float)mouseY / viewport->GetViewportHeight() + 1.0f) / projectionMatrix.mat[1][1];
-		// 因为是在摄像机空间所以是(0,0,0)
-		origin = { 0.0f, 0.0f, 0.0f };
+		
 		direction = { vx, vy, 1.0f };
+		Core::SMatrix4x4 invViewMatrix =  Core::MatrixInvViewMatrix(camera.GetViewMatrix());
+		direction = direction * invViewMatrix;
 		direction.Normalize();
-		return Ray(camera, origin, direction);
+		return Ray(camera, camera.GetPosition(), direction);
 	}
 	bool Ray::Hit(const BoundingBox& box, float* pOutDist, float maxDist)
 	{
 		// 摄像机空间的包围盒
-		BoundingBox boxInCamera;
-		box.Transform(boxInCamera, mCamera.GetViewMatrix());
+		//BoundingBox boxInCamera;
+		//box.Transform(boxInCamera, mCamera.GetViewMatrix());
 
 		float tmin = 0.0f;
 		float tmax = FLT_MAX;
-		Core::SVector3 boxMin = boxInCamera.mCenter - boxInCamera.mLengthToSides;
-		Core::SVector3 boxMax = boxInCamera.mCenter + boxInCamera.mLengthToSides;
+		Core::SVector3 boxMin = box.mCenter - box.mLengthToSides;
+		Core::SVector3 boxMax = box.mCenter + box.mLengthToSides;
 
 		//The plane perpendicular to x-axie
 		if (fabs(mDirection.x) < 0.000001f) //If the ray parallel to the plane
