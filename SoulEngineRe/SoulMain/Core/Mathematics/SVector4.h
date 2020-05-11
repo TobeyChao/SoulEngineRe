@@ -6,7 +6,6 @@ namespace Soul
 {
 	namespace Core
 	{
-		class SVector3;
 		class SVector4
 		{
 		public:
@@ -39,5 +38,6 @@ namespace Soul
 			float z;
 			float w;
 		};
+		float Dot(const SVector4& vec4L, const SVector4& vec4R);
 	}
 }

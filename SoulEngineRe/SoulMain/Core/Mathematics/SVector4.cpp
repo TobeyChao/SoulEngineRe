@@ -112,5 +112,9 @@ namespace Soul
 			output << "X: " << vec4.x << " Y: " << vec4.y << " Z: " << vec4.z << " W: " << vec4.w;
 			return output;
 		}
+		float Dot(const SVector4& vec4L, const SVector4& vec4R)
+		{
+			return vec4L.x * vec4R.x + vec4L.y * vec4R.y + vec4L.z * vec4R.z + vec4L.w * vec4R.w;
+		}
 	}
 }

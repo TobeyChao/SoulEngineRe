@@ -39,6 +39,9 @@ namespace Soul
 		virtual void SetRasterizerType(const RasterizerType& rt) = 0;
 		// 设置深度模板
 		virtual void SetDepthStencilType(const DepthStencilType& dst) = 0;
+
+		virtual void SetStencilRef(UINT stencilRef) = 0;
+
 		// 设置着色器
 		virtual void BindShader(Shader* shader) = 0;
 

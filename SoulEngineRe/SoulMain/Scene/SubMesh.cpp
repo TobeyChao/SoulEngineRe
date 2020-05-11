@@ -6,6 +6,7 @@ namespace Soul
 	SubMesh::SubMesh(const std::string& name)
 		:
 		mName(name),
+		mEnableShadow(false),
 		mShader(nullptr),
 		mMaterial(nullptr),
 		mUseBlend(false),

@@ -29,7 +29,8 @@ namespace Soul
 	{
 		DST_DEFAULT,
 		DST_LESS_EQUAL,		// 深度测试小于等于，用于天空盒
-		DST_NO_DEPTH_WRITE	// 深度测试开启，但是不写入深度值
+		DST_NO_DEPTH_WRITE,	// 深度测试开启，但是不写入深度值
+		DST_NO_DOUBLE_BLEND,// 无二次混合
 	};
 
 	class RenderParameter

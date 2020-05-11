@@ -61,6 +61,37 @@ public:
 		//nodeLine->AttachObj(line);
 		//nodeLine->SetPosition({ 0.f, 0.f, 0.f });
 
+		Core::SMatrix4x4 shadowMat = Core::MatrixShadow({ 0.0f, 1.0f, 0.0f, -0.01f }, { 0.577f, 0.577f, -0.577f, 0.0f });
+
+		
+		// nodePlane
+		json planeSet;
+		planeSet["width"] = 30.0f;
+		planeSet["depth"] = 30.0f;
+		planeSet["m"] = 5.0f;
+		planeSet["n"] = 5.0f;
+		planeSet["maxU"] = 5.0f;
+		planeSet["maxV"] = 5.0f;
+		//planeSet["Rasterizer"] = "RT_WIREFRAME";
+
+		for (size_t i = 0; i < 5; i++)
+		{
+			plane[i] = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
+			plane[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/checkboard.dds"));
+			nodePlane[i] = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+			nodePlane[i]->AttachObj(plane[i]);
+		}
+
+		nodePlane[0]->SetPosition({ 0.f, 0.f, 0.f });
+		nodePlane[1]->SetPosition({ 0.f, 15.f, 15.f });
+		nodePlane[2]->SetPosition({ -15.f, 15.f, 0.f });
+		nodePlane[3]->SetPosition({ 0.f, 15.f, -15.f });
+		nodePlane[4]->SetPosition({ 15.f, 15.f, 0.f });
+		nodePlane[1]->SetRotation({ -Core::SM_PIDIV2, 0.f, 0.f });
+		nodePlane[2]->SetRotation({ 0.f, 0.f, -Core::SM_PIDIV2 });
+		nodePlane[3]->SetRotation({ Core::SM_PIDIV2, 0.f, 0.f });
+		nodePlane[4]->SetRotation({ 0.f, 0.f, Core::SM_PIDIV2 });
+
 		// Cube
 		json cubeSet;
 		cubeSet["Shader"] = "Basic";
@@ -69,10 +100,12 @@ public:
 		cubeSet["depth"] = 1;
 		cubeSet["Rasterizer"] = "RT_CULL_NONE";
 		cube = sceneMgr->CreateGameObject("cube", SIMPLE_GAMEOBJECT::SG_CUBE, cubeSet);
-		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/WireFence.dds"));
+		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/WoodCrate.dds"));
+		cube->GetSubMesh(0)->EnableShadow(true);
+		cube->GetSubMesh(0)->SetShadowMatrix(shadowMat);
 		nodeCube = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCube->AttachObj(cube);
-		nodeCube->SetPosition({ 0.f, 1.1f, 3.f });
+		nodeCube->SetPosition({ 0.f, 0.51f, 0.f });
 
 		// Cylinder
 		json cylinderSet;
@@ -84,14 +117,21 @@ public:
 		cylinderSet["stackCount"] = 60;
 		cylinder = sceneMgr->CreateGameObject("cylinder", SIMPLE_GAMEOBJECT::SG_CYLINDER, cylinderSet);
 		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stone.dds"));
+		cylinder->GetSubMesh(0)->EnableShadow(true);
+		cylinder->GetSubMesh(0)->SetShadowMatrix(shadowMat);
 		nodeCylinder = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCylinder->AttachObj(cylinder);
-		nodeCylinder->SetPosition({ 3.f, 1.1f, 0.f });
+		nodeCylinder->SetPosition({ 3.f, 1.51f, 0.f });
 
 		// Mesh
 		json meshSet;
 		//meshSet["Rasterizer"] = "RT_WIREFRAME";
 		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/mouse/mouse1.obj", meshSet);
+		for (auto it : mesh->GetAllSubMesh())
+		{
+			it->EnableShadow(true);
+			it->SetShadowMatrix(shadowMat);
+		}
 		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeMesh->SetScale({ 5.f, 5.f, 5.f });
 		nodeMesh->SetPosition({ -3.f, 10.2f, 0.f });
@@ -99,6 +139,11 @@ public:
 
 		//meshSet["Rasterizer"] = "RT_WIREFRAME";
 		mesh2 = sceneMgr->CreateGameObject("mesh2", L"../Assets/Models/box/box.obj", meshSet);
+		for (auto it : mesh2->GetAllSubMesh())
+		{
+			it->EnableShadow(true);
+			it->SetShadowMatrix(shadowMat);
+		}
 		nodeMesh2 = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeMesh2->SetPosition({ 0.f, 0.2f, -3.f });
 		nodeMesh2->AttachObj(mesh2);
@@ -113,34 +158,6 @@ public:
 		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeSky->AttachObj(sphere);
 		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
-
-		// nodePlane
-		json planeSet;
-		planeSet["width"] = 30.0f;
-		planeSet["depth"] = 30.0f;
-		planeSet["m"] = 5.0f;
-		planeSet["n"] = 5.0f;
-		planeSet["maxU"] = 5.0f;
-		planeSet["maxV"] = 5.0f;
-		//planeSet["Rasterizer"] = "RT_WIREFRAME";
-
-		for (size_t i = 0; i < 1; i++)
-		{
-			plane[i] = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-			plane[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/checkboard.dds"));
-			nodePlane[i] = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-			nodePlane[i]->AttachObj(plane[i]);
-		}
-
-		nodePlane[0]->SetPosition({ 0.f, 0.f, 0.f });
-		//nodePlane[1]->SetPosition({ 0.f, 15.f, 15.f });
-		//nodePlane[2]->SetPosition({ -15.f, 15.f, 0.f });
-		//nodePlane[3]->SetPosition({ 0.f, 15.f, -15.f });
-		//nodePlane[4]->SetPosition({ 15.f, 15.f, 0.f });
-		//nodePlane[1]->SetRotation({ -Core::SM_PIDIV2, 0.f, 0.f });
-		//nodePlane[2]->SetRotation({ 0.f, 0.f, -Core::SM_PIDIV2 });
-		//nodePlane[3]->SetRotation({ Core::SM_PIDIV2, 0.f, 0.f });
-		//nodePlane[4]->SetRotation({ 0.f, 0.f, Core::SM_PIDIV2 });
 
 		particleEmitter = new ParticleEmitter();
 		json particleSet;
@@ -182,16 +199,12 @@ public:
 		water = sceneMgr->CreateGameObject("water", SIMPLE_GAMEOBJECT::SG_PLANE, waterSet);
 		water->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/water.dds"));
 		nodeWater = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeWater->AttachObj(water);
+		//nodeWater->AttachObj(water);
 		nodeWater->SetPosition({ 0.f, 1.1f, 0.f });
 
 		camera = sceneMgr->AddCameraSceneNode();
 		camera->SetIsOrthogonal(false);
 		mWindow->AddViewport(camera);
-
-		audio = SoundResourceManager::GetInstance().LoadSound(L"倩女幽魂", L"../Assets/Sounds/邓紫棋+-+喜欢你.wav");
-		audio->Play(100, false);
-
 		return true;
 	}
 
@@ -246,19 +259,17 @@ public:
 			cameraChoose = 2;
 		}
 
-		if (Input::DXInput::GetInstance().IsButtonDown(1))
-		{
-			if ((Input::DXInput::GetInstance().GetMouseState().lX != Input::DXInput::GetInstance().GetLastMouseState().lX) ||
-				(Input::DXInput::GetInstance().GetMouseState().lY != Input::DXInput::GetInstance().GetLastMouseState().lY))
-			{
-				cameraRotate.x += Input::DXInput::GetInstance().GetMouseState().lY * 0.001f;
-				cameraRotate.y += Input::DXInput::GetInstance().GetMouseState().lX * 0.001f;
 
-				if (cameraRotate.x > Core::SM_PIDIV4)
-					cameraRotate.x = Core::SM_PIDIV4;
-				if (cameraRotate.x < -Core::SM_PIDIV4)
-					cameraRotate.x = -Core::SM_PIDIV4;
-			}
+		if ((Input::DXInput::GetInstance().GetMouseState().lX != Input::DXInput::GetInstance().GetLastMouseState().lX) ||
+			(Input::DXInput::GetInstance().GetMouseState().lY != Input::DXInput::GetInstance().GetLastMouseState().lY))
+		{
+			cameraRotate.x += Input::DXInput::GetInstance().GetMouseState().lY * 0.001f;
+			cameraRotate.y += Input::DXInput::GetInstance().GetMouseState().lX * 0.001f;
+
+			if (cameraRotate.x > Core::SM_PIDIV4)
+				cameraRotate.x = Core::SM_PIDIV4;
+			if (cameraRotate.x < -Core::SM_PIDIV4)
+				cameraRotate.x = -Core::SM_PIDIV4;
 		}
 
 		if (cameraChoose == 1)
@@ -376,9 +387,9 @@ public:
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
 		lightNode->AttachObj(dirLight);
 		//lightNode->AttachObj(pointLight);
-		//lightNode->AttachObj(spotLight1);
-		//lightNode->AttachObj(spotLight2);
-		//lightNode->AttachObj(spotLight3);
+		lightNode->AttachObj(spotLight1);
+		lightNode->AttachObj(spotLight2);
+		lightNode->AttachObj(spotLight3);
 	}
 
 	// 第一人称相机
@@ -415,9 +426,9 @@ public:
 	// 第三人称相机
 	void ProcessThirdCamera()
 	{
-		float x = nodeMesh->GetPosition().x + -5 * cosf(cameraRotate.x) * sinf(cameraRotate.y);
-		float z = nodeMesh->GetPosition().z + -5 * cosf(cameraRotate.x) * cosf(cameraRotate.y);
-		float y = nodeMesh->GetPosition().y + 5 * sinf(cameraRotate.x);
+		float x = nodeCube->GetPosition().x + -5 * cosf(cameraRotate.x) * sinf(cameraRotate.y);
+		float z = nodeCube->GetPosition().z + -5 * cosf(cameraRotate.x) * cosf(cameraRotate.y);
+		float y = nodeCube->GetPosition().y + 5 * sinf(cameraRotate.x);
 		cameraPos = { x, y, z };
 	}
 
@@ -457,7 +468,7 @@ private:
 	Core::SVector3 pos = { -3.f, 0.2f, 0.f };
 	Core::SVector3 rotate;
 	Core::SVector3 sphereRotate;
-	Core::SVector3 cameraPos = { 0.f, 8.6f, -10.f };
+	Core::SVector3 cameraPos = { 0.f, 2.f, -2.f };
 	Core::SVector3 cameraRotate = { Core::SM_PIDIV4, 0.f, 0.f };
 	int cameraChoose = 1;
 

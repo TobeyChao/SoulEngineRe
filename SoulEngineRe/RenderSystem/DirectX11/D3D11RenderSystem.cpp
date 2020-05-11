@@ -298,9 +298,36 @@ namespace Soul
 			mDepthStencilDesc.StencilEnable = false;
 			mDepthStencilDescChanged = true;
 			break;
+		case DepthStencilType::DST_NO_DOUBLE_BLEND:
+			// 无二次混合深度/模板状态
+			// 允许默认深度测试
+			// 通过自递增使得原来StencilRef的值只能使用一次，实现仅一次混合
+			mDepthStencilDesc.DepthEnable = true;
+			mDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+			mDepthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+			mDepthStencilDesc.StencilEnable = true;
+			mDepthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+			mDepthStencilDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+			mDepthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			mDepthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+			mDepthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_INCR;
+			mDepthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+			// 对于背面的几何体我们是不进行渲染的，所以这里的设置无关紧要
+			mDepthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			mDepthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+			mDepthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_INCR;
+			mDepthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+			mDepthStencilDescChanged = true;
+			break;
 		default:
 			break;
 		}
+	}
+	void D3D11RenderSystem::SetStencilRef(UINT stencilRef)
+	{
+		mStencilRef = stencilRef;
 	}
 	void D3D11RenderSystem::BindShader(Shader* shader)
 	{
@@ -448,10 +475,11 @@ namespace Soul
 		if (ros.mDepthStencilState)
 		{
 			deviceContext->OMSetDepthStencilState(ros.mDepthStencilState.Get(), mStencilRef);
+			mStencilRef = 0;
 		}
 		else
 		{
-			deviceContext->OMSetDepthStencilState(nullptr, mStencilRef);
+			deviceContext->OMSetDepthStencilState(nullptr, 0);
 		}
 
 		deviceContext->DrawIndexed(rp.mIndicesCount, 0u, 0);

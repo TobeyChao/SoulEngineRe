@@ -535,11 +535,12 @@ namespace Soul
 			if (shader)
 			{
 				// ±ä»»¾ØÕó
-				shader->SetWorld(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation());
-				shader->SetWorldViewProj(
-					sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation() *
+				shader->SetWorldViewProj(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation() *
 					GetActiveCamera()->GetViewMatrix() *
 					GetActiveCamera()->GetProjectionMatrix());
+				shader->SetWorld(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation());
+				shader->SetView(GetActiveCamera()->GetViewMatrix());
+				shader->SetProj(GetActiveCamera()->GetProjectionMatrix());
 
 				// ²ÄÖÊ
 				if (sm->GetTextures().size() > 0)
@@ -600,18 +601,45 @@ namespace Soul
 				shader->SetDirectinalLightNum(slotD);
 				shader->SetSpotLightNum(slotS);
 
-				// ²ÄÖÊ
+				// ²ÄÖÊ ·ÇÒõÓ°
+				shader->SetEnableShadow(false);
 				shader->SetMaterial(*(sm->GetMaterial()));
 
 				// ÉèÖÃShader
 				mRenderSystem->BindShader(shader);
+				// äÖÈ¾
+				mRenderSystem->Render(*rp);
+				// äÖÈ¾ÒõÓ°
+				if (sm->IsEnableShadow())
+				{
+					// ±ä»»¾ØÕó
+					shader->SetWorldViewProj(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation() *
+						GetActiveCamera()->GetViewMatrix()*
+						GetActiveCamera()->GetProjectionMatrix());
+					shader->SetWorld(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation());
+					shader->SetView(GetActiveCamera()->GetViewMatrix());
+					shader->SetProj(GetActiveCamera()->GetProjectionMatrix());
+					Material materialShadow;
+					materialShadow.ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
+					materialShadow.diffuse = { 0.0f, 0.0f, 0.0f, 0.5f };
+					materialShadow.specular = { 0.0f, 0.0f, 0.0f, 16.0f };
+					shader->SetMaterial(materialShadow);
+					shader->SetEnableShadow(true);
+					shader->SetShadowMatrix(sm->GetShadowMatrix());
+					shader->SetUseTexture(false);
+					mRenderSystem->SetDepthStencilType(DepthStencilType::DST_NO_DOUBLE_BLEND);
+					mRenderSystem->SetStencilRef(1);
+					mRenderSystem->SetBlendType(BlendType::BT_TRANSPARENT);
+					mRenderSystem->BindShader(shader);
+					// äÖÈ¾ÒõÓ°
+					mRenderSystem->Render(*rp);
+				}
 			}
 			else
 			{
 				mRenderSystem->BindShader(nullptr);
 			}
-			// äÖÈ¾
-			mRenderSystem->Render(*rp);
+
 			mAllAttachedGameObject.pop();
 		}
 		mLightList.clear();

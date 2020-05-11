@@ -1,6 +1,7 @@
 #include "SMatrix4x4.h"
 #include "SQuaternion.h"
 #include "SVector3.h"
+#include "SVector4.h"
 
 namespace Soul
 {
@@ -344,6 +345,31 @@ namespace Soul
 			mat4x4.mat[0][0] = scale_x;
 			mat4x4.mat[1][1] = scale_y;
 			mat4x4.mat[2][2] = scale_z;
+			return mat4x4;
+		}
+		SMatrix4x4 MatrixShadow(const SVector4& plane, const SVector4& light)
+		{
+			SVector4 planeVec = plane;
+			SMatrix4x4 mat4x4 = Matrix4x4Identity();
+			planeVec.PlaneNormalize();
+			float dot = Dot(planeVec, light);
+			planeVec = -planeVec;
+			mat4x4.mat[0][0] = dot + planeVec.x * light.x;
+			mat4x4.mat[0][1] = planeVec.x * light.y;
+			mat4x4.mat[0][2] = planeVec.x * light.z;
+			mat4x4.mat[0][3] = planeVec.x * light.w;
+			mat4x4.mat[1][0] = planeVec.y * light.x;
+			mat4x4.mat[1][1] = dot + planeVec.y * light.y;
+			mat4x4.mat[1][2] = planeVec.y * light.z;
+			mat4x4.mat[1][3] = planeVec.y * light.w;
+			mat4x4.mat[2][0] = planeVec.z * light.x;
+			mat4x4.mat[2][1] = planeVec.z * light.y;
+			mat4x4.mat[2][2] = dot + planeVec.z * light.z;
+			mat4x4.mat[2][3] = planeVec.z * light.w;
+			mat4x4.mat[3][0] = planeVec.w * light.x;
+			mat4x4.mat[3][1] = planeVec.w * light.y;
+			mat4x4.mat[3][2] = planeVec.w * light.z;
+			mat4x4.mat[3][3] = dot + planeVec.w * light.w;
 			return mat4x4;
 		}
 		SVector3 operator*(const SVector3& vec3, const SMatrix4x4& matrix)

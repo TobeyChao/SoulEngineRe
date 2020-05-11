@@ -19,6 +19,7 @@ constexpr auto MAX_TEXTURES = 8;
 		void SetBlendType(const BlendType& bt) override;
 		void SetRasterizerType(const RasterizerType& rt) override;
 		void SetDepthStencilType(const DepthStencilType& dst) override;
+		void SetStencilRef(UINT StencilRef) override;
 		void BindShader(Shader* shader) override;
 		void Clear(const Core::SColorf& color) override;
 		void Render(const RenderParameter& rp) override;

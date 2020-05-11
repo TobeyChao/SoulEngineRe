@@ -85,6 +85,26 @@ namespace Soul
 
 		virtual void UpdateBuffer() {};
 
+		void EnableShadow(bool enableShadow)
+		{
+			mEnableShadow = enableShadow;
+		}
+
+		void SetShadowMatrix(const Core::SMatrix4x4& shadowMatrix)
+		{
+			mShadowMat = shadowMatrix;
+		}
+
+		const Core::SMatrix4x4& GetShadowMatrix()
+		{
+			return mShadowMat;
+		}
+
+		bool IsEnableShadow()
+		{
+			return mEnableShadow;
+		}
+
 		// 纹理
 		void PushTexture(ITexture* texture)
 		{
@@ -197,6 +217,11 @@ namespace Soul
 
 	protected:
 		std::string mName;
+
+		bool mEnableShadow;
+
+		Core::SMatrix4x4 mShadowMat;
+
 		// 是否自定义混合
 		bool mUseBlend;
 		BlendType mBlendType;

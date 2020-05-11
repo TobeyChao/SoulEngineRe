@@ -88,6 +88,10 @@ namespace Soul
 		}
 		void SetWorldViewProj(const Core::SMatrix4x4& wvp) override {};
 		void SetWorld(const Core::SMatrix4x4& world) override {};
+		void SetView(const Core::SMatrix4x4& view) override {};
+		void SetProj(const Core::SMatrix4x4& proj) override {};
+		void SetShadowMatrix(const Core::SMatrix4x4& shadowMat) override {};
+		void SetEnableShadow(bool useShadow) override {};
 		void SetMaterial(const Material& matrial) override {};
 		void SetEyePos(const Core::SVector3& eyePos) override {};
 		void SetDirectinalLight(int slot, const DirectionalLight& light) override {};

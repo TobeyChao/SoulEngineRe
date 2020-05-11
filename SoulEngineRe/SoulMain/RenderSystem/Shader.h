@@ -38,7 +38,11 @@ namespace Soul
 		}
 		virtual void ApplyShader() = 0;
 		virtual void SetWorldViewProj(const Core::SMatrix4x4& wvp) = 0;
+		virtual void SetView(const Core::SMatrix4x4& view) = 0;
+		virtual void SetProj(const Core::SMatrix4x4& proj) = 0;
 		virtual void SetWorld(const Core::SMatrix4x4& world) = 0;
+		virtual void SetShadowMatrix(const Core::SMatrix4x4& shadowMat) = 0;
+		virtual void SetEnableShadow(bool useShadow) = 0;
 		virtual void SetMaterial(const Material& matrial) = 0;
 		virtual void SetEyePos(const Core::SVector3& eyePos) = 0;
 

@@ -14,9 +14,12 @@ cbuffer cbPerFrame : register(b0)
 
 cbuffer cbPerObject : register(b1)
 {
-	float4x4 gWorld;
-	float4x4 gWorldViewProj;
+	matrix gWorld;
+	matrix gView;
+	matrix gProj;
 	Material gMaterial;
+	matrix gShadow;
+    int gIsShadow;
 };
 
 Texture2D gTex : register(t0);
@@ -42,8 +45,14 @@ struct VertexOut
 VertexOut VS(VertexIn vertIn)
 {
     VertexOut vertOut;
-    vertOut.PosW = mul(float4(vertIn.PosL, 1.0f), gWorld).xyz;
-	vertOut.PosH = mul(float4(vertIn.PosL, 1.0f), gWorldViewProj);
+	float4 posw = mul(float4(vertIn.PosL, 1.0f), gWorld);
+	if(gIsShadow == 1)
+	{
+		posw = mul(posw, gShadow);
+	}
+	matrix viewProj = mul(gView, gProj);
+	vertOut.PosH = mul(posw, viewProj);
+	vertOut.PosW = posw.xyz;
 	vertOut.NormalW = mul(vertIn.NormalL, (float3x3)gWorld);
     vertOut.Color = vertIn.Color;
 	vertOut.Tex = vertIn.Tex;

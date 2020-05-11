@@ -8,8 +8,11 @@ namespace Soul
 	struct BasicCBufferPerObj
 	{
 		Core::SMatrix4x4 world;
-		Core::SMatrix4x4 wvp;
+		Core::SMatrix4x4 view;
+		Core::SMatrix4x4 proj;
 		Material material;
+		Core::SMatrix4x4 shadowMat;
+		int shadow = 0;
 	};
 
 	struct BasicCBufferPerFrame
@@ -25,6 +28,10 @@ namespace Soul
 		float pad2 = 0;
 	};
 
+	//struct BasicCBufferShadowRef
+	//{
+	//};
+
 	class D3D11BasicShader : public D3D11Shader
 	{
 	public:
@@ -32,17 +39,30 @@ namespace Soul
 			:
 			D3D11Shader(device, shaderName, shaderConfig),
 			mConstantBufferPerObj(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBufferPerObj)),
-			mConstantBufferPerFrame(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBufferPerFrame))
+			mConstantBufferPerFrame(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBufferPerFrame))/*,
+			mConstantBufferShadowRef(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBufferShadowRef))*/
 		{
 		}
 		void SetWorld(const Core::SMatrix4x4& world) override
 		{
 			mConstantsPerObj.world = world;
 		}
-		void SetWorldViewProj(const Core::SMatrix4x4& wvp) override
+		void SetView(const Core::SMatrix4x4& view) override
 		{
-			mConstantsPerObj.wvp = wvp;
+			mConstantsPerObj.view = view;
 		}
+		void SetProj(const Core::SMatrix4x4& proj) override
+		{
+			mConstantsPerObj.proj = proj;
+		}
+		void SetShadowMatrix(const Core::SMatrix4x4& shadowMat) override
+		{
+			mConstantsPerObj.shadowMat = shadowMat;
+		}
+		void SetEnableShadow(bool useShadow) override
+		{
+			mConstantsPerObj.shadow = useShadow ? 1 : 0;
+		};
 		void SetMaterial(const Material& matrial) override
 		{
 			mConstantsPerObj.material = matrial;
@@ -95,25 +115,36 @@ namespace Soul
 			// Set the vertex and pixel shaders that will be used to render.
 			deviceContext->VSSetShader(GetVertexShader(), nullptr, 0u);
 			deviceContext->PSSetShader(GetPixelShader(), nullptr, 0u);
-			Core::MatrixTranspose(mConstantsPerObj.wvp);
+			Core::MatrixTranspose(mConstantsPerObj.proj);
+			Core::MatrixTranspose(mConstantsPerObj.view);
 			Core::MatrixTranspose(mConstantsPerObj.world);
+			if (mConstantsPerObj.shadow == 1)
+			{
+				Core::MatrixTranspose(mConstantsPerObj.shadowMat);
+			}
 			mConstantBufferPerObj.UpdateBuffer(&mConstantsPerObj, sizeof(mConstantsPerObj));
 			mConstantBufferPerFrame.UpdateBuffer(&mConstantsPerFrame, sizeof(mConstantsPerFrame));
 			// Set the constant buffer.
-			ID3D11Buffer* buffer = mConstantBufferPerObj.GetD3D11Buffer();
-			deviceContext->VSSetConstantBuffers(1, 1, &buffer);
-			deviceContext->PSSetConstantBuffers(1, 1, &buffer);
-			buffer = mConstantBufferPerFrame.GetD3D11Buffer();
-			deviceContext->PSSetConstantBuffers(0, 1, &buffer);
+			ID3D11Buffer* buffer1 = mConstantBufferPerObj.GetD3D11Buffer();
+			deviceContext->VSSetConstantBuffers(1, 1, &buffer1);
+			deviceContext->PSSetConstantBuffers(1, 1, &buffer1);
+			ID3D11Buffer* buffer2 = mConstantBufferPerFrame.GetD3D11Buffer();
+			deviceContext->PSSetConstantBuffers(0, 1, &buffer2);
+			//ID3D11Buffer* buffer3 = mConstantBufferShadowRef.GetD3D11Buffer();
+			//deviceContext->VSSetConstantBuffers(2, 1, &buffer3);
 		}
 	private:
 		//静态缓存对应的结构体变量
 		BasicCBufferPerObj mConstantsPerObj;
 		//静态缓存对应的结构体变量
 		BasicCBufferPerFrame mConstantsPerFrame;
+		//静态缓存对应的结构体变量
+		//BasicCBufferShadowRef mBasicCBufferShadowRef;
 		//静态缓存
 		D3D11GPUBuffer mConstantBufferPerObj;
 		//静态缓存
 		D3D11GPUBuffer mConstantBufferPerFrame;
+		//阴影反射
+		//D3D11GPUBuffer mConstantBufferShadowRef;
 	};
 }
