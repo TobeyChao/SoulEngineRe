@@ -621,14 +621,14 @@ namespace Soul
 					shader->SetProj(GetActiveCamera()->GetProjectionMatrix());
 					Material materialShadow;
 					materialShadow.ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
-					materialShadow.diffuse = { 0.0f, 0.0f, 0.0f, 0.5f };
+					materialShadow.diffuse = { 0.0f, 0.0f, 0.0f, 0.8f };
 					materialShadow.specular = { 0.0f, 0.0f, 0.0f, 16.0f };
 					shader->SetMaterial(materialShadow);
 					shader->SetEnableShadow(true);
 					shader->SetShadowMatrix(sm->GetShadowMatrix());
 					shader->SetUseTexture(false);
 					mRenderSystem->SetDepthStencilType(DepthStencilType::DST_NO_DOUBLE_BLEND);
-					mRenderSystem->SetStencilRef(1);
+					mRenderSystem->SetStencilRef(0);
 					mRenderSystem->SetBlendType(BlendType::BT_TRANSPARENT);
 					mRenderSystem->BindShader(shader);
 					// ‰÷»æ“ı”∞

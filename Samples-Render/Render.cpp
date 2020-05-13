@@ -126,7 +126,7 @@ public:
 		// Mesh
 		json meshSet;
 		//meshSet["Rasterizer"] = "RT_WIREFRAME";
-		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/Lucy/Lucy.obj", meshSet);
+		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/lucy/lucy.obj", meshSet);
 		for (auto it : mesh->GetAllSubMesh())
 		{
 			it->EnableShadow(true);
@@ -199,7 +199,7 @@ public:
 		water = sceneMgr->CreateGameObject("water", SIMPLE_GAMEOBJECT::SG_PLANE, waterSet);
 		water->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/water.dds"));
 		nodeWater = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		//nodeWater->AttachObj(water);
+		nodeWater->AttachObj(water);
 		nodeWater->SetPosition({ 0.f, 1.1f, 0.f });
 
 		camera = sceneMgr->AddCameraSceneNode();
@@ -387,9 +387,9 @@ public:
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
 		lightNode->AttachObj(dirLight);
 		//lightNode->AttachObj(pointLight);
-		//lightNode->AttachObj(spotLight1);
-		//lightNode->AttachObj(spotLight2);
-		//lightNode->AttachObj(spotLight3);
+		lightNode->AttachObj(spotLight1);
+		lightNode->AttachObj(spotLight2);
+		lightNode->AttachObj(spotLight3);
 	}
 
 	// 第一人称相机
