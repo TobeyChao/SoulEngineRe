@@ -22,19 +22,19 @@ public:
 
 		InitLight();
 
-		//json terrainSet;
-		//terrainSet["width"] = 1025.0f;
-		//terrainSet["depth"] = 1025.0f;
-		//terrainSet["m"] = 1025;
-		//terrainSet["n"] = 1025;
-		//terrainSet["scale"] = 0.003f;
-		//terrainSet["heightMap"] = "../Assets/Terrain/heightmap.raw";
-		//terrainSet["Shader"] = "Basic";
-		//terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
-		//terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
-		//nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		//nodeTerrain->SetPosition({ 0.0f, -80.0f, 0.0f });
-		//nodeTerrain->AttachObj(terrain);
+		json terrainSet;
+		terrainSet["width"] = 1025.0f;
+		terrainSet["depth"] = 1025.0f;
+		terrainSet["m"] = 1025;
+		terrainSet["n"] = 1025;
+		terrainSet["scale"] = 0.003f;
+		terrainSet["heightMap"] = "../Assets/Terrain/heightmap.raw";
+		terrainSet["Shader"] = "Basic";
+		terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
+		terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
+		nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeTerrain->SetPosition({ 0.0f, -80.0f, 0.0f });
+		nodeTerrain->AttachObj(terrain);
 
 		// Line
 		//json lineSet;
@@ -399,21 +399,21 @@ public:
 		const Core::SVector3& right = camera->GetRight();
 		if (Input::DXInput::GetInstance().IsPressed(DIK_UP))
 		{
-			cameraPos.x += 0.05f * forward.x;
-			cameraPos.y += 0.05f * forward.y;
-			cameraPos.z += 0.05f * forward.z;
+			cameraPos.x += 0.25f * forward.x;
+			cameraPos.y += 0.25f * forward.y;
+			cameraPos.z += 0.25f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_DOWN))
 		{
-			cameraPos.x -= 0.05f * forward.x;
-			cameraPos.y -= 0.05f * forward.y;
-			cameraPos.z -= 0.05f * forward.z;
+			cameraPos.x -= 0.25f * forward.x;
+			cameraPos.y -= 0.25f * forward.y;
+			cameraPos.z -= 0.25f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_LEFT))
 		{
-			cameraPos.x -= 0.05f * right.x;
-			cameraPos.y -= 0.05f * right.y;
-			cameraPos.z -= 0.05f * right.z;
+			cameraPos.x -= 0.25f * right.x;
+			cameraPos.y -= 0.25f * right.y;
+			cameraPos.z -= 0.25f * right.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_RIGHT))
 		{
@@ -441,7 +441,7 @@ private:
 	SceneNode* nodeSky{};
 	SceneNode* nodePlane[5]{};
 	SceneNode* nodeParticles{};
-	//SceneNode* nodeTerrain{};
+	SceneNode* nodeTerrain{};
 	SceneNode* nodeWater{};
 	//SceneNode* nodeLine{};
 
@@ -454,7 +454,7 @@ private:
 	GameObject* mesh2{};
 	GameObject* plane[5]{};
 	GameObject* particleList{};
-	//GameObject* terrain{};
+	GameObject* terrain{};
 	IAudioBuffer* audio;
 	Light* pointLight{};
 	Light* spotLight1{};

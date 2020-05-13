@@ -365,7 +365,7 @@ namespace Soul
 		const std::function<float(int, int)>& heightFunc,
 		const std::function<Core::SVector4(int, int)>& colorFunc)
 	{
-		size_t vertexCount = ((size_t)m - 1u) * ((size_t)n - 1u) * 4u;
+		size_t vertexCount = ((size_t)m) * ((size_t)n);
 		size_t faceCount = ((size_t)m - 1u) * ((size_t)n - 1u) * 2u;
 
 		//
@@ -378,6 +378,9 @@ namespace Soul
 		float dx = width / float(n - 1);
 		float dz = depth / float(m - 1);
 
+		float du = n / float(n - 1);
+		float dv = m / float(m - 1);
+
 		meshData.Vertices.resize(vertexCount);
 		meshData.Indices.resize(faceCount * 3u);
 
@@ -385,70 +388,37 @@ namespace Soul
 		std::vector<Core::SVector3> faceNormals;
 		faceNormals.resize(faceCount / 2);
 
-		int index = 0, index1, index2, index3, index4;
-		size_t k = 0;
+		int index = 0;
 		float z;
 		float x;
-		for (unsigned i = 0; i < (m - 1); i++)
+		for (unsigned i = 0; i < m; i++)
 		{
-			for (unsigned j = 0; j < (n - 1); j++)
+			for (unsigned j = 0; j < n; j++)
 			{
-				// Upper left.
-				index1 = index;
+				index = i * n + j;
 				z = halfDepth - i * dz;
 				x = -halfWidth + j * dx;
 				meshData.Vertices[index].Position = Core::SVector3(x, heightFunc(i, j), z);
-				meshData.Vertices[index].TexCoord = { 0.0f, 0.0f };
+				meshData.Vertices[index].TexCoord = { j * du, i * dv };
 				meshData.Vertices[index].TangentU = Core::SVector3(1.0f, 0.0f, 0.0f);
 				meshData.Vertices[index].Color = colorFunc(i, j);
-				index++;
+			}
+		}
 
-				// Upper right.
-				index2 = index;
-				z = halfDepth - i * dz;
-				x = -halfWidth + (j + 1) * dx;
-				meshData.Vertices[index].Position = Core::SVector3(x, heightFunc(i, j + 1), z);
-				meshData.Vertices[index].TexCoord = { 1.0f, 0.0f };
-				meshData.Vertices[index].TangentU = Core::SVector3(1.0f, 0.0f, 0.0f);
-				meshData.Vertices[index].Color = colorFunc(i, j);
-				index++;
+		meshData.Min = { -halfWidth, 0.f, -halfDepth };
+		meshData.Max = { halfWidth, 0.f, halfDepth };
 
-				// Bottom left.
-				index3 = index;
-				z = halfDepth - (i + 1) * dz;
-				x = -halfWidth + j * dx;
-				meshData.Vertices[index].Position = Core::SVector3(x, heightFunc(i + 1, j), z);
-				meshData.Vertices[index].TexCoord = { 0.0f, 1.0f };
-				meshData.Vertices[index].TangentU = Core::SVector3(1.0f, 0.0f, 0.0f);
-				meshData.Vertices[index].Color = colorFunc(i, j);
-
-				index++;
-
-				// Bottom Right.
-				index4 = index;
-				z = halfDepth - (i + 1) * dz;
-				x = -halfWidth + (j + 1) * dx;
-				meshData.Vertices[index].Position = Core::SVector3(x, heightFunc(i + 1, j + 1), z);
-				meshData.Vertices[index].TexCoord = { 1.0f, 1.0f };
-				meshData.Vertices[index].TangentU = Core::SVector3(1.0f, 0.0f, 0.0f);
-				meshData.Vertices[index].Color = colorFunc(i, j);
-				index++;
-
-				//
-				// Create the indices.
-				//
-				meshData.Indices[k] = (index1);
-				meshData.Indices[k + 1u] = (index2);
-				meshData.Indices[k + 2u] = (index3);
-				meshData.Indices[k + 3u] = (index3);
-				meshData.Indices[k + 4u] = (index2);
-				meshData.Indices[k + 5u] = (index4);
-
-				k += 6u;	// next quad
-
-				//
-				// Compute Face Normal
-				//
+		//
+		// Compute Face Normal
+		//
+		unsigned index1, index2, index3;
+		for (unsigned i = 0; i < m - 1u; i++)
+		{
+			for (unsigned j = 0; j < n - 1u; j++)
+			{
+				index1 = i * n + j;
+				index2 = i * n + j + 1;
+				index3 = (i + 1) * n + j;
 				ComputeNormal(
 					meshData.Vertices[index2].Position,
 					meshData.Vertices[index1].Position,
@@ -457,12 +427,7 @@ namespace Soul
 			}
 		}
 
-		meshData.Min = { -halfWidth, 0.f, -halfDepth };
-		meshData.Max = { halfWidth, 0.f, halfDepth };
-
 		// Normal Averaging
-		std::vector<Core::SVector3> normalSum;
-		normalSum.resize((size_t)m * n);
 		unsigned normalSumIndex;
 		for (int i = 0; i < (int)m; i++)	//row
 		{
@@ -475,48 +440,48 @@ namespace Soul
 				if ((j - 1) >= 0 && (i - 1) >= 0)
 				{
 					index = ((i - 1) * (n - 1)) + (j - 1);
-					normalSum[normalSumIndex] += faceNormals[index];
+					meshData.Vertices[normalSumIndex].Normal += faceNormals[index];
 				}
 
 				// 右上是否有三角形
 				if ((j < ((int)n - 1)) && (i - 1) >= 0)
 				{
 					index = ((i - 1) * ((int)n - 1)) + j;
-					normalSum[normalSumIndex] += faceNormals[index];
+					meshData.Vertices[normalSumIndex].Normal += faceNormals[index];
 				}
 
 				// 左下是否有三角形
 				if ((j - 1) >= 0 && i < ((int)m - 1))
 				{
 					index = (i * ((int)n - 1)) + (j - 1);
-					normalSum[normalSumIndex] += faceNormals[index];
+					meshData.Vertices[normalSumIndex].Normal += faceNormals[index];
 				}
 
 				// 右下是否有三角形
 				if ((j < ((int)n - 1)) && i < ((int)m - 1))
 				{
 					index = (i * ((int)n - 1)) + j;
-					normalSum[normalSumIndex] += faceNormals[index];
+					meshData.Vertices[normalSumIndex].Normal += faceNormals[index];
 				}
 
-				normalSum[normalSumIndex].Normalize();
+				meshData.Vertices[normalSumIndex].Normal.Normalize();
 			}
 		}
 
-		index = 0;
-		for (unsigned i = 0; i < (m - 1); i++)
+		unsigned k = 0;
+		for (unsigned i = 0; i < m - 1; ++i)
 		{
-			for (unsigned j = 0; j < (n - 1); j++)
+			for (unsigned j = 0; j < n - 1; ++j)
 			{
-				index1 = (n * i) + j;
-				index2 = (n * i) + (j + 1);
-				index3 = (n * (i + 1)) + j;
-				index4 = (n * (i + 1)) + (j + 1);
+				meshData.Indices[k] = i * n + j;
+				meshData.Indices[k + 1u] = i * n + j + 1;
+				meshData.Indices[k + 2u] = (i + 1) * n + j;
 
-				meshData.Vertices[index++].Normal = normalSum[index1];
-				meshData.Vertices[index++].Normal = normalSum[index2];
-				meshData.Vertices[index++].Normal = normalSum[index3];
-				meshData.Vertices[index++].Normal = normalSum[index4];
+				meshData.Indices[k + 3u] = (i + 1) * n + j;
+				meshData.Indices[k + 4u] = i * n + j + 1;
+				meshData.Indices[k + 5u] = (i + 1) * n + j + 1;
+
+				k += 6; // next quad
 			}
 		}
 	}
