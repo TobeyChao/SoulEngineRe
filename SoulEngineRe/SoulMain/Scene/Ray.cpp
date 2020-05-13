@@ -40,10 +40,6 @@ namespace Soul
 	}
 	bool Ray::Hit(const BoundingBox& box, float* pOutDist, float maxDist)
 	{
-		// 摄像机空间的包围盒
-		//BoundingBox boxInCamera;
-		//box.Transform(boxInCamera, mCamera.GetViewMatrix());
-
 		float tmin = 0.0f;
 		float tmax = FLT_MAX;
 		Core::SVector3 boxMin = box.mCenter - box.mLengthToSides;

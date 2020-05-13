@@ -9,12 +9,17 @@
 
 namespace Soul
 {
+	const std::wstring newExtension = L"cm";
 	using namespace std::filesystem;
 	bool ObjLoader::LoadObjModel(const std::wstring& objFileName, int nHandSystem)
 	{
-
-		LoadObjFile(objFileName, nHandSystem);
-		return true;
+		path pathObj(objFileName);
+		std::wstring customModelFileName = pathObj.replace_extension(newExtension).wstring();
+		if (CheckIfFile(customModelFileName))
+		{
+			return LoadCustomModelFile(customModelFileName);
+		}
+		return LoadObjFile(objFileName, nHandSystem);
 	}
 
 	void ObjLoader::Clean()
@@ -29,6 +34,10 @@ namespace Soul
 
 	bool ObjLoader::LoadObjFile(const std::wstring& objFileName, int nHandSystem)
 	{
+		if (!CheckIfFile(objFileName))
+		{
+			return false;
+		}
 		path pathObj(objFileName);
 		mParentPath = pathObj.parent_path().wstring();
 		mMin = { 3.402823466e+38F, 3.402823466e+38F, 3.402823466e+38F };
@@ -40,6 +49,124 @@ namespace Soul
 			mSubMesh[0]->GetOriginalMeshDataPtr()->Min = mMin;
 			mSubMesh[0]->GetOriginalMeshDataPtr()->Max = mMax;
 		}
+		// 生成二进制文件
+		GenerateCustomModelFile(pathObj.replace_extension(newExtension));
+		return true;
+	}
+
+	bool ObjLoader::GenerateCustomModelFile(const std::wstring& customModelFileName)
+	{
+		// [Part数目] sizeof(size_t)字节
+		// [AABB盒顶点vMax] 12字节
+		// [AABB盒顶点vMin] 12字节
+		// [Part
+		//   [环境光材质文件名]520字节
+		//   [漫射光材质文件名]520字节
+		//   [材质]sizeof(Material)字节
+		//   [顶点数]sizeof(size_t)字节
+		//   [索引数]sizeof(size_t)字节
+		//   [顶点]sizeof(Vertex)*顶点数 字节
+		//   [索引]unsigned*索引数 字节
+		// ]
+		// ...
+		std::ofstream fout(customModelFileName, std::ios::out | std::ios::binary);
+		size_t parts = mSubMesh.size();
+		// [Part数目] 4字节
+		fout.write(reinterpret_cast<const char*>(&parts), sizeof(size_t));
+		// [AABB盒顶点vMax] 12字节
+		fout.write(reinterpret_cast<const char*>(&mMax), sizeof(Core::SVector3));
+		// [AABB盒顶点vMin] 12字节
+		fout.write(reinterpret_cast<const char*>(&mMin), sizeof(Core::SVector3));
+		// [Part
+		for (size_t i = 0; i < parts; ++i)
+		{
+			wchar_t filePath[MAX_PATH] = L"";
+			std::wstring mapDiffuse;
+			if (mSubMesh[i]->GetTextures().size() > 0)
+			{
+				mapDiffuse = mSubMesh[i]->GetTextures()[0]->GetName();
+			}
+			wcscpy_s(filePath, mapDiffuse.c_str());
+			// [漫射光材质文件名]520字节
+			fout.write(reinterpret_cast<const char*>(filePath), MAX_PATH * sizeof(wchar_t));
+			// [材质]64字节
+			fout.write(reinterpret_cast<const char*>(mSubMesh[i]->GetMaterial()), sizeof(Material));
+			size_t vertexCount = mSubMesh[i]->GetOriginalMeshDataPtr()->Vertices.size();
+			// [顶点数]4字节
+			fout.write(reinterpret_cast<const char*>(&vertexCount), sizeof(size_t));
+			size_t indexCount = (UINT)mSubMesh[i]->GetOriginalMeshDataPtr()->Indices.size();
+			// [索引数]4字节
+			fout.write(reinterpret_cast<const char*>(&indexCount), sizeof(size_t));
+			// [顶点]32*顶点数 字节
+			fout.write(reinterpret_cast<const char*>(mSubMesh[i]->GetOriginalMeshDataPtr()->Vertices.data()), vertexCount * sizeof(Vertex));
+			// [索引]4*索引数 字节
+			fout.write(reinterpret_cast<const char*>(mSubMesh[i]->GetOriginalMeshDataPtr()->Indices.data()), indexCount * sizeof(unsigned));
+		}
+		// ]
+		fout.close();
+		return true;
+	}
+
+	bool ObjLoader::LoadCustomModelFile(const std::wstring& customModelFileName)
+	{
+		// [Part数目] sizeof(size_t)字节
+		// [AABB盒顶点vMax] 12字节
+		// [AABB盒顶点vMin] 12字节
+		// [Part
+		//   [漫射光材质文件名]520字节
+		//   [材质]sizeof(Material)字节
+		//   [顶点数]sizeof(size_t)字节
+		//   [索引数]sizeof(size_t)字节
+		//   [顶点]sizeof(Vertex)*顶点数 字节
+		//   [索引]unsigned*索引数 字节
+		// ]
+		// ...
+		std::ifstream fin(customModelFileName, std::ios::in | std::ios::binary);
+		if (!fin.is_open())
+			return false;
+
+		size_t parts = 0;
+		// [Part数目] 4字节
+		fin.read(reinterpret_cast<char*>(&parts), sizeof(size_t));
+		mSubMesh.resize(parts);
+		for (size_t i = 0; i < parts; i++)
+		{
+			mSubMesh[i] = new SubMesh("");
+		}
+		// [AABB盒顶点vMax] 12字节
+		fin.read(reinterpret_cast<char*>(&mMax), sizeof(Core::SVector3));
+		// [AABB盒顶点vMin] 12字节
+		fin.read(reinterpret_cast<char*>(&mMin), sizeof(Core::SVector3));
+		mSubMesh[0]->GetOriginalMeshDataPtr()->Max = mMax;
+		mSubMesh[0]->GetOriginalMeshDataPtr()->Min = mMin;
+		for (size_t i = 0; i < parts; ++i)
+		{
+			wchar_t filePath[MAX_PATH];
+			// [漫射光材质文件名]
+			fin.read(reinterpret_cast<char*>(filePath), MAX_PATH * sizeof(wchar_t));
+			std::wstring textureFilePath(filePath);
+			if (!textureFilePath.empty())
+			{
+				mSubMesh[i]->PushTexture(TextureManager::GetInstance().GetTexture(textureFilePath));
+			}
+			// [材质]64字节
+			Material* mat = new Material();
+			fin.read(reinterpret_cast<char*>(mat), sizeof(Material));
+			mSubMesh[i]->SetMaterial(mat);
+			size_t vertexCount, indexCount;
+			// [顶点数]4字节
+			fin.read(reinterpret_cast<char*>(&vertexCount), sizeof(size_t));
+			// [索引数]4字节
+			fin.read(reinterpret_cast<char*>(&indexCount), sizeof(size_t));
+			// [顶点]32*顶点数 字节
+			mSubMesh[i]->GetOriginalMeshDataPtr()->Vertices.resize(vertexCount);
+			fin.read(reinterpret_cast<char*>(mSubMesh[i]->GetOriginalMeshDataPtr()->Vertices.data()), vertexCount * sizeof(Vertex));
+			// [索引]4*索引数 字节
+			mSubMesh[i]->GetOriginalMeshDataPtr()->Indices.resize(indexCount);
+			fin.read(reinterpret_cast<char*>(mSubMesh[i]->GetOriginalMeshDataPtr()->Indices.data()), indexCount * sizeof(unsigned));
+		}
+
+		fin.close();
 		return true;
 	}
 

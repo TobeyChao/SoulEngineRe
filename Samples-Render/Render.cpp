@@ -126,14 +126,14 @@ public:
 		// Mesh
 		json meshSet;
 		//meshSet["Rasterizer"] = "RT_WIREFRAME";
-		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/mouse/mouse1.obj", meshSet);
+		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/Lucy/Lucy.obj", meshSet);
 		for (auto it : mesh->GetAllSubMesh())
 		{
 			it->EnableShadow(true);
 			it->SetShadowMatrix(shadowMat);
 		}
 		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeMesh->SetScale({ 5.f, 5.f, 5.f });
+		nodeMesh->SetScale({ 0.01f, 0.01f, 0.01f });
 		nodeMesh->SetPosition({ -3.f, 10.2f, 0.f });
 		nodeMesh->AttachObj(mesh);
 
@@ -387,9 +387,9 @@ public:
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
 		lightNode->AttachObj(dirLight);
 		//lightNode->AttachObj(pointLight);
-		lightNode->AttachObj(spotLight1);
-		lightNode->AttachObj(spotLight2);
-		lightNode->AttachObj(spotLight3);
+		//lightNode->AttachObj(spotLight1);
+		//lightNode->AttachObj(spotLight2);
+		//lightNode->AttachObj(spotLight3);
 	}
 
 	// 第一人称相机
@@ -468,7 +468,7 @@ private:
 	Core::SVector3 pos = { -3.f, 0.2f, 0.f };
 	Core::SVector3 rotate;
 	Core::SVector3 sphereRotate;
-	Core::SVector3 cameraPos = { 0.f, 2.f, -2.f };
+	Core::SVector3 cameraPos = { 0.f, 8.f, -8.f };
 	Core::SVector3 cameraRotate = { Core::SM_PIDIV4, 0.f, 0.f };
 	int cameraChoose = 1;
 

@@ -209,6 +209,7 @@
     <ClCompile Include="SoulMain\Scene\SceneNodeRenderable.cpp" />
     <ClCompile Include="SoulMain\Scene\SubMesh.cpp" />
     <ClCompile Include="SoulMain\Scene\TerrainCreator.cpp" />
+    <ClCompile Include="SoulMain\Utils\FileUtils.cpp" />
     <ClCompile Include="SoulMain\Utils\StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -303,6 +304,7 @@
     <ClInclude Include="SoulMain\Scene\SubMesh.h" />
     <ClInclude Include="SoulMain\Scene\TerrainCreator.h" />
     <ClInclude Include="SoulMain\SoulPCH.h" />
+    <ClInclude Include="SoulMain\Utils\FileUtils.h" />
     <ClInclude Include="SoulMain\Utils\json.hpp" />
     <ClInclude Include="SoulMain\Utils\Singleton.h" />
     <ClInclude Include="SoulMain\Utils\StringUtils.h" />

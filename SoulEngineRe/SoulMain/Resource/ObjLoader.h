@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include "../Scene/PrimitiveTypes.h"
 #include "../Scene/SubMesh.h"
+
 namespace Soul
 {
 	class ObjLoader
@@ -15,7 +16,6 @@ namespace Soul
 			Core::SVector4 ambient;
 			Core::SVector4 diffuse;
 			Core::SVector4 specular; // w = 镜面反射强度
-			Core::SVector4 reflect;
 		};
 		enum
 		{
@@ -31,6 +31,8 @@ namespace Soul
 		void Clean();
 	private:
 		bool LoadObjFile(const std::wstring& objFileName, int nHandSystem = RIGHT_HAND_SYSTEM);
+		bool GenerateCustomModelFile(const std::wstring& customModelFileName);
+		bool LoadCustomModelFile(const std::wstring& customModelFileName);
 		bool ParseVertices(const std::wstring& objFileName, int nHandSystem);
 		bool ParseMaterialFile(const std::wstring& matFileName);
 		bool ParseSubset(const std::wstring& objFileName, int nHandSystem);
