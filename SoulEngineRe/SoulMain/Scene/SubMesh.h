@@ -29,9 +29,9 @@ namespace Soul
 
 		virtual ~SubMesh();
 
-		RenderParameter* GetRenderParameter()
+		RenderParameter& GetRenderParameter()
 		{
-			return mRenderParameter;
+			return *mRenderParameter;
 		}
 
 		// ¶¥µã»º´æ

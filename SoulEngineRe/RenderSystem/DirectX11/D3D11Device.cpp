@@ -34,7 +34,7 @@ namespace Soul
 #ifdef _DEBUG
 		flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
-			// determine feature levels
+		// determine feature levels
 		D3D_FEATURE_LEVEL featureLevels[] =
 		{
 #if defined(_WIN32_WINNT_WIN8) && _WIN32_WINNT >= _WIN32_WINNT_WIN8

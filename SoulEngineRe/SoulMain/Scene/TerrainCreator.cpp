@@ -90,10 +90,6 @@ namespace Soul
 			}
 			// ∂¡»°Õº∆¨
 			heightMapFile.read(reinterpret_cast<char*>(rawImage), length);
-			if (heightMapFile)
-				std::cout << "all characters read successfully." << std::endl;
-			else
-				std::cout << "error: only " << heightMapFile.gcount() << " could be read" << std::endl;
 			heightMapFile.close();
 			heightMapInfo.height.resize(m * n, 0.f);
 			for (size_t i = 0; i < m * n; i++)

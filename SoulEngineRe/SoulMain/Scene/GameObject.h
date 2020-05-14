@@ -11,6 +11,11 @@ namespace Soul
 
 		virtual ~GameObject();
 		
+		const std::string& GetName() const
+		{
+			return mName;
+		}
+
 		void SetSceneNodeBelongsTo(SceneNode* sceneNode) { mSceneNodeBelongsTo = sceneNode; }
 
 		SceneNode* GetSceneNodeBelongsTo() const { return mSceneNodeBelongsTo; }

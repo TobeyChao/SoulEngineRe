@@ -9,6 +9,6 @@
     "fullscreen" : false,
     "screen_width" : 1280,
     "screen_height" : 720,
-    "vsync" : true,
+    "vsync" : false,
     "msaa" : 4
 }

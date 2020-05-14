@@ -12,8 +12,13 @@ namespace Soul
 	class GPUBuffer
 	{
 	public:
-		GPUBuffer() {};
+		GPUBuffer()
+			:
+			mIsDirty(false)
+		{};
 		virtual ~GPUBuffer() {};
 		virtual void UpdateBuffer(const void* mem, unsigned byteSize) = 0;
+	public:
+		bool mIsDirty;
 	};
 }

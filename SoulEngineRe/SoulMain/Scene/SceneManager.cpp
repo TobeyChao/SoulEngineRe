@@ -35,9 +35,8 @@ namespace Soul
 	SceneManager::~SceneManager()
 	{
 		mCameraNodeList.clear();
-		mSkyBoxNodeList.clear();
 		mLightNodeList.clear();
-		mSolidNodeList.clear();
+		mRenderableNodeList.clear();
 	}
 
 	SceneNodeCamera* SceneManager::AddCameraSceneNode(SceneNode* parent,
@@ -89,10 +88,6 @@ namespace Soul
 		unsigned int taken = 0u;
 		switch (pass)
 		{
-		case E_SCENENODE_TYPES::EST_SKYBOX:
-			mSkyBoxNodeList.push_back(node);
-			taken = 1;
-			break;
 		case E_SCENENODE_TYPES::EST_CAMERA:
 			taken = 1;
 			for (size_t i = 0; i != mCameraNodeList.size(); ++i)
@@ -109,7 +104,7 @@ namespace Soul
 			}
 			break;
 		case E_SCENENODE_TYPES::EST_SOLID:
-			mSolidNodeList.push_back(node);
+			mRenderableNodeList.push_back(node);
 			taken = 1;
 			break;
 		case E_SCENENODE_TYPES::EST_LIGHT:
@@ -340,7 +335,7 @@ namespace Soul
 			newGameObject = new GameObject(name);
 			newGameObject->PushSubMesh(subMesh);
 			geoGen.CreateLine3D({ x1, y1, z1 }, { x2, y2, z2 }, *subMesh->GetOriginalMeshDataPtr());
-			subMesh->GetRenderParameter()->mPrimitiveTopology = PrimitiveTopology::PT_LINELIST;
+			subMesh->GetRenderParameter().mPrimitiveTopology = PrimitiveTopology::PT_LINELIST;
 			subMesh->InitializeBuffer();
 			break;
 		}
@@ -362,7 +357,7 @@ namespace Soul
 			newGameObject = new GameObject(name);
 			newGameObject->PushSubMesh(subMesh);
 			geoGen.CreatePoint3D({ x, y, z }, *subMesh->GetOriginalMeshDataPtr());
-			subMesh->GetRenderParameter()->mPrimitiveTopology = PrimitiveTopology::PT_POINTLIST;
+			subMesh->GetRenderParameter().mPrimitiveTopology = PrimitiveTopology::PT_POINTLIST;
 			subMesh->InitializeBuffer();
 			break;
 		}
@@ -487,30 +482,35 @@ namespace Soul
 
 	void SceneManager::DrawAll(SceneNodeCamera* camera, Viewport* viewport)
 	{
+		// 设置激活摄像机
 		SetActiveCamera(camera);
-
-		mActiveViewport = viewport;
-
+		// 设置视口
 		SetViewport(viewport);
-
+		// 注册所有可见场景节点
 		OnRegisterSceneNode();
-
+		// 清理缓冲区
 		mRenderSystem->Clear({ 0.14f, 0.14f, 0.152f, 1.0f });
-
+		// 遍历所有灯光节点
 		for (auto& i : mLightNodeList)
 		{
 			i->Render();
 		}
-
-		for (auto& i : mSolidNodeList)
+		// 遍历所有渲染节点
+		for (auto& i : mRenderableNodeList)
 		{
 			i->Render();
 		}
-
-		while (!mAllAttachedGameObject.empty())
+		// 对每个节点所绑定的SubMesh进行渲染
+		while (!mAllAttachedSubMesh.empty())
 		{
-			SubMesh* sm = mAllAttachedGameObject.front();
-			RenderParameter* rp = sm->GetRenderParameter();
+			SubMesh* sm = mAllAttachedSubMesh.front();
+			
+			if (!mActiveCamera->CheckRectangle(sm->GetParent()->GetBoundingBox()))
+			{
+				std::cout << sm->GetParent()->GetName() << std::endl;
+				mAllAttachedSubMesh.pop();
+				continue;
+			}
 
 			// 深度模板
 			if (sm->UseDepthStencil())
@@ -563,7 +563,13 @@ namespace Soul
 				for (size_t i = 0; i < mLightList.size(); i++)
 				{
 					LIGHT_TYPE lt = mLightList[i]->GetType();
-					if (lt == LIGHT_TYPE::LT_DIRECTIONAL)
+					switch (lt)
+					{
+					case Soul::LIGHT_TYPE::LT_NONE:
+					{
+						break;
+					}
+					case Soul::LIGHT_TYPE::LT_DIRECTIONAL:
 					{
 						DirectionalLight dl;
 						dl.Ambient = mLightList[i]->GetAmbient();
@@ -571,8 +577,9 @@ namespace Soul
 						dl.Specular = mLightList[i]->GetSpecular();
 						dl.Direction = mLightList[i]->GetDirection();
 						shader->SetDirectinalLight(slotD++, dl);
+						break;
 					}
-					else if (lt == LIGHT_TYPE::LT_POINT)
+					case Soul::LIGHT_TYPE::LT_POINT:
 					{
 						PointLight pl;
 						pl.Ambient = mLightList[i]->GetAmbient();
@@ -582,8 +589,9 @@ namespace Soul
 						pl.Position = mLightList[i]->GetPosition();
 						pl.Range = mLightList[i]->GetRange();
 						shader->SetPointLight(slotP++, pl);
+						break;
 					}
-					else if (lt == LIGHT_TYPE::LT_SPOT)
+					case Soul::LIGHT_TYPE::LT_SPOT:
 					{
 						SpotLight sl;
 						sl.Spot = mLightList[i]->GetSpot();
@@ -595,31 +603,29 @@ namespace Soul
 						sl.Range = mLightList[i]->GetRange();
 						sl.Direction = mLightList[i]->GetDirection();
 						shader->SetSpotLight(slotS++, sl);
+						break;
+					}
+					default:
+					{
+						break;
+					}
 					}
 				}
+				// 设置各类灯光的数量
 				shader->SetPointLightNum(slotP);
 				shader->SetDirectinalLightNum(slotD);
 				shader->SetSpotLightNum(slotS);
-
 				// 材质 非阴影
 				shader->SetEnableShadow(false);
 				shader->SetMaterial(*(sm->GetMaterial()));
-
 				// 设置Shader
 				mRenderSystem->BindShader(shader);
 				// 渲染
-				mRenderSystem->Render(*rp);
+				mRenderSystem->Render(sm->GetRenderParameter());
 				// 渲染阴影
 				if (sm->IsEnableShadow())
 				{
-					// 变换矩阵
-					shader->SetWorldViewProj(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation() *
-						GetActiveCamera()->GetViewMatrix()*
-						GetActiveCamera()->GetProjectionMatrix());
-					shader->SetWorld(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation());
-					shader->SetView(GetActiveCamera()->GetViewMatrix());
-					shader->SetProj(GetActiveCamera()->GetProjectionMatrix());
-					Material materialShadow;
+					static Material materialShadow;
 					materialShadow.ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
 					materialShadow.diffuse = { 0.0f, 0.0f, 0.0f, 0.8f };
 					materialShadow.specular = { 0.0f, 0.0f, 0.0f, 16.0f };
@@ -632,7 +638,7 @@ namespace Soul
 					mRenderSystem->SetBlendType(BlendType::BT_TRANSPARENT);
 					mRenderSystem->BindShader(shader);
 					// 渲染阴影
-					mRenderSystem->Render(*rp);
+					mRenderSystem->Render(sm->GetRenderParameter());
 				}
 			}
 			else
@@ -640,13 +646,12 @@ namespace Soul
 				mRenderSystem->BindShader(nullptr);
 			}
 
-			mAllAttachedGameObject.pop();
+			mAllAttachedSubMesh.pop();
 		}
 		mLightList.clear();
 		mCameraNodeList.clear();
-		mSkyBoxNodeList.clear();
 		mLightNodeList.clear();
-		mSolidNodeList.clear();
+		mRenderableNodeList.clear();
 	}
 
 	void SceneManager::Clear()

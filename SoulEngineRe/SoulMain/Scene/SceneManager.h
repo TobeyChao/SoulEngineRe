@@ -5,7 +5,6 @@ namespace Soul
 {
 	enum class E_SCENENODE_TYPES
 	{
-		EST_SKYBOX,
 		EST_CAMERA,
 		EST_SOLID,
 		EST_LIGHT
@@ -59,7 +58,7 @@ namespace Soul
 
 		void EnqueueSubMeshQueue(SubMesh* rp)
 		{
-			mAllAttachedGameObject.push(rp);
+			mAllAttachedSubMesh.push(rp);
 		}
 
 		void EnqueueLightQueue(Light* light)
@@ -73,9 +72,8 @@ namespace Soul
 	private:
 
 		std::vector<SceneNode*> mCameraNodeList;
-		std::vector<SceneNode*> mSkyBoxNodeList;
 		std::vector<SceneNode*> mLightNodeList;
-		std::vector<SceneNode*> mSolidNodeList;
+		std::vector<SceneNode*> mRenderableNodeList;
 
 		// current active camera
 		SceneNodeCamera* mActiveCamera;
@@ -87,7 +85,7 @@ namespace Soul
 		Viewport* mActiveViewport;
 
 		// 需要渲染的游戏物体
-		std::queue<SubMesh*> mAllAttachedGameObject;
+		std::queue<SubMesh*> mAllAttachedSubMesh;
 
 		// 需要设置的灯光list
 		std::vector<Light*> mLightList;

@@ -34,7 +34,7 @@ public:
 		terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
 		nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeTerrain->SetPosition({ 0.0f, -80.0f, 0.0f });
-		nodeTerrain->AttachObj(terrain);
+		//nodeTerrain->AttachObj(terrain);
 
 		// Line
 		//json lineSet;
@@ -125,19 +125,16 @@ public:
 
 		// Mesh
 		json meshSet;
-		//meshSet["Rasterizer"] = "RT_WIREFRAME";
-		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/lucy/lucy.obj", meshSet);
+		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/house2/house2.obj", meshSet);
 		for (auto it : mesh->GetAllSubMesh())
 		{
 			it->EnableShadow(true);
 			it->SetShadowMatrix(shadowMat);
 		}
 		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeMesh->SetScale({ 0.01f, 0.01f, 0.01f });
-		nodeMesh->SetPosition({ -3.f, 10.2f, 0.f });
+		nodeMesh->SetPosition({ -3.f, 0.f, 0.f });
 		nodeMesh->AttachObj(mesh);
 
-		//meshSet["Rasterizer"] = "RT_WIREFRAME";
 		mesh2 = sceneMgr->CreateGameObject("mesh2", L"../Assets/Models/box/box.obj", meshSet);
 		for (auto it : mesh2->GetAllSubMesh())
 		{
@@ -159,6 +156,7 @@ public:
 		nodeSky->AttachObj(sphere);
 		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
 
+		/*
 		particleEmitter = new ParticleEmitter();
 		json particleSet;
 		particleSet["texture"] = "../Assets/Images/particle_texture.png";
@@ -182,6 +180,7 @@ public:
 		nodeParticles = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeParticles->SetPosition({ 0.0f, 3.0f, 0.0f });
 		nodeParticles->AttachObj(particleList);
+		*/
 
 		// nodeWater
 		json waterSet;
@@ -211,7 +210,7 @@ public:
 	// 每帧开始处理
 	bool FrameStarted() override
 	{
-		particleEmitter->Update(Timer::DeltaTime());
+		//particleEmitter->Update(Timer::DeltaTime());
 
 		intersects = mesh->GetBoundingBox().Intersects(mesh2->GetBoundingBox());
 
@@ -293,24 +292,24 @@ public:
 
 	bool FrameUpdated() override
 	{
-		const Core::SVector2 pos = Input::DXInput::GetInstance().GetMouseLocation();
-		Ray ray = Ray::ScreenToRay(*camera, pos);
-		if (ray.Hit(cube->GetBoundingBox()))
-		{
-			RenderSystem2D::GetInstance().DrawTextW(L"选中Cube", { 300, 10 });
-		}
-		if (ray.Hit(mesh->GetBoundingBox()))
-		{
-			RenderSystem2D::GetInstance().DrawTextW(L"选中mesh", { 300, 10 });
-		}
-		if (ray.Hit(mesh2->GetBoundingBox()))
-		{
-			RenderSystem2D::GetInstance().DrawTextW(L"选中mesh2", { 300, 10 });
-		}
-		if (ray.Hit(cylinder->GetBoundingBox()))
-		{
-			RenderSystem2D::GetInstance().DrawTextW(L"选中cylinder", { 300, 10 });
-		}
+		//const Core::SVector2 pos = Input::DXInput::GetInstance().GetMouseLocation();
+		//Ray ray = Ray::ScreenToRay(*camera, pos);
+		//if (ray.Hit(cube->GetBoundingBox()))
+		//{
+		//	RenderSystem2D::GetInstance().DrawTextW(L"选中Cube", { 300, 10 });
+		//}
+		//if (ray.Hit(mesh->GetBoundingBox()))
+		//{
+		//	RenderSystem2D::GetInstance().DrawTextW(L"选中mesh", { 300, 10 });
+		//}
+		//if (ray.Hit(mesh2->GetBoundingBox()))
+		//{
+		//	RenderSystem2D::GetInstance().DrawTextW(L"选中mesh2", { 300, 10 });
+		//}
+		//if (ray.Hit(cylinder->GetBoundingBox()))
+		//{
+		//	RenderSystem2D::GetInstance().DrawTextW(L"选中cylinder", { 300, 10 });
+		//}
 
 		std::wostringstream buffer;
 		buffer << "FPS:" << 1.0f / Timer::DeltaTime() << std::endl
@@ -318,7 +317,7 @@ public:
 			<< L"按1切换自由视角摄像机!" << std::endl
 			<< L"按2切换第三人称摄像机!" << std::endl
 			<< L"CameraPos:(" << cameraPos.x << "," << cameraPos.y << "," << cameraPos.z << ")" << std::endl
-			<< L"RayDir:(" << ray.mDirection.x << "," << ray.mDirection.y << "," << ray.mDirection.z << ")" << std::endl;
+			/*<< L"RayDir:(" << ray.mDirection.x << "," << ray.mDirection.y << "," << ray.mDirection.z << ")" << std::endl*/;
 		std::wstring info = buffer.str();
 
 		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 10 });
@@ -417,9 +416,9 @@ public:
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_RIGHT))
 		{
-			cameraPos.x += 0.05f * right.x;
-			cameraPos.y += 0.05f * right.y;
-			cameraPos.z += 0.05f * right.z;
+			cameraPos.x += 0.25f * right.x;
+			cameraPos.y += 0.25f * right.y;
+			cameraPos.z += 0.25f * right.z;
 		}
 	}
 

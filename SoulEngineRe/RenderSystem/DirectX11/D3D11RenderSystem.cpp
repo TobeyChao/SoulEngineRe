@@ -386,37 +386,6 @@ namespace Soul
 		DX11RenderOperationState ros;
 		HRESULT hr;
 
-		//输出混合阶段
-		if (mBlendDescChanged)
-		{
-			mBlendDescChanged = false;
-			hr = (*mD3D11Device)->CreateBlendState(&mBlendDesc, ros.mBlendState.ReleaseAndGetAddressOf());
-			if (FAILED(hr))
-			{
-			}
-		}
-
-		//光栅化阶段
-		if (mRasterizerDescChanged)
-		{
-			mRasterizerDescChanged = false;
-			hr = (*mD3D11Device)->CreateRasterizerState(&mRasterizerDesc, ros.mRasterizer.ReleaseAndGetAddressOf());
-			if (FAILED(hr))
-			{
-				// 创建RasterizerState失败
-			}
-		}
-
-		if (mDepthStencilDescChanged)
-		{
-			mDepthStencilDescChanged = false;
-			hr = (*mD3D11Device)->CreateDepthStencilState(&mDepthStencilDesc, ros.mDepthStencilState.ReleaseAndGetAddressOf());
-			if (FAILED(hr))
-			{
-			}
-		}
-
-		//像素着色阶段
 		// 纹理
 		if (!mTextureSettingChanged && mTextureNum == 0)
 		{
@@ -451,44 +420,53 @@ namespace Soul
 			}
 		}
 
-		// 混合
-		if (ros.mBlendState)
-		{
-			deviceContext->OMSetBlendState(ros.mBlendState.Get(), 0, 0xffffffff);
-		}
-		else
-		{
-			deviceContext->OMSetBlendState(nullptr, 0, 0xffffffff);
-		}
-
 		// 光栅化
-		if (ros.mRasterizer)
+		if (mRasterizerDescChanged)
 		{
-			deviceContext->RSSetState(ros.mRasterizer.Get());
+			mRasterizerDescChanged = false;
+			hr = (*mD3D11Device)->CreateRasterizerState(&mRasterizerDesc, ros.mRasterizer.ReleaseAndGetAddressOf());
+			if (SUCCEEDED(hr))
+			{
+				deviceContext->RSSetState(ros.mRasterizer.Get());
+			}
 		}
 		else
 		{
-			deviceContext->RSSetState(mDefaultRasterizer.Get());
+			deviceContext->RSSetState(nullptr);
 		}
 
 		// 深度模板
-		if (ros.mDepthStencilState)
+		if (mDepthStencilDescChanged)
 		{
-			deviceContext->OMSetDepthStencilState(ros.mDepthStencilState.Get(), mStencilRef);
-			mStencilRef = 0;
+			mDepthStencilDescChanged = false;
+			hr = (*mD3D11Device)->CreateDepthStencilState(&mDepthStencilDesc, ros.mDepthStencilState.ReleaseAndGetAddressOf());
+			if (SUCCEEDED(hr))
+			{
+				deviceContext->OMSetDepthStencilState(ros.mDepthStencilState.Get(), mStencilRef);
+				mStencilRef = 0;
+			}
 		}
 		else
 		{
 			deviceContext->OMSetDepthStencilState(nullptr, 0);
 		}
 
-		deviceContext->DrawIndexed(rp.mIndicesCount, 0u, 0);
+		// 混合
+		if (mBlendDescChanged)
+		{
+			mBlendDescChanged = false;
+			hr = (*mD3D11Device)->CreateBlendState(&mBlendDesc, ros.mBlendState.ReleaseAndGetAddressOf());
+			if (SUCCEEDED(hr))
+			{
+				deviceContext->OMSetBlendState(ros.mBlendState.Get(), 0, 0xffffffff);
+			}
+		}
+		else
+		{
+			deviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+		}
 
-		// 恢复默认的渲染状态
-		//deviceContext->OMSetBlendState(0, 0, 0xffffffff);
-		//deviceContext->RSSetState(nullptr);
-		//deviceContext->OMSetDepthStencilState(0, 0);
-		//deviceContext->PSSetSamplers(static_cast<UINT>(0), static_cast<UINT>(0), 0);
+		deviceContext->DrawIndexed(rp.mIndicesCount, 0u, 0);
 	}
 	HRESULT D3D11RenderSystem::CreateD3D11Device() const
 	{

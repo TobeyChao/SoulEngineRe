@@ -1,6 +1,19 @@
 #include "LightHelper.fx"
 
-cbuffer cbPerFrame : register(b0)
+cbuffer CBChangesEveryDrawing : register(b0)
+{
+	matrix gWorld;
+	matrix gView;
+	matrix gProj;
+	Material gMaterial;
+};
+
+cbuffer cbPerFrame : register(b1)
+{
+	float3 gEyePosW;
+};
+
+cbuffer CBChangesRarely : register(b2)
 {
 	DirectionalLight gDirLight[3];
 	PointLight gPointLight[3];
@@ -8,19 +21,11 @@ cbuffer cbPerFrame : register(b0)
     int gNumDirLight;
 	int gNumPointLight;
 	int gNumSpotLight;
-    bool gUseTexture;
-	float3 gEyePosW;
-};
-
-cbuffer cbPerObject : register(b1)
-{
-	matrix gWorld;
-	matrix gView;
-	matrix gProj;
-	Material gMaterial;
+	float pad1 = 0;
 	matrix gShadow;
-    int gIsShadow;
-};
+	bool gIsShadow;
+	bool gUseTexture;
+}
 
 Texture2D gTex : register(t0);
 SamplerState gSamLinear : register(s0);
@@ -46,7 +51,7 @@ VertexOut VS(VertexIn vertIn)
 {
     VertexOut vertOut;
 	float4 posw = mul(float4(vertIn.PosL, 1.0f), gWorld);
-	if(gIsShadow == 1)
+	if(gIsShadow)
 	{
 		posw = mul(posw, gShadow);
 	}
@@ -62,7 +67,7 @@ VertexOut VS(VertexIn vertIn)
 float4 PS(VertexOut vertIn) : SV_Target
 {
     float4 originColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	if(gUseTexture == true)
+	if(gUseTexture)
 	{
 		originColor = gTex.Sample(gSamLinear, vertIn.Tex);
 		clip(originColor.a - 0.1f);

@@ -19,6 +19,8 @@ namespace Soul
 		void SetWorldViewProj(const Core::SMatrix4x4& wvp) override
 		{
 			mConstantsPerObj.WVP = wvp;
+			Core::MatrixTranspose(mConstantsPerObj.WVP);
+			mIsDirty = mConstantBuffer.mIsDirty = true;
 		}
 		void ApplyShader() override
 		{
@@ -28,11 +30,13 @@ namespace Soul
 			// Set the vertex and pixel shaders that will be used to render.
 			deviceContext->VSSetShader(GetVertexShader(), nullptr, 0u);
 			deviceContext->PSSetShader(GetPixelShader(), nullptr, 0u);
-			Core::MatrixTranspose(mConstantsPerObj.WVP);
-			mConstantBuffer.UpdateBuffer(&mConstantsPerObj, sizeof(mConstantsPerObj));
 			// Set the constant buffer.
-			ID3D11Buffer* buffer = mConstantBuffer.GetD3D11Buffer();
-			deviceContext->VSSetConstantBuffers(0, 1, &buffer);
+			if (mIsDirty)
+			{
+				mIsDirty = false;
+				mConstantBuffer.UpdateBuffer(&mConstantsPerObj, sizeof(mConstantsPerObj));
+			}
+			mConstantBuffer.BindVS(0);
 		}
 	private:
 		//静态缓存对应的结构体变量

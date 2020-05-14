@@ -20,7 +20,8 @@ namespace Soul
 			mPixelShaderBuffer(nullptr),
 			mLayout(nullptr),
 			mSampleState(nullptr),
-			mDevice(device)
+			mDevice(device),
+			mIsDirty(false)
 		{
 			HRESULT result;
 			ID3D10Blob* errorMessage = nullptr;
@@ -132,5 +133,7 @@ namespace Soul
 		ID3D11SamplerState* mSampleState;
 		//Device
 		D3D11Device& mDevice;
+		//是否需要更新
+		bool mIsDirty;
 	};
 }

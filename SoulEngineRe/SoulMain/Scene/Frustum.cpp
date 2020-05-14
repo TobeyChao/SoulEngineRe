@@ -11,14 +11,14 @@ namespace Soul
 	//根据屏幕的深度，投影矩阵和相机矩阵求出世界空间的相应的视截体的6个平面
 	void Frustum::BuildFrustum(const Core::SMatrix4x4& projMatrix, const Core::SMatrix4x4& viewMatrix)
 	{
-		mCacheViewMatrix = viewMatrix;
-		mCacheProjMatrix = projMatrix;
-
 		// 如果不是第一次构建并且和上次的矩阵相同就不构建
-		if (!mFirstBuild && (mCacheViewMatrix == viewMatrix || mCacheProjMatrix == projMatrix))
+		if (!mFirstBuild && (mCacheViewMatrix == viewMatrix && mCacheProjMatrix == projMatrix))
 		{
 			return;
 		}
+
+		mCacheViewMatrix = viewMatrix;
+		mCacheProjMatrix = projMatrix;
 
 		mFirstBuild = false;
 
