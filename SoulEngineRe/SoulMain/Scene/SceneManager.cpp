@@ -172,13 +172,13 @@ namespace Soul
 
 		// Material
 		Material* material = new Material();
-		material->ambient = { 0.7250f, 0.7100f, 0.6800f, 1.0f };
-		material->diffuse = { 0.7250f, 0.7100f, 0.6800f, 1.0f };
+		material->ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
+		material->diffuse = { 0.8f, 0.8f, 0.8f, 1.0f };
 		if (createParameters.contains("alpha"))
 		{
 			material->diffuse.w = createParameters["alpha"];
 		}
-		material->specular = { 0.5f, 0.5f, 0.5f, 5.0f };
+		material->specular = { 0.2f, 0.2f, 0.2f, 16.0f };
 		subMesh->SetMaterial(material);
 
 		SetCustomEffect(subMesh, createParameters);
@@ -543,19 +543,14 @@ namespace Soul
 				shader->SetProj(GetActiveCamera()->GetProjectionMatrix());
 
 				// ²ÄÖÊ
-				if (sm->GetTextures().size() > 0)
+				auto& textures = sm->GetTextures();
+				for (size_t i = 0; i < textures.size(); i++)
 				{
-					shader->SetUseTexture(true);
-					auto& textures = sm->GetTextures();
-					for (size_t i = 0; i < textures.size(); i++)
-					{
-						mRenderSystem->SetTexture(i, textures[i]);
-					}
+					mRenderSystem->SetTexture(i, textures[i]);
 				}
-				else
-				{
-					shader->SetUseTexture(false);
-				}
+				shader->SetUseTexture(sm->GetTextures().size() > 0);
+				shader->SetUseNormalMap(sm->GetTextures().size() > 1);
+
 				// µÆ¹â
 				int slotD = 0;
 				int slotP = 0;

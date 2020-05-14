@@ -54,6 +54,7 @@ namespace Soul
 		virtual void SetSpotLightNum(int num) = 0;
 		virtual void SetPointLightNum(int num) = 0;
 		virtual void SetUseTexture(bool useTexture) = 0;
+		virtual void SetUseNormalMap(bool useNormalMap) = 0;
 	protected:
 		std::wstring mShaderName;
 		SHADER_TYPE mShaderType;

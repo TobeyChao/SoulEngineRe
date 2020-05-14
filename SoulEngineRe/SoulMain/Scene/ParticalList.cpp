@@ -15,11 +15,11 @@ namespace Soul
 		}
 		mRenderParameter->mVertexCount = (unsigned int)(*mOringinMeshData).Vertices.size();
 		mRenderParameter->mIndicesCount = (unsigned int)(*mOringinMeshData).Indices.size();
-		CreateBuffer<ColorTextureVertex>(GPU_BUFFER_TYPE::GBT_VERTEX_DYNAMIC);
+		CreateBuffer<PosTexColVertex>(GPU_BUFFER_TYPE::GBT_VERTEX_DYNAMIC);
 	}
 	void ParticalList::UpdateBuffer()
 	{
-		ColorTextureVertex* vertices = new ColorTextureVertex[mRenderParameter->mVertexCount];
+		PosTexColVertex* vertices = new PosTexColVertex[mRenderParameter->mVertexCount];
 		//Ìî³ä¶¥µã
 		for (size_t i = 0; i < (*mOringinMeshData).Vertices.size(); ++i)
 		{
@@ -27,7 +27,7 @@ namespace Soul
 			vertices[i].Color = (*mOringinMeshData).Vertices[i].Color;
 			vertices[i].TexCoord = (*mOringinMeshData).Vertices[i].TexCoord;
 		}
-		mRenderParameter->mVertexBuffer->UpdateBuffer(vertices, sizeof(ColorTextureVertex) * mRenderParameter->mVertexCount);
+		mRenderParameter->mVertexBuffer->UpdateBuffer(vertices, sizeof(PosTexColVertex) * mRenderParameter->mVertexCount);
 		delete[] vertices;
 		vertices = nullptr;
 	}

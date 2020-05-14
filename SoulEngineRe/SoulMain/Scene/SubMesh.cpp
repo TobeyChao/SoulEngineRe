@@ -52,15 +52,15 @@ namespace Soul
 
 		if (config["input_layout"] == "pos")
 		{
-			CreateBuffer<PositionVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
+			CreateBuffer<PosVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
 		}
 		else if (config["input_layout"] == "pos_tex")
 		{
-			CreateBuffer<TextureVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
+			CreateBuffer<PosTexVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
 		}
 		else if (config["input_layout"] == "pos_col")
 		{
-			CreateBuffer<ColorVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
+			CreateBuffer<PosColVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
 		}
 		else if (config["input_layout"] == "pos_tex_normal_col")
 		{
@@ -68,7 +68,11 @@ namespace Soul
 		}
 		else if (config["input_layout"] == "pos_tex_col")
 		{
-			// error
+			CreateBuffer<PosTexColVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
+		}
+		else if (config["input_layout"] == "pos_nor_tan_tex_col")
+		{
+			CreateBuffer<PosNorTanTexColVertex>(GPU_BUFFER_TYPE::GBT_VERTEX);
 		}
 		else
 		{

@@ -7,13 +7,13 @@
 
 namespace Soul
 {
-	struct PositionVertex
+	struct PosVertex
 	{
-		PositionVertex()
+		PosVertex()
 			:
 			Position(0.0f, 0.0f, 0.0f)
 		{}
-		PositionVertex(float x, float y, float z)
+		PosVertex(float x, float y, float z)
 			:
 			Position(x, y, z)
 		{}
@@ -22,21 +22,23 @@ namespace Soul
 		static const bool hasTex = false;
 		static const bool hasNor = false;
 		static const bool hasCol = false;
+		static const bool hasTan = false;
 
 		static const unsigned PosStartByte = 0;
 		static const unsigned TexStartByte = 0;
 		static const unsigned NorStartByte = 0;
 		static const unsigned ColStartByte = 0;
+		static const unsigned TanStartByte = 0;
 	};
 
-	struct TextureVertex
+	struct PosTexVertex
 	{
-		TextureVertex()
+		PosTexVertex()
 			:
 			Position(0.0f, 0.0f, 0.0f),
 			TexCoord(0.0f, 0.0f)
 		{}
-		TextureVertex(float x, float y, float z, float u, float v)
+		PosTexVertex(float x, float y, float z, float u, float v)
 			:
 			Position(x, y, z),
 			TexCoord(u, v)
@@ -47,18 +49,20 @@ namespace Soul
 		static const bool hasTex = true;
 		static const bool hasNor = false;
 		static const bool hasCol = false;
+		static const bool hasTan = false;
 
 		static const unsigned PosStartByte = 0;
 		static const unsigned TexStartByte = sizeof(Core::SVector3);
 		static const unsigned NorStartByte = 0;
 		static const unsigned ColStartByte = 0;
+		static const unsigned TanStartByte = 0;
 	};
 
-	struct ColorVertex
+	struct PosColVertex
 	{
-		ColorVertex()
+		PosColVertex()
 		{}
-		ColorVertex(float x, float y, float z, float r, float g, float b, float a)
+		PosColVertex(float x, float y, float z, float r, float g, float b, float a)
 			:
 			Position(x, y, z),
 			Color(r, g, b, a)
@@ -69,22 +73,24 @@ namespace Soul
 		static const bool hasTex = false;
 		static const bool hasNor = false;
 		static const bool hasCol = true;
+		static const bool hasTan = false;
 
 		static const unsigned PosStartByte = 0;
 		static const unsigned TexStartByte = 0;
 		static const unsigned NorStartByte = 0;
 		static const unsigned ColStartByte = sizeof(Core::SVector3);
+		static const unsigned TanStartByte = 0;
 	};
 
-	struct ColorTextureVertex
+	struct PosTexColVertex
 	{
-		ColorTextureVertex()
+		PosTexColVertex()
 			:
 			Position(0.0f, 0.0f, 0.0f),
 			TexCoord(0.0f, 0.0f),
 			Color(0.0f, 0.0f, 0.0f, 0.0f)
 		{}
-		ColorTextureVertex(float x, float y, float z, float u, float v,
+		PosTexColVertex(float x, float y, float z, float u, float v,
 			float r, float g, float b, float a)
 			:
 			Position(x, y, z),
@@ -98,11 +104,13 @@ namespace Soul
 		static const bool hasTex = true;
 		static const bool hasNor = false;
 		static const bool hasCol = true;
+		static const bool hasTan = false;
 
 		static const unsigned PosStartByte = 0;
 		static const unsigned TexStartByte = sizeof(Core::SVector3);
 		static const unsigned NorStartByte = 0;
 		static const unsigned ColStartByte = sizeof(Core::SVector3) + sizeof(Core::SVector2);
+		static const unsigned TanStartByte = 0;
 	};
 
 	struct PosTexNorVertex
@@ -123,11 +131,13 @@ namespace Soul
 		static const bool hasTex = true;
 		static const bool hasNor = true;
 		static const bool hasCol = false;
+		static const bool hasTan = false;
 
 		static const unsigned PosStartByte = 0;
 		static const unsigned TexStartByte = sizeof(Core::SVector3);
 		static const unsigned NorStartByte = sizeof(Core::SVector3) + sizeof(Core::SVector2);
 		static const unsigned ColStartByte = 0;
+		static const unsigned TanStartByte = 0;
 	};
 
 	struct PosNorColVertex
@@ -148,11 +158,13 @@ namespace Soul
 		static const bool hasTex = false;
 		static const bool hasNor = true;
 		static const bool hasCol = true;
+		static const bool hasTan = false;
 
 		static const unsigned PosStartByte = 0;
 		static const unsigned TexStartByte = 0;
 		static const unsigned NorStartByte = sizeof(Core::SVector3);
 		static const unsigned ColStartByte = sizeof(Core::SVector3) + sizeof(Core::SVector3);
+		static const unsigned TanStartByte = 0;
 	};
 
 	struct PosTexNorColVertex
@@ -176,11 +188,51 @@ namespace Soul
 		static const bool hasTex = true;
 		static const bool hasNor = true;
 		static const bool hasCol = true;
+		static const bool hasTan = false;
 
 		static const unsigned PosStartByte = 0;
 		static const unsigned TexStartByte = sizeof(Core::SVector3);
 		static const unsigned NorStartByte = sizeof(Core::SVector3) + sizeof(Core::SVector2);
 		static const unsigned ColStartByte = sizeof(Core::SVector3) + sizeof(Core::SVector2) + sizeof(Core::SVector3);
+		static const unsigned TanStartByte = 0;
+	};
+
+	struct PosNorTanTexColVertex
+	{
+		PosNorTanTexColVertex()
+		{}
+
+		PosNorTanTexColVertex(
+			float px, float py, float pz,
+			float nx, float ny, float nz,
+			float tx, float ty, float tz,
+			float u, float v,
+			float r, float g, float b, float a)
+			:
+			Position(px, py, pz),
+			Normal(nx, ny, nz),
+			TangentU(tx, ty, tz),
+			TexCoord(u, v),
+			Color(r, g, b, a)
+		{}
+
+		Core::SVector3 Position;
+		Core::SVector3 Normal;
+		Core::SVector3 TangentU;
+		Core::SVector2 TexCoord;
+		Core::SVector4 Color;
+
+		static const bool hasPos = true;
+		static const bool hasTex = true;
+		static const bool hasNor = true;
+		static const bool hasCol = true;
+		static const bool hasTan = true;
+
+		static const unsigned PosStartByte = 0;
+		static const unsigned NorStartByte = sizeof(Core::SVector3);
+		static const unsigned TanStartByte = sizeof(Core::SVector3) + sizeof(Core::SVector3);
+		static const unsigned TexStartByte = sizeof(Core::SVector3) + sizeof(Core::SVector3) + sizeof(Core::SVector3);
+		static const unsigned ColStartByte = sizeof(Core::SVector3) + sizeof(Core::SVector3) + sizeof(Core::SVector3) + sizeof(Core::SVector2);
 	};
 
 	struct Vertex

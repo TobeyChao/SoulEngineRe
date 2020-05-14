@@ -1,4 +1,5 @@
 #include "LightHelper.fx"
+#include "TangentHelper.fx"
 
 cbuffer CBChangesEveryDrawing : register(b0)
 {
@@ -25,16 +26,19 @@ cbuffer CBChangesRarely : register(b2)
 	matrix gShadow;
 	bool gIsShadow;
 	bool gUseTexture;
+	bool gUseNormal;
 }
 
 Texture2D gTex : register(t0);
+Texture2D gNormalMap : register(t1);
 SamplerState gSamLinear : register(s0);
 
 struct VertexIn
 {
 	float3 PosL : POSITION;
-	float2 Tex : TEXCOORD;
     float3 NormalL : NORMAL;
+	float3 TangentL : TANGENT;
+	float2 Tex : TEXCOORD;
 	float4 Color : COLOR;
 };
 
@@ -43,6 +47,7 @@ struct VertexOut
 	float4 PosH : SV_POSITION;
     float3 PosW : POSITION;     // 在世界中的位置
     float3 NormalW : NORMAL;    // 法向量在世界中的方向
+	float3 TangentW : TANGENT;
 	float4 Color : COLOR;
 	float2 Tex : TEXCOORD;
 };
@@ -59,6 +64,7 @@ VertexOut VS(VertexIn vertIn)
 	vertOut.PosH = mul(posw, viewProj);
 	vertOut.PosW = posw.xyz;
 	vertOut.NormalW = mul(vertIn.NormalL, (float3x3)gWorld);
+	vertOut.TangentW = mul(float4(vertIn.TangentL, 1.0f), gWorld).xyz;
     vertOut.Color = vertIn.Color;
 	vertOut.Tex = vertIn.Tex;
     return vertOut;
@@ -77,7 +83,15 @@ float4 PS(VertexOut vertIn) : SV_Target
     vertIn.NormalW = normalize(vertIn.NormalW); 
     // 物体顶点到摄像机眼睛，用来计算镜面高光
 	float3 toEyeW = normalize(gEyePosW - vertIn.PosW);
+	float3 NormalW = vertIn.NormalW;
 
+	// 如果使用法线贴图更新法线值
+	if(gUseNormal)
+	{
+		float3 normalMapSample = gNormalMap.Sample(gSamLinear, vertIn.Tex).rgb;
+    	NormalW = NormalSampleToWorldSpace(normalMapSample, vertIn.NormalW, vertIn.TangentW);
+	}
+    
 	// Start with a sum of zero. 
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -89,7 +103,7 @@ float4 PS(VertexOut vertIn) : SV_Target
 	[unroll]
     for (i = 0; i < gNumDirLight; ++i)
     {
-		ComputeDirectionalLight(gMaterial, gDirLight[i], vertIn.NormalW, toEyeW, A, D, S);
+		ComputeDirectionalLight(gMaterial, gDirLight[i], NormalW, toEyeW, A, D, S);
 		ambient += A;  
 		diffuse += D;
 		spec += S;
@@ -98,7 +112,7 @@ float4 PS(VertexOut vertIn) : SV_Target
 	[unroll]
     for (i = 0; i < gNumPointLight; ++i)
     {
-		ComputePointLight(gMaterial, gPointLight[i], vertIn.PosW, vertIn.NormalW, toEyeW, A, D, S);
+		ComputePointLight(gMaterial, gPointLight[i], vertIn.PosW, NormalW, toEyeW, A, D, S);
 		ambient += A;
 		diffuse += D;
 		spec += S;
@@ -107,7 +121,7 @@ float4 PS(VertexOut vertIn) : SV_Target
 	[unroll]
     for (i = 0; i < gNumSpotLight; ++i)
     {
-		ComputeSpotLight(gMaterial, gSpotLight[i], vertIn.PosW, vertIn.NormalW, toEyeW, A, D, S);
+		ComputeSpotLight(gMaterial, gSpotLight[i], vertIn.PosW, NormalW, toEyeW, A, D, S);
 		ambient += A;
 		diffuse += D;
 		spec += S;

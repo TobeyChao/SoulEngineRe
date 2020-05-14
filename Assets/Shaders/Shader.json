@@ -1,7 +1,7 @@
 {
     "Basic": {
         "path": "../Assets/Shaders/Light.fx",
-        "input_layout": "pos_tex_normal_col"
+        "input_layout": "pos_nor_tan_tex_col"
     },
     "Color": {
         "path": "../Assets/Shaders/ColorShader.fx",

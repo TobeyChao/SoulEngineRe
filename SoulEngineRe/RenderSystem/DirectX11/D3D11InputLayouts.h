@@ -12,5 +12,6 @@ namespace Soul
 		static const D3D11_INPUT_ELEMENT_DESC inputLayoutPosTexCol[3];
 		static const D3D11_INPUT_ELEMENT_DESC inputLayoutPosNorCol[3];
 		static const D3D11_INPUT_ELEMENT_DESC inputLayoutPosTexNorCol[4];
+		static const D3D11_INPUT_ELEMENT_DESC inputLayoutPosNorTanTexCol[5];
 	};
 }

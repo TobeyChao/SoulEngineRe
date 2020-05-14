@@ -83,6 +83,12 @@ namespace Soul
 				mDevice->CreateInputLayout(InputLayouts::inputLayoutPosTexCol, numElements, mVertexShaderBuffer->GetBufferPointer(),
 					mVertexShaderBuffer->GetBufferSize(), &mLayout);
 			}
+			else if (mShaderConfig["input_layout"] == "pos_nor_tan_tex_col")
+			{
+				UINT numElements = sizeof(InputLayouts::inputLayoutPosNorTanTexCol) / sizeof(InputLayouts::inputLayoutPosNorTanTexCol[0]);
+				mDevice->CreateInputLayout(InputLayouts::inputLayoutPosNorTanTexCol, numElements, mVertexShaderBuffer->GetBufferPointer(),
+					mVertexShaderBuffer->GetBufferSize(), &mLayout);
+			}
 		}
 		~D3D11Shader()
 		{
@@ -102,6 +108,7 @@ namespace Soul
 		void SetSpotLightNum(int num) override {};
 		void SetPointLightNum(int num) override {};
 		void SetUseTexture(bool useTexture) override {};
+		void SetUseNormalMap(bool useNormalMap) override {};
 		ID3D11VertexShader* GetVertexShader() const
 		{
 			return mVertexShader;

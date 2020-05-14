@@ -31,7 +31,7 @@ namespace Soul
 		Core::SMatrix4x4 shadowMat;
 		BOOL shadow = FALSE;
 		BOOL useTexture = FALSE;
-		float pad2 = 0;
+		BOOL useNormalMap = FALSE;
 		float pad3 = 0;
 	};
 
@@ -134,6 +134,11 @@ namespace Soul
 		void SetUseTexture(bool useTexture) override
 		{
 			mBasicCBChangesRarely.useTexture = useTexture;
+			mIsDirty = mConstantBufferChangesRarely.mIsDirty = true;
+		};
+		void SetUseNormalMap(bool useNormalMap) override
+		{
+			mBasicCBChangesRarely.useNormalMap = useNormalMap;
 			mIsDirty = mConstantBufferChangesRarely.mIsDirty = true;
 		};
 		void ApplyShader() override

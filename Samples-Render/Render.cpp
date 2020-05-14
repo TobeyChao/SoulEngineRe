@@ -61,7 +61,7 @@ public:
 		//nodeLine->AttachObj(line);
 		//nodeLine->SetPosition({ 0.f, 0.f, 0.f });
 
-		Core::SMatrix4x4 shadowMat = Core::MatrixShadow({ 0.0f, 1.0f, 0.0f, -0.01f }, { 0.577f, 0.577f, -0.577f, 0.0f });
+		Core::SMatrix4x4 shadowMat = Core::MatrixShadow({ 0.0f, 1.0f, 0.0f, -0.01f }, { 0.0f, 3.0f, 0.0f, 1.0f });
 
 		
 		// nodePlane
@@ -70,14 +70,13 @@ public:
 		planeSet["depth"] = 30.0f;
 		planeSet["m"] = 5.0f;
 		planeSet["n"] = 5.0f;
-		planeSet["maxU"] = 5.0f;
-		planeSet["maxV"] = 5.0f;
-		//planeSet["Rasterizer"] = "RT_WIREFRAME";
-
+		planeSet["maxU"] = 2.0f;
+		planeSet["maxV"] = 2.0f;
 		for (size_t i = 0; i < 5; i++)
 		{
 			plane[i] = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-			plane[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/checkboard.dds"));
+			plane[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones.dds"));
+			plane[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones_NORM.png"));
 			nodePlane[i] = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 			nodePlane[i]->AttachObj(plane[i]);
 		}
@@ -98,9 +97,9 @@ public:
 		cubeSet["width"] = 1;
 		cubeSet["height"] = 1;
 		cubeSet["depth"] = 1;
-		cubeSet["Rasterizer"] = "RT_CULL_NONE";
 		cube = sceneMgr->CreateGameObject("cube", SIMPLE_GAMEOBJECT::SG_CUBE, cubeSet);
-		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/WoodCrate.dds"));
+		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/floor.dds"));
+		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/floor_NORM.png"));
 		cube->GetSubMesh(0)->EnableShadow(true);
 		cube->GetSubMesh(0)->SetShadowMatrix(shadowMat);
 		nodeCube = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
@@ -116,7 +115,8 @@ public:
 		cylinderSet["sliceCount"] = 30;
 		cylinderSet["stackCount"] = 60;
 		cylinder = sceneMgr->CreateGameObject("cylinder", SIMPLE_GAMEOBJECT::SG_CYLINDER, cylinderSet);
-		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stone.dds"));
+		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks.dds"));
+		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks_NORM.png"));
 		cylinder->GetSubMesh(0)->EnableShadow(true);
 		cylinder->GetSubMesh(0)->SetShadowMatrix(shadowMat);
 		nodeCylinder = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
@@ -125,7 +125,7 @@ public:
 
 		// Mesh
 		json meshSet;
-		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/house2/house2.obj", meshSet);
+		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/mouse/mouse1.obj", meshSet);
 		for (auto it : mesh->GetAllSubMesh())
 		{
 			it->EnableShadow(true);
@@ -198,7 +198,7 @@ public:
 		water = sceneMgr->CreateGameObject("water", SIMPLE_GAMEOBJECT::SG_PLANE, waterSet);
 		water->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/water.dds"));
 		nodeWater = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeWater->AttachObj(water);
+		//nodeWater->AttachObj(water);
 		nodeWater->SetPosition({ 0.f, 1.1f, 0.f });
 
 		camera = sceneMgr->AddCameraSceneNode();
@@ -340,7 +340,7 @@ public:
 	void InitLight()
 	{
 		pointLight = sceneMgr->CreateLight("main light", LIGHT_TYPE::LT_POINT);
-		pointLight->SetAmbient({ 0.3f, 0.3f, 0.3f, 0.3f });
+		pointLight->SetAmbient({ 0.3f, 0.3f, 0.3f, 1.0f });
 		pointLight->SetDiffuse({ 1.f, 1.f, 1.f, 1.0f });
 		pointLight->SetSpecular({ 0.7f, 0.7f, 0.7f, 1.0f });
 		pointLight->SetAtt({ 0.0f, 0.5f, 0.0f });
@@ -377,18 +377,22 @@ public:
 		spotLight3->SetSpot(10.0f);
 		spotLight3->SetRange(100.0f);
 
-		dirLight = sceneMgr->CreateLight("dirLight", LIGHT_TYPE::LT_DIRECTIONAL);
-		dirLight->SetAmbient({ 0.2f, 0.2f, 0.2f, 1.0f });
-		dirLight->SetDiffuse({ 0.8f, 0.8f, 0.8f, 1.0f });
-		dirLight->SetSpecular({ 0.5f, 0.5f, 0.5f, 1.0f });
-		dirLight->SetDirection({ -0.577f, -0.577f, 0.577f });
+		for (size_t i = 0; i < 1; i++)
+		{
+			dirLight[i] = sceneMgr->CreateLight("dirLight", LIGHT_TYPE::LT_DIRECTIONAL);
+		}
+
+		dirLight[0]->SetAmbient({ 0.65f, 0.65f, 0.65f, 1.0f });
+		dirLight[0]->SetDiffuse({ 0.5f, 0.5f, 0.5f, 1.0f });
+		dirLight[0]->SetSpecular({ 0.1f, 0.1f, 0.1f, 1.0f });
+		dirLight[0]->SetDirection({ -0.577f, -0.577f, 0.577f });
 
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
-		lightNode->AttachObj(dirLight);
-		//lightNode->AttachObj(pointLight);
-		lightNode->AttachObj(spotLight1);
-		lightNode->AttachObj(spotLight2);
-		lightNode->AttachObj(spotLight3);
+		//lightNode->AttachObj(dirLight[0]);
+		lightNode->AttachObj(pointLight);
+		//lightNode->AttachObj(spotLight1);
+		//lightNode->AttachObj(spotLight2);
+		//lightNode->AttachObj(spotLight3);
 	}
 
 	// 第一人称相机
@@ -398,27 +402,27 @@ public:
 		const Core::SVector3& right = camera->GetRight();
 		if (Input::DXInput::GetInstance().IsPressed(DIK_UP))
 		{
-			cameraPos.x += 0.25f * forward.x;
-			cameraPos.y += 0.25f * forward.y;
-			cameraPos.z += 0.25f * forward.z;
+			cameraPos.x += 0.01f * forward.x;
+			cameraPos.y += 0.01f * forward.y;
+			cameraPos.z += 0.01f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_DOWN))
 		{
-			cameraPos.x -= 0.25f * forward.x;
-			cameraPos.y -= 0.25f * forward.y;
-			cameraPos.z -= 0.25f * forward.z;
+			cameraPos.x -= 0.01f * forward.x;
+			cameraPos.y -= 0.01f * forward.y;
+			cameraPos.z -= 0.01f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_LEFT))
 		{
-			cameraPos.x -= 0.25f * right.x;
-			cameraPos.y -= 0.25f * right.y;
-			cameraPos.z -= 0.25f * right.z;
+			cameraPos.x -= 0.01f * right.x;
+			cameraPos.y -= 0.01f * right.y;
+			cameraPos.z -= 0.01f * right.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_RIGHT))
 		{
-			cameraPos.x += 0.25f * right.x;
-			cameraPos.y += 0.25f * right.y;
-			cameraPos.z += 0.25f * right.z;
+			cameraPos.x += 0.01f * right.x;
+			cameraPos.y += 0.01f * right.y;
+			cameraPos.z += 0.01f * right.z;
 		}
 	}
 
@@ -459,7 +463,7 @@ private:
 	Light* spotLight1{};
 	Light* spotLight2{};
 	Light* spotLight3{};
-	Light* dirLight{};
+	Light* dirLight[3]{};
 
 	SceneNodeCamera* camera{};
 	SceneManager* sceneMgr{};

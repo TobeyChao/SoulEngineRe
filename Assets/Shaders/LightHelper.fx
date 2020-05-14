@@ -65,8 +65,9 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
     
     if(diffuseFactor > 0.0f)
     {
-        float3 lightReflect = reflect(L.Direction, normal);
-        float specFactor = pow(max(dot(lightReflect, toEye), 0), mat.Specular.w);
+        //float3 lightReflect = reflect(L.Direction, normal);
+        float3 halfwarDir = normalize(lightVec + toEye);
+        float specFactor = pow(max(dot(halfwarDir, normal), 0), mat.Specular.w);
         diffuse = diffuseFactor * mat.Diffuse * L.Diffuse;
         if(specFactor > 0)
             spec = specFactor * mat.Specular * L.Specular;
@@ -100,8 +101,9 @@ void ComputePointLight(Material mat, PointLight L, float3 pos, float3 normal, fl
     float diffuseFactor = dot(lightVec, normal);
     if(diffuseFactor > 0.0f)
     {
-        float3 lightReflect = reflect(-lightVec, normal);
-        float specFactor = pow(max(dot(lightReflect, toEye), 0), mat.Specular.w);
+        //float3 lightReflect = reflect(-lightVec, normal);
+        float3 halfwarDir = normalize(lightVec + toEye);
+        float specFactor = pow(max(dot(normal, halfwarDir), 0), mat.Specular.w);
         diffuse = diffuseFactor * mat.Diffuse * L.Diffuse;
         if(specFactor > 0)
             spec = specFactor * mat.Specular * L.Specular;
@@ -138,8 +140,9 @@ void ComputeSpotLight(Material mat, SpotLight L, float3 pos, float3 normal, floa
     float diffuseFactor = dot(lightVec, normal);
     if(diffuseFactor > 0.0f)
     {
-        float3 lightReflect = reflect(-lightVec, normal);
-        float specFactor = pow(max(dot(lightReflect, toEye), 0.0f), mat.Specular.w);
+        //float3 lightReflect = reflect(-lightVec, normal);
+        float3 halfwarDir = normalize(lightVec + toEye);
+        float specFactor = pow(max(dot(normal, halfwarDir), 0.0f), mat.Specular.w);
         diffuse = diffuseFactor * mat.Diffuse * L.Diffuse;
         if(specFactor > 0)
             spec = specFactor * mat.Specular * L.Specular;

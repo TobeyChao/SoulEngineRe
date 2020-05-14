@@ -65,6 +65,11 @@ namespace Soul
 					memcpy_s(reinterpret_cast<char*>(&vertices[i]) + VertexType::ColStartByte, sizeof(Core::SVector4),
 						&((*mOringinMeshData).Vertices[i].Color), sizeof(Core::SVector4));
 				}
+				if (VertexType::hasTan)
+				{
+					memcpy_s(reinterpret_cast<char*>(&vertices[i]) + VertexType::TanStartByte, sizeof(Core::SVector3),
+						&((*mOringinMeshData).Vertices[i].TangentU), sizeof(Core::SVector3));
+				}
 			}
 			mRenderParameter->mSizePerVertex = sizeof(VertexType);
 			//创建顶点缓存
@@ -111,6 +116,9 @@ namespace Soul
 			mTextures.push_back(texture);
 		}
 
+		// 约定
+		// 第一位为普通贴图
+		// 第二位为法线贴图
 		std::vector<ITexture*>& GetTextures()
 		{
 			return mTextures;
