@@ -163,15 +163,21 @@ namespace Soul
 		}
 
 		// 深度模板
-		void SetDepthStencil(const DepthStencilType& dst)
+		void SetDepthStencil(const DepthStencilType& dst, UINT stencilRef)
 		{
 			mUseDepthStencil = true;
 			mDepthStencilType = dst;
+			mStencilRef = stencilRef;
 		}
 
 		bool UseDepthStencil()
 		{
 			return mUseDepthStencil;
+		}
+
+		UINT GetStencilRef()
+		{
+			return mStencilRef;
 		}
 
 		const DepthStencilType& GetDepthStencilType()
@@ -241,6 +247,7 @@ namespace Soul
 		// 是否自定义深度模板
 		bool mUseDepthStencil;
 		DepthStencilType mDepthStencilType;
+		UINT mStencilRef;
 
 		// 需要渲染的顶点缓存
 		RenderParameter* mRenderParameter;

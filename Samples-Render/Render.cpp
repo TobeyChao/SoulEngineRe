@@ -22,19 +22,30 @@ public:
 
 		InitLight();
 
+		// sky
+		json sky;
+		sky["Shader"] = "SkyBox";
+		sky["DepthStencil"] = "DST_LESS_EQUAL";
+		sky["Rasterizer"] = "RT_CULL_CLOCKWISE";
+		sphere = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sky);
+		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/space.dds"));
+		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeSky->AttachObj(sphere);
+		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
+
 		json terrainSet;
-		terrainSet["width"] = 1025.0f;
-		terrainSet["depth"] = 1025.0f;
-		terrainSet["m"] = 1025;
-		terrainSet["n"] = 1025;
-		terrainSet["scale"] = 0.003f;
-		terrainSet["heightMap"] = "../Assets/Terrain/heightmap.raw";
+		terrainSet["width"] = 257.0f;
+		terrainSet["depth"] = 257.0f;
+		terrainSet["m"] = 257;
+		terrainSet["n"] = 257;
+		terrainSet["scale"] = 0.0003f;
+		terrainSet["heightMap"] = "../Assets/Terrain/heightmap(2).raw";
 		terrainSet["Shader"] = "Basic";
 		terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
 		terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
 		nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeTerrain->SetPosition({ 0.0f, -80.0f, 0.0f });
-		//nodeTerrain->AttachObj(terrain);
+		nodeTerrain->SetPosition({ 0.0f, 0.0f, 0.0f });
+		nodeTerrain->AttachObj(terrain);
 
 		// Line
 		//json lineSet;
@@ -72,24 +83,15 @@ public:
 		planeSet["n"] = 5.0f;
 		planeSet["maxU"] = 2.0f;
 		planeSet["maxV"] = 2.0f;
-		for (size_t i = 0; i < 5; i++)
-		{
-			plane[i] = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-			plane[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones.dds"));
-			plane[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones_NORM.png"));
-			nodePlane[i] = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-			nodePlane[i]->AttachObj(plane[i]);
-		}
-
-		nodePlane[0]->SetPosition({ 0.f, 0.f, 0.f });
-		nodePlane[1]->SetPosition({ 0.f, 15.f, 15.f });
-		nodePlane[2]->SetPosition({ -15.f, 15.f, 0.f });
-		nodePlane[3]->SetPosition({ 0.f, 15.f, -15.f });
-		nodePlane[4]->SetPosition({ 15.f, 15.f, 0.f });
-		nodePlane[1]->SetRotation({ -Core::SM_PIDIV2, 0.f, 0.f });
-		nodePlane[2]->SetRotation({ 0.f, 0.f, -Core::SM_PIDIV2 });
-		nodePlane[3]->SetRotation({ Core::SM_PIDIV2, 0.f, 0.f });
-		nodePlane[4]->SetRotation({ 0.f, 0.f, Core::SM_PIDIV2 });
+		planeSet["DepthStencil"] = "DST_WRITE_STECIL";
+		planeSet["StencilRef"] = 1;
+		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones.dds"));
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones_NORM.png"));
+		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodePlane->AttachObj(plane);
+		
+		nodePlane->SetPosition({ 0.f, 0.f, 0.f });
 
 		// Cube
 		json cubeSet;
@@ -145,16 +147,6 @@ public:
 		nodeMesh2->SetPosition({ 0.f, 0.2f, -3.f });
 		nodeMesh2->AttachObj(mesh2);
 
-		// sky
-		json sky;
-		sky["Shader"] = "SkyBox";
-		sky["DepthStencil"] = "DST_LESS_EQUAL";
-		sky["Rasterizer"] = "RT_CULL_CLOCKWISE";
-		sphere = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sky);
-		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/space.dds"));
-		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeSky->AttachObj(sphere);
-		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
 
 		/*
 		particleEmitter = new ParticleEmitter();
@@ -388,7 +380,7 @@ public:
 		dirLight[0]->SetDirection({ -0.577f, -0.577f, 0.577f });
 
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
-		//lightNode->AttachObj(dirLight[0]);
+		lightNode->AttachObj(dirLight[0]);
 		lightNode->AttachObj(pointLight);
 		//lightNode->AttachObj(spotLight1);
 		//lightNode->AttachObj(spotLight2);
@@ -442,7 +434,7 @@ private:
 	SceneNode* nodeCylinder{};
 	SceneNode* nodeCube{};
 	SceneNode* nodeSky{};
-	SceneNode* nodePlane[5]{};
+	SceneNode* nodePlane{};
 	SceneNode* nodeParticles{};
 	SceneNode* nodeTerrain{};
 	SceneNode* nodeWater{};
@@ -455,7 +447,7 @@ private:
 	GameObject* cylinder{};
 	GameObject* mesh{};
 	GameObject* mesh2{};
-	GameObject* plane[5]{};
+	GameObject* plane{};
 	GameObject* particleList{};
 	GameObject* terrain{};
 	IAudioBuffer* audio;

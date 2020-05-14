@@ -134,7 +134,7 @@ namespace Soul
 			GameObject* newGameObject = new GameObject(name);
 			SubMesh* subMesh = new ParticalList(name);
 			subMesh->SetBlend(BlendType::BT_TRANSPARENT);
-			subMesh->SetDepthStencil(DepthStencilType::DST_NO_DEPTH_WRITE);
+			subMesh->SetDepthStencil(DepthStencilType::DST_NO_DEPTH_WRITE, 0);
 			subMesh->SetRasterizer(RasterizerType::RT_CULL_NONE);
 			subMesh->SetShader(ShaderManager::GetInstance().GetShaderByName(L"Particle"));
 			subMesh->PushTexture(TextureManager::GetInstance().GetTexture(textureNameW));
@@ -426,11 +426,48 @@ namespace Soul
 			std::string depthStencil = effctSetting["DepthStencil"];
 			if (depthStencil == "DST_LESS_EQUAL")
 			{
-				subMesh->SetDepthStencil(DepthStencilType::DST_LESS_EQUAL);
+				subMesh->SetDepthStencil(DepthStencilType::DST_LESS_EQUAL, 0);
 			}
 			else if (depthStencil == "DST_NO_DEPTH_WRITE")
 			{
-				subMesh->SetDepthStencil(DepthStencilType::DST_NO_DEPTH_WRITE);
+				subMesh->SetDepthStencil(DepthStencilType::DST_NO_DEPTH_WRITE, 0);
+			}
+			else if (depthStencil == "DST_NO_DEPTH_WRITE_WRITE_STECIL")
+			{
+				UINT StencilRef = 0;
+				if (effctSetting.contains("StencilRef"))
+				{
+					StencilRef = effctSetting["StencilRef"];
+				}
+				subMesh->SetDepthStencil(DepthStencilType::DST_NO_DEPTH_WRITE_WRITE_STECIL, StencilRef);
+			}
+			else if (depthStencil == "DST_WRITE_STECIL")
+			{
+				UINT StencilRef = 0;
+				if (effctSetting.contains("StencilRef"))
+				{
+					StencilRef = effctSetting["StencilRef"];
+				}
+				subMesh->SetDepthStencil(DepthStencilType::DST_WRITE_STECIL, StencilRef);
+			}
+			else if (depthStencil == "DST_DRAW_WITH_STECIL")
+			{
+				UINT StencilRef = 0;
+				if (effctSetting.contains("StencilRef"))
+				{
+					StencilRef = effctSetting["StencilRef"];
+				}
+				subMesh->SetDepthStencil(DepthStencilType::DST_DRAW_WITH_STECIL, StencilRef);
+				
+			}
+			else if (depthStencil == "DST_NO_DOUBLE_BLEND")
+			{
+				UINT StencilRef = 0;
+				if (effctSetting.contains("StencilRef"))
+				{
+					StencilRef = effctSetting["StencilRef"];
+				}
+				subMesh->SetDepthStencil(DepthStencilType::DST_NO_DOUBLE_BLEND, StencilRef);
 			}
 		}
 
@@ -504,18 +541,23 @@ namespace Soul
 		while (!mAllAttachedSubMesh.empty())
 		{
 			SubMesh* sm = mAllAttachedSubMesh.front();
-			
-			if (!mActiveCamera->CheckRectangle(sm->GetParent()->GetBoundingBox()))
+			const BoundingBox& bb = sm->GetParent()->GetBoundingBox();
+			// 到三边距离均为0不进行裁剪
+			if (bb.mLengthToSides != Core::SVector3{ 0.0f, 0.0f, 0.0f})
 			{
-				std::cout << sm->GetParent()->GetName() << std::endl;
-				mAllAttachedSubMesh.pop();
-				continue;
+				if (!mActiveCamera->CheckRectangle(bb))
+				{
+					std::cout << sm->GetParent()->GetName() << std::endl;
+					mAllAttachedSubMesh.pop();
+					continue;
+				}
 			}
-
+			
 			// 深度模板
 			if (sm->UseDepthStencil())
 			{
 				mRenderSystem->SetDepthStencilType(sm->GetDepthStencilType());
+				mRenderSystem->SetStencilRef(sm->GetStencilRef());
 			}
 
 			// 光栅化
@@ -629,7 +671,7 @@ namespace Soul
 					shader->SetShadowMatrix(sm->GetShadowMatrix());
 					shader->SetUseTexture(false);
 					mRenderSystem->SetDepthStencilType(DepthStencilType::DST_NO_DOUBLE_BLEND);
-					mRenderSystem->SetStencilRef(0);
+					mRenderSystem->SetStencilRef(1);
 					mRenderSystem->SetBlendType(BlendType::BT_TRANSPARENT);
 					mRenderSystem->BindShader(shader);
 					// 渲染阴影

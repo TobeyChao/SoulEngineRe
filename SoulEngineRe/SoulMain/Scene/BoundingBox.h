@@ -10,7 +10,7 @@ namespace Soul
 		BoundingBox() noexcept
 			:
 			mCenter(0.0f, 0.0f, 0.0f),
-			mLengthToSides(1.f, 1.f, 1.f)
+			mLengthToSides(0.f, 0.f, 0.f)
 		{}
 		void Transform(BoundingBox& Out, const Core::SMatrix4x4& M) const;
 		bool Intersects(const BoundingBox& box) const;

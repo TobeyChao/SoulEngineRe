@@ -33,7 +33,10 @@ namespace Soul
 			return *mBoundingBox;
 		}
 		BoundingBox out;
-		mBoundingBox->Transform(out, mSceneNodeBelongsTo->GetAbsoluteTransformation());
+		if (mBoundingBox)
+		{
+			mBoundingBox->Transform(out, mSceneNodeBelongsTo->GetAbsoluteTransformation());
+		}
 		return out;
 	}
 	void GameObject::BuildBoundingBox()

@@ -28,9 +28,12 @@ namespace Soul
 	enum class DepthStencilType
 	{
 		DST_DEFAULT,
-		DST_LESS_EQUAL,		// 深度测试小于等于，用于天空盒
-		DST_NO_DEPTH_WRITE,	// 深度测试开启，但是不写入深度值
-		DST_NO_DOUBLE_BLEND,// 无二次混合
+		DST_LESS_EQUAL,						// 深度测试小于等于，用于天空盒
+		DST_NO_DEPTH_WRITE,					// 深度测试开启，但是不写入深度值
+		DST_NO_DEPTH_WRITE_WRITE_STECIL,	// 写入模板值，但是不写入深度信息
+		DST_WRITE_STECIL,					// 写入模板值，也写入深度信息
+		DST_DRAW_WITH_STECIL,				// 使用模板值绘制
+		DST_NO_DOUBLE_BLEND,				// 无二次混合
 	};
 
 	class RenderParameter
