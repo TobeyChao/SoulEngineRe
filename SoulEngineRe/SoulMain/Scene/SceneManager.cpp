@@ -661,6 +661,7 @@ namespace Soul
 					shader->SetMaterial(materialShadow);
 					shader->SetEnableShadow(true);
 					shader->SetShadowMatrix(sm->GetShadowMatrix());
+					shader->SetShadowPlane(sm->GetShadowPlane());
 					shader->SetUseTexture(false);
 					mRenderSystem->SetDepthStencilType(DepthStencilType::DST_NO_DOUBLE_BLEND);
 					mRenderSystem->SetStencilRef(1);

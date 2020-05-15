@@ -33,6 +33,7 @@ namespace Soul
 		BOOL useTexture = FALSE;
 		BOOL useNormalMap = FALSE;
 		float pad3 = 0;
+		Core::SVector4 shadowPlane;
 	};
 
 	class D3D11BasicShader : public D3D11Shader
@@ -68,6 +69,10 @@ namespace Soul
 		{
 			mBasicCBChangesRarely.shadowMat = shadowMat;
 			Core::MatrixTranspose(mBasicCBChangesRarely.shadowMat);
+		}
+		void SetShadowPlane(const Core::SVector4& shadowPlane) override
+		{
+			mBasicCBChangesRarely.shadowPlane = shadowPlane;
 		}
 		void SetEnableShadow(bool useShadow) override
 		{

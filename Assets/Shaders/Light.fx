@@ -27,6 +27,8 @@ cbuffer CBChangesRarely : register(b2)
 	bool gIsShadow;
 	bool gUseTexture;
 	bool gUseNormal;
+	float pad2 = 0;
+	float4 gShadowplane;
 }
 
 Texture2D gTex : register(t0);
@@ -56,12 +58,18 @@ VertexOut VS(VertexIn vertIn)
 {
     VertexOut vertOut;
 	float4 posw = mul(float4(vertIn.PosL, 1.0f), gWorld);
+	float t = 1;
 	if(gIsShadow)
 	{
+		t = dot(posw, gShadowplane);
 		posw = mul(posw, gShadow);
 	}
-	matrix viewProj = mul(gView, gProj);
+	float4x4 viewProj = mul(gView, gProj);
 	vertOut.PosH = mul(posw, viewProj);
+	if(t <= 0.0f)
+	{
+		vertOut.PosH.w = 0;
+	}
 	vertOut.PosW = posw.xyz;
 	vertOut.NormalW = mul(vertIn.NormalL, (float3x3)gWorld);
 	vertOut.TangentW = mul(float4(vertIn.TangentL, 1.0f), gWorld).xyz;

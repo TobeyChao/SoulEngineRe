@@ -100,6 +100,16 @@ namespace Soul
 			mShadowMat = shadowMatrix;
 		}
 
+		void SetShadowPlane(const Core::SVector4& shadowPlane)
+		{
+			mShadowPlane = shadowPlane;
+		}
+
+		const Core::SVector4& GetShadowPlane()
+		{
+			return mShadowPlane;
+		}
+
 		const Core::SMatrix4x4& GetShadowMatrix()
 		{
 			return mShadowMat;
@@ -235,6 +245,7 @@ namespace Soul
 		bool mEnableShadow;
 
 		Core::SMatrix4x4 mShadowMat;
+		Core::SVector4 mShadowPlane;
 
 		// 是否自定义混合
 		bool mUseBlend;

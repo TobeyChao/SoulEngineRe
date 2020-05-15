@@ -78,6 +78,7 @@ public:
 		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/floor_NORM.png"));
 		cube->GetSubMesh(0)->EnableShadow(true);
 		cube->GetSubMesh(0)->SetShadowMatrix(shadowMat);
+		cube->GetSubMesh(0)->SetShadowPlane({ 0.0f, 1.0f, 0.0f, -0.01f });
 		nodeCube = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCube->AttachObj(cube);
 		nodeCube->SetPosition({ 0.f, 0.51f, 0.f });
@@ -95,17 +96,19 @@ public:
 		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks_NORM.png"));
 		cylinder->GetSubMesh(0)->EnableShadow(true);
 		cylinder->GetSubMesh(0)->SetShadowMatrix(shadowMat);
+		cylinder->GetSubMesh(0)->SetShadowPlane({ 0.0f, 1.0f, 0.0f, -0.01f });
 		nodeCylinder = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCylinder->AttachObj(cylinder);
 		nodeCylinder->SetPosition({ 3.f, 1.51f, 0.f });
 
 		// Mesh
 		json meshSet;
-		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/mouse/mouse1.obj", meshSet);
+		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/house2/house2.obj", meshSet);
 		for (auto it : mesh->GetAllSubMesh())
 		{
 			it->EnableShadow(true);
 			it->SetShadowMatrix(shadowMat);
+			it->SetShadowPlane({ 0.0f, 1.0f, 0.0f, -0.01f });
 		}
 		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeMesh->SetPosition({ -3.f, 0.f, 0.f });
@@ -116,6 +119,7 @@ public:
 		{
 			it->EnableShadow(true);
 			it->SetShadowMatrix(shadowMat);
+			it->SetShadowPlane({ 0.0f, 1.0f, 0.0f, -0.01f });
 		}
 		nodeMesh2 = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeMesh2->SetPosition({ 0.f, 0.2f, -3.f });
@@ -365,27 +369,27 @@ public:
 		const Core::SVector3& right = camera->GetRight();
 		if (Input::DXInput::GetInstance().IsPressed(DIK_UP))
 		{
-			cameraPos.x += 0.01f * forward.x;
-			cameraPos.y += 0.01f * forward.y;
-			cameraPos.z += 0.01f * forward.z;
+			cameraPos.x += 0.05f * forward.x;
+			cameraPos.y += 0.05f * forward.y;
+			cameraPos.z += 0.05f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_DOWN))
 		{
-			cameraPos.x -= 0.01f * forward.x;
-			cameraPos.y -= 0.01f * forward.y;
-			cameraPos.z -= 0.01f * forward.z;
+			cameraPos.x -= 0.05f * forward.x;
+			cameraPos.y -= 0.05f * forward.y;
+			cameraPos.z -= 0.05f * forward.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_LEFT))
 		{
-			cameraPos.x -= 0.01f * right.x;
-			cameraPos.y -= 0.01f * right.y;
-			cameraPos.z -= 0.01f * right.z;
+			cameraPos.x -= 0.05f * right.x;
+			cameraPos.y -= 0.05f * right.y;
+			cameraPos.z -= 0.05f * right.z;
 		}
 		if (Input::DXInput::GetInstance().IsPressed(DIK_RIGHT))
 		{
-			cameraPos.x += 0.01f * right.x;
-			cameraPos.y += 0.01f * right.y;
-			cameraPos.z += 0.01f * right.z;
+			cameraPos.x += 0.05f * right.x;
+			cameraPos.y += 0.05f * right.y;
+			cameraPos.z += 0.05f * right.z;
 		}
 	}
 
