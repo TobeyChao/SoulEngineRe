@@ -8,6 +8,6 @@ namespace Soul
 	public:
 		SceneNodeLight(SceneNode* parent, SceneManager* mgr, size_t id = -1);
 		void OnRegisterSceneNode() override;
-		void Render() override;
+		void ProcessVisibleGameObject() override;
 	};
 }

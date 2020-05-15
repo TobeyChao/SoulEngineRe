@@ -7,6 +7,7 @@ namespace Soul
 	GameObject::GameObject(const std::string& name)
 		:
 		mName(name),
+		mVisible(true),
 		mSceneNodeBelongsTo(nullptr),
 		mBoundingBox(nullptr)
 	{

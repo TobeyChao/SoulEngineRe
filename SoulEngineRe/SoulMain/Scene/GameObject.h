@@ -7,7 +7,7 @@ namespace Soul
 	class GameObject
 	{
 	public:
-		explicit GameObject(const std::string& name);
+		explicit GameObject(const std::string& name = "GameObject");
 
 		virtual ~GameObject();
 		
@@ -16,12 +16,16 @@ namespace Soul
 			return mName;
 		}
 
+		void SetVisible(bool isVisible) { mVisible = isVisible; }
+
+		bool IsVisible() { return mVisible; }
+
 		void SetSceneNodeBelongsTo(SceneNode* sceneNode) { mSceneNodeBelongsTo = sceneNode; }
 
 		SceneNode* GetSceneNodeBelongsTo() const { return mSceneNodeBelongsTo; }
 
 		void PushSubMesh(SubMesh* subMesh)
-		{
+		{ 
 			mSunMeshes.push_back(subMesh);
 			subMesh->SetParent(this);
 		}
@@ -44,7 +48,10 @@ namespace Soul
 		void BuildBoundingBox();
 		
 	protected:
+		// 物体名称
 		std::string mName;
+		// 是否可见
+		bool mVisible;
 		// 由SceneManager管理
 		SceneNode* mSceneNodeBelongsTo;
 		// 包围盒

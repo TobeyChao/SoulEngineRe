@@ -8,6 +8,6 @@ namespace Soul
 	public:
 		SceneNodeRenderable(SceneNode* parent, SceneManager* mgr, size_t id = -1);
 		void OnRegisterSceneNode() override;
-		void Render() override;
+		void ProcessVisibleGameObject() override;
 	};
 }

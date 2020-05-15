@@ -17,77 +17,53 @@ namespace Soul
 
 		~SceneManager();
 
-		/***************************************************/
-		SceneNodeCamera* AddCameraSceneNode(SceneNode* parent = nullptr,
-			const Core::SVector3& position = Core::SVector3(0.f, 0.f, -10.0f),
-			const Core::SVector3& lookAt = Core::SVector3(0.f, 0.f, 0.f),
-			size_t id = -1, bool makeActive = true);
+		SceneNode* GetRootSceneNode();
 
-		virtual SceneNode* AddSkyBoxSceneNode(ITexture* texture, SceneNode* parent = nullptr, size_t id = -1);
+		unsigned int RegisterNode(SceneNode* node, E_SCENENODE_TYPES pass);
 
-		virtual SceneNode* GetRootSceneNode();
+		GameObject* CreateGameObject(const std::string& name, ParticleEmitter* particleEmmiter, const json& createParameters);
 
-		virtual SceneNode* GetSceneNodeFromId(int id, SceneNode* start = nullptr);
+		GameObject* CreateGameObject(const std::string& name, const json& createParameters);
 
-		virtual SceneNode* GetSceneNodeFromName(const std::wstring& name, SceneNode* start = nullptr);
+		GameObject* CreateGameObject(const std::string& name, SIMPLE_GAMEOBJECT simpleGameObject, const json& createParameters);
 
-		virtual unsigned int RegisterNode(SceneNode* node, E_SCENENODE_TYPES pass);
+		GameObject* CreateGameObject(const std::string& name, const std::wstring& meshFilePath, const json& createParameters);
 
-		virtual GameObject* CreateGameObject(const std::string& name, ParticleEmitter* particleEmmiter, const json& createParameters);
+		Light* CreateLight(const std::string& name, LIGHT_TYPE lightType);
 
-		virtual GameObject* CreateGameObject(const std::string& name, const json& createParameters);
+		[[nodiscard]] SceneNodeCamera* GetActiveCamera() const;
 
-		virtual GameObject* CreateGameObject(const std::string& name, SIMPLE_GAMEOBJECT simpleGameObject, const json& createParameters);
+		void SetActiveCamera(SceneNodeCamera* camera);
 
-		virtual GameObject* CreateGameObject(const std::string& name, const std::wstring& meshFilePath, const json& createParameters);
+		void SetViewport(Viewport* viewport);
 
-		virtual Light* CreateLight(const std::string& name, LIGHT_TYPE lightType);
+		void DrawAll(SceneNodeCamera* camera, Viewport* viewport);
 
-		[[nodiscard]] virtual SceneNodeCamera* GetActiveCamera() const;
+		void EnqueueSubMeshQueue(SubMesh* subMesh) { mRenderCacheSubMeshes.push(subMesh); }
 
-		virtual void SetActiveCamera(SceneNodeCamera* camera);
+		void EnqueueLightQueue(Light* light) { mRenderCacheLightList.push_back(light); }
 
-		virtual void SetViewport(Viewport* viewport);
-
-		virtual void DrawAll(SceneNodeCamera* camera, Viewport* viewport);
-
-		virtual void Clear();
-		/********************************************/
-
-		void Render() override;
-
-		void EnqueueSubMeshQueue(SubMesh* rp)
-		{
-			mAllAttachedSubMesh.push(rp);
-		}
-
-		void EnqueueLightQueue(Light* light)
-		{
-			mLightList.push_back(light);
-		}
+		void ProcessVisibleGameObject() override;
 
 	private:
 		void SetCustomEffect(SubMesh* subMesh, const json& effctSetting);
 
 	private:
-
+		// 需要渲染的所有场景节点
 		std::vector<SceneNode*> mCameraNodeList;
 		std::vector<SceneNode*> mLightNodeList;
 		std::vector<SceneNode*> mRenderableNodeList;
-
 		// current active camera
 		SceneNodeCamera* mActiveCamera;
-
 		// 当前的渲染系统
 		RenderSystem* mRenderSystem;
-
 		// 当前激活的视口
 		Viewport* mActiveViewport;
-
 		// 需要渲染的游戏物体
-		std::queue<SubMesh*> mAllAttachedSubMesh;
-
+		std::queue<SubMesh*> mRenderCacheSubMeshes;
 		// 需要设置的灯光list
-		std::vector<Light*> mLightList;
+		std::vector<Light*> mRenderCacheLightList;
+		// 创建的所有游戏物体
+		std::vector<GameObject*> mGameObjects;
 	};
 }

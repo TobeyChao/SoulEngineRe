@@ -8,26 +8,25 @@ namespace Soul
 	SceneNodeRenderable::SceneNodeRenderable(SceneNode* parent, SceneManager* mgr, size_t id)
 		:
 		SceneNode(parent, mgr, id)
-	{
-	}
+	{}
+
 	void SceneNodeRenderable::OnRegisterSceneNode()
 	{
-		if (mIsVisible)
-		{
-			if (mSceneManager->RegisterNode(this, E_SCENENODE_TYPES::EST_SOLID))
-				mIsRegister = true;
-		}
+		if (mSceneManager->RegisterNode(this, E_SCENENODE_TYPES::EST_SOLID))
+			mIsRegister = true;
 		SceneNode::OnRegisterSceneNode();
 	}
-	void SceneNodeRenderable::Render()
+
+	void SceneNodeRenderable::ProcessVisibleGameObject()
 	{
 		UpdateAbsolutePosition();
-		for (auto& gameObject : mAttachedGameObject)
+		if (!mAttachedGameObject || !mAttachedGameObject->IsVisible())
 		{
-			for (auto subMesh : gameObject->GetAllSubMesh())
-			{
-				mSceneManager->EnqueueSubMeshQueue(subMesh);
-			}
+			return;
+		}
+		for (auto subMesh : mAttachedGameObject->GetAllSubMesh())
+		{
+			mSceneManager->EnqueueSubMeshQueue(subMesh);
 		}
 	}
 }

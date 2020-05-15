@@ -47,34 +47,8 @@ public:
 		nodeTerrain->SetPosition({ 0.0f, 0.0f, 0.0f });
 		nodeTerrain->AttachObj(terrain);
 
-		// Line
-		//json lineSet;
-		//lineSet["x1"] = 0;
-		//lineSet["y1"] = 0;
-		//lineSet["z1"] = 0;
-		//lineSet["x2"] = 6;
-		//lineSet["y2"] = 6;
-		//lineSet["z2"] = 6;
-		//lineSet["Shader"] = "Color";
-		//line = sceneMgr->CreateGameObject("line", SIMPLE_GAMEOBJECT::SG_LINE3D, lineSet);
-		//nodeLine = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		//nodeLine->AttachObj(line);
-		//nodeLine->SetPosition({ 0.f, 0.f, 0.f });
-
-		// Point
-		//json lineSet;
-		//lineSet["x"] = 0;
-		//lineSet["y"] = 0;
-		//lineSet["z"] = 0;
-		//lineSet["Shader"] = "Color";
-		//line = sceneMgr->CreateGameObject("point", SIMPLE_GAMEOBJECT::SG_POINT3D, lineSet);
-		//nodeLine = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		//nodeLine->AttachObj(line);
-		//nodeLine->SetPosition({ 0.f, 0.f, 0.f });
-
 		Core::SMatrix4x4 shadowMat = Core::MatrixShadow({ 0.0f, 1.0f, 0.0f, -0.01f }, { 0.0f, 3.0f, 0.0f, 1.0f });
 
-		
 		// nodePlane
 		json planeSet;
 		planeSet["width"] = 30.0f;
@@ -90,7 +64,7 @@ public:
 		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones_NORM.png"));
 		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodePlane->AttachObj(plane);
-		
+
 		nodePlane->SetPosition({ 0.f, 0.f, 0.f });
 
 		// Cube
@@ -193,8 +167,9 @@ public:
 		//nodeWater->AttachObj(water);
 		nodeWater->SetPosition({ 0.f, 1.1f, 0.f });
 
-		camera = sceneMgr->AddCameraSceneNode();
-		camera->SetIsOrthogonal(false);
+		camera = new SceneNodeCamera(sceneMgr, sceneMgr, 101);
+		sceneMgr->AddChild(camera);
+		sceneMgr->SetActiveCamera(camera);
 		mWindow->AddViewport(camera);
 		return true;
 	}
@@ -332,12 +307,12 @@ public:
 	void InitLight()
 	{
 		pointLight = sceneMgr->CreateLight("main light", LIGHT_TYPE::LT_POINT);
-		pointLight->SetAmbient({ 0.3f, 0.3f, 0.3f, 1.0f });
+		pointLight->SetAmbient({ 0.8f, 0.8f, 0.8f, 1.0f });
 		pointLight->SetDiffuse({ 1.f, 1.f, 1.f, 1.0f });
 		pointLight->SetSpecular({ 0.7f, 0.7f, 0.7f, 1.0f });
 		pointLight->SetAtt({ 0.0f, 0.5f, 0.0f });
-		pointLight->SetRange(25.0f);
-		pointLight->SetPosition({ 0.0f, 3.0f, 0.0f });
+		pointLight->SetRange(45.0f);
+		pointLight->SetPosition({ 0.0f, 5.0f, 0.0f });
 
 		spotLight1 = sceneMgr->CreateLight("spot light1", LIGHT_TYPE::LT_SPOT);
 		spotLight1->SetPosition({ 3.0f, 6.0f, 3.0f });
@@ -369,18 +344,14 @@ public:
 		spotLight3->SetSpot(10.0f);
 		spotLight3->SetRange(100.0f);
 
-		for (size_t i = 0; i < 1; i++)
-		{
-			dirLight[i] = sceneMgr->CreateLight("dirLight", LIGHT_TYPE::LT_DIRECTIONAL);
-		}
-
-		dirLight[0]->SetAmbient({ 0.65f, 0.65f, 0.65f, 1.0f });
-		dirLight[0]->SetDiffuse({ 0.5f, 0.5f, 0.5f, 1.0f });
-		dirLight[0]->SetSpecular({ 0.1f, 0.1f, 0.1f, 1.0f });
-		dirLight[0]->SetDirection({ -0.577f, -0.577f, 0.577f });
+		dirLight = sceneMgr->CreateLight("dirLight", LIGHT_TYPE::LT_DIRECTIONAL);
+		dirLight->SetAmbient({ 0.2f, 0.2f, 0.2f, 1.0f });
+		dirLight->SetDiffuse({ 1.f, 1.f, 1.f, 1.0f });
+		dirLight->SetSpecular({ 0.1f, 0.1f, 0.1f, 1.0f });
+		dirLight->SetDirection({ -0.577f, -0.577f, 0.577f });
 
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
-		lightNode->AttachObj(dirLight[0]);
+		//lightNode->AttachObj(dirLight);
 		lightNode->AttachObj(pointLight);
 		//lightNode->AttachObj(spotLight1);
 		//lightNode->AttachObj(spotLight2);
@@ -438,9 +409,7 @@ private:
 	SceneNode* nodeParticles{};
 	SceneNode* nodeTerrain{};
 	SceneNode* nodeWater{};
-	//SceneNode* nodeLine{};
 
-	//GameObject* line{};
 	GameObject* water{};
 	GameObject* cube{};
 	GameObject* sphere{};
@@ -455,7 +424,7 @@ private:
 	Light* spotLight1{};
 	Light* spotLight2{};
 	Light* spotLight3{};
-	Light* dirLight[3]{};
+	Light* dirLight{};
 
 	SceneNodeCamera* camera{};
 	SceneManager* sceneMgr{};

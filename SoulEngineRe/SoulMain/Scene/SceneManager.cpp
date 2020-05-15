@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include "SceneNodeCamera.h"
+#include "SceneNodeRenderable.h"
 #include "GameObject.h"
 
 #include "SubMesh.h"
@@ -37,40 +38,21 @@ namespace Soul
 		mCameraNodeList.clear();
 		mLightNodeList.clear();
 		mRenderableNodeList.clear();
-	}
 
-	SceneNodeCamera* SceneManager::AddCameraSceneNode(SceneNode* parent,
-		const Core::SVector3& position, const Core::SVector3& lookAt, size_t id, bool makeActive)
-	{
-		if (!parent)
-			parent = this;
-
-		const auto node = new SceneNodeCamera(parent, this, id, position, lookAt);
-
-		if (makeActive)
-			SetActiveCamera(node);
-
-		return node;
-	}
-
-	SceneNode* SceneManager::AddSkyBoxSceneNode(ITexture* texture, SceneNode* parent, size_t id)
-	{
-		return nullptr;
+		for (auto it : mGameObjects)
+		{
+			if (it)
+			{
+				delete it;
+				it = nullptr;
+			}
+		}
+		mGameObjects.clear();
 	}
 
 	SceneNode* SceneManager::GetRootSceneNode()
 	{
 		return this;
-	}
-
-	SceneNode* SceneManager::GetSceneNodeFromId(int id, SceneNode* start)
-	{
-		return nullptr;
-	}
-
-	SceneNode* SceneManager::GetSceneNodeFromName(const std::wstring& name, SceneNode* start)
-	{
-		return nullptr;
 	}
 
 	SceneNodeCamera* SceneManager::GetActiveCamera() const
@@ -131,7 +113,7 @@ namespace Soul
 		}
 		if (particleEmmiter)
 		{
-			GameObject* newGameObject = new GameObject(name);
+			GameObject* gameObject = new GameObject(name);
 			SubMesh* subMesh = new ParticalList(name);
 			subMesh->SetBlend(BlendType::BT_TRANSPARENT);
 			subMesh->SetDepthStencil(DepthStencilType::DST_NO_DEPTH_WRITE, 0);
@@ -139,8 +121,9 @@ namespace Soul
 			subMesh->SetShader(ShaderManager::GetInstance().GetShaderByName(L"Particle"));
 			subMesh->PushTexture(TextureManager::GetInstance().GetTexture(textureNameW));
 			particleEmmiter->Initialize(subMesh, createParameters);
-			newGameObject->PushSubMesh(subMesh);
-			return newGameObject;
+			gameObject->PushSubMesh(subMesh);
+			mGameObjects.push_back(gameObject);
+			return gameObject;
 		}
 		return nullptr;
 	}
@@ -159,14 +142,15 @@ namespace Soul
 
 		TerrainCreator::CreateTerrainWithHeightMap(createParameters, subMesh);
 		subMesh->InitializeBuffer();
-		GameObject* newGameObject = new GameObject(name);
-		newGameObject->PushSubMesh(subMesh);
-		return newGameObject;
+		GameObject* gameObject = new GameObject(name);
+		gameObject->PushSubMesh(subMesh);
+		mGameObjects.push_back(gameObject);
+		return gameObject;
 	}
 
 	GameObject* SceneManager::CreateGameObject(const std::string& name, SIMPLE_GAMEOBJECT simpleGameObject, const json& createParameters)
 	{
-		GameObject* newGameObject = nullptr;
+		GameObject* gameObject = nullptr;
 
 		SubMesh* subMesh = new SubMesh(name);
 
@@ -189,8 +173,8 @@ namespace Soul
 		{
 		case SIMPLE_GAMEOBJECT::SG_CUBE:
 		{
-			newGameObject = new GameObject(name);
-			newGameObject->PushSubMesh(subMesh);
+			gameObject = new GameObject(name);
+			gameObject->PushSubMesh(subMesh);
 			float width = 1.f;
 			float height = 1.f;
 			float depth = 1.f;
@@ -211,8 +195,8 @@ namespace Soul
 		}break;
 		case SIMPLE_GAMEOBJECT::SG_PLANE:
 		{
-			newGameObject = new GameObject(name);
-			newGameObject->PushSubMesh(subMesh);
+			gameObject = new GameObject(name);
+			gameObject->PushSubMesh(subMesh);
 			float width = 1.f;
 			float depth = 1.f;
 			unsigned m = 2;
@@ -250,8 +234,8 @@ namespace Soul
 		}
 		case SIMPLE_GAMEOBJECT::SG_SPHERE:
 		{
-			newGameObject = new GameObject(name);
-			newGameObject->PushSubMesh(subMesh);
+			gameObject = new GameObject(name);
+			gameObject->PushSubMesh(subMesh);
 			float radius = 1.0f;
 			unsigned sliceCount = 20;
 			unsigned stackCount = 20;
@@ -273,8 +257,8 @@ namespace Soul
 		}
 		case SIMPLE_GAMEOBJECT::SG_CYLINDER:
 		{
-			newGameObject = new GameObject(name);
-			newGameObject->PushSubMesh(subMesh);
+			gameObject = new GameObject(name);
+			gameObject->PushSubMesh(subMesh);
 			float bottomRadius = 1.0f;
 			float topRadius = 1.0f;
 			float height = 3.0f;
@@ -332,8 +316,8 @@ namespace Soul
 			{
 				z2 = createParameters["z2"];
 			}
-			newGameObject = new GameObject(name);
-			newGameObject->PushSubMesh(subMesh);
+			gameObject = new GameObject(name);
+			gameObject->PushSubMesh(subMesh);
 			geoGen.CreateLine3D({ x1, y1, z1 }, { x2, y2, z2 }, *subMesh->GetOriginalMeshDataPtr());
 			subMesh->GetRenderParameter().mPrimitiveTopology = PrimitiveTopology::PT_LINELIST;
 			subMesh->InitializeBuffer();
@@ -354,16 +338,17 @@ namespace Soul
 			{
 				z = createParameters["z"];
 			}
-			newGameObject = new GameObject(name);
-			newGameObject->PushSubMesh(subMesh);
+			gameObject = new GameObject(name);
+			gameObject->PushSubMesh(subMesh);
 			geoGen.CreatePoint3D({ x, y, z }, *subMesh->GetOriginalMeshDataPtr());
 			subMesh->GetRenderParameter().mPrimitiveTopology = PrimitiveTopology::PT_POINTLIST;
 			subMesh->InitializeBuffer();
 			break;
 		}
 		}
-		newGameObject->BuildBoundingBox();
-		return newGameObject;
+		gameObject->BuildBoundingBox();
+		mGameObjects.push_back(gameObject);
+		return gameObject;
 	}
 
 	GameObject* SceneManager::CreateGameObject(const std::string& name, const std::wstring& meshFilePath, const json& createParameters)
@@ -385,6 +370,7 @@ namespace Soul
 		}
 		gameObject->BuildBoundingBox();
 		loader.Clean();
+		mGameObjects.push_back(gameObject);
 		return gameObject;
 	}
 
@@ -405,6 +391,10 @@ namespace Soul
 		default:
 			break;
 		}
+		if (light)
+		{
+			mGameObjects.push_back(light);
+		}
 		return light;
 	}
 
@@ -412,10 +402,6 @@ namespace Soul
 	{
 		mActiveViewport = viewport;
 		mRenderSystem->SetViewport(viewport);
-	}
-
-	void SceneManager::Render()
-	{
 	}
 
 	void SceneManager::SetCustomEffect(SubMesh* subMesh, const json& effctSetting)
@@ -458,7 +444,7 @@ namespace Soul
 					StencilRef = effctSetting["StencilRef"];
 				}
 				subMesh->SetDepthStencil(DepthStencilType::DST_DRAW_WITH_STECIL, StencilRef);
-				
+
 			}
 			else if (depthStencil == "DST_NO_DOUBLE_BLEND")
 			{
@@ -517,6 +503,20 @@ namespace Soul
 		subMesh->SetShader(shader);
 	}
 
+	void SceneManager::ProcessVisibleGameObject()
+	{
+		// 遍历所有灯光节点
+		for (auto& i : mLightNodeList)
+		{
+			i->ProcessVisibleGameObject();
+		}
+		// 遍历所有渲染节点
+		for (auto& i : mRenderableNodeList)
+		{
+			i->ProcessVisibleGameObject();
+		}
+	}
+
 	void SceneManager::DrawAll(SceneNodeCamera* camera, Viewport* viewport)
 	{
 		// 设置激活摄像机
@@ -527,32 +527,24 @@ namespace Soul
 		OnRegisterSceneNode();
 		// 清理缓冲区
 		mRenderSystem->Clear({ 0.14f, 0.14f, 0.152f, 1.0f });
-		// 遍历所有灯光节点
-		for (auto& i : mLightNodeList)
-		{
-			i->Render();
-		}
-		// 遍历所有渲染节点
-		for (auto& i : mRenderableNodeList)
-		{
-			i->Render();
-		}
+		// 处理可见游戏物体
+		ProcessVisibleGameObject();
 		// 对每个节点所绑定的SubMesh进行渲染
-		while (!mAllAttachedSubMesh.empty())
+		while (!mRenderCacheSubMeshes.empty())
 		{
-			SubMesh* sm = mAllAttachedSubMesh.front();
+			SubMesh* sm = mRenderCacheSubMeshes.front();
 			const BoundingBox& bb = sm->GetParent()->GetBoundingBox();
 			// 到三边距离均为0不进行裁剪
-			if (bb.mLengthToSides != Core::SVector3{ 0.0f, 0.0f, 0.0f})
+			if (bb.mLengthToSides != Core::SVector3{ 0.0f, 0.0f, 0.0f })
 			{
 				if (!mActiveCamera->CheckRectangle(bb))
 				{
 					std::cout << sm->GetParent()->GetName() << std::endl;
-					mAllAttachedSubMesh.pop();
+					mRenderCacheSubMeshes.pop();
 					continue;
 				}
 			}
-			
+
 			// 深度模板
 			if (sm->UseDepthStencil())
 			{
@@ -597,9 +589,9 @@ namespace Soul
 				int slotD = 0;
 				int slotP = 0;
 				int slotS = 0;
-				for (size_t i = 0; i < mLightList.size(); i++)
+				for (size_t i = 0; i < mRenderCacheLightList.size(); i++)
 				{
-					LIGHT_TYPE lt = mLightList[i]->GetType();
+					LIGHT_TYPE lt = mRenderCacheLightList[i]->GetType();
 					switch (lt)
 					{
 					case Soul::LIGHT_TYPE::LT_NONE:
@@ -609,36 +601,36 @@ namespace Soul
 					case Soul::LIGHT_TYPE::LT_DIRECTIONAL:
 					{
 						DirectionalLight dl;
-						dl.Ambient = mLightList[i]->GetAmbient();
-						dl.Diffuse = mLightList[i]->GetDiffuse();
-						dl.Specular = mLightList[i]->GetSpecular();
-						dl.Direction = mLightList[i]->GetDirection();
+						dl.Ambient = mRenderCacheLightList[i]->GetAmbient();
+						dl.Diffuse = mRenderCacheLightList[i]->GetDiffuse();
+						dl.Specular = mRenderCacheLightList[i]->GetSpecular();
+						dl.Direction = mRenderCacheLightList[i]->GetDirection();
 						shader->SetDirectinalLight(slotD++, dl);
 						break;
 					}
 					case Soul::LIGHT_TYPE::LT_POINT:
 					{
 						PointLight pl;
-						pl.Ambient = mLightList[i]->GetAmbient();
-						pl.Diffuse = mLightList[i]->GetDiffuse();
-						pl.Specular = mLightList[i]->GetSpecular();
-						pl.Att = mLightList[i]->GetAtt();
-						pl.Position = mLightList[i]->GetPosition();
-						pl.Range = mLightList[i]->GetRange();
+						pl.Ambient = mRenderCacheLightList[i]->GetAmbient();
+						pl.Diffuse = mRenderCacheLightList[i]->GetDiffuse();
+						pl.Specular = mRenderCacheLightList[i]->GetSpecular();
+						pl.Att = mRenderCacheLightList[i]->GetAtt();
+						pl.Position = mRenderCacheLightList[i]->GetPosition();
+						pl.Range = mRenderCacheLightList[i]->GetRange();
 						shader->SetPointLight(slotP++, pl);
 						break;
 					}
 					case Soul::LIGHT_TYPE::LT_SPOT:
 					{
 						SpotLight sl;
-						sl.Spot = mLightList[i]->GetSpot();
-						sl.Ambient = mLightList[i]->GetAmbient();
-						sl.Diffuse = mLightList[i]->GetDiffuse();
-						sl.Specular = mLightList[i]->GetSpecular();
-						sl.Att = mLightList[i]->GetAtt();
-						sl.Position = mLightList[i]->GetPosition();
-						sl.Range = mLightList[i]->GetRange();
-						sl.Direction = mLightList[i]->GetDirection();
+						sl.Spot = mRenderCacheLightList[i]->GetSpot();
+						sl.Ambient = mRenderCacheLightList[i]->GetAmbient();
+						sl.Diffuse = mRenderCacheLightList[i]->GetDiffuse();
+						sl.Specular = mRenderCacheLightList[i]->GetSpecular();
+						sl.Att = mRenderCacheLightList[i]->GetAtt();
+						sl.Position = mRenderCacheLightList[i]->GetPosition();
+						sl.Range = mRenderCacheLightList[i]->GetRange();
+						sl.Direction = mRenderCacheLightList[i]->GetDirection();
 						shader->SetSpotLight(slotS++, sl);
 						break;
 					}
@@ -683,16 +675,11 @@ namespace Soul
 				mRenderSystem->BindShader(nullptr);
 			}
 
-			mAllAttachedSubMesh.pop();
+			mRenderCacheSubMeshes.pop();
 		}
-		mLightList.clear();
+		mRenderCacheLightList.clear();
 		mCameraNodeList.clear();
 		mLightNodeList.clear();
 		mRenderableNodeList.clear();
-	}
-
-	void SceneManager::Clear()
-	{
-		RemoveAll();
 	}
 }

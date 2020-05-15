@@ -32,8 +32,8 @@ namespace Soul
 			// Render Scene
 			if (mCamera->GetViewport() != this)
 				mCamera->SetViewport(this);
-
-			mCamera->Render();
+			mCamera->UpdateCamera();
+			mCamera->RenderScene();
 		}
 	}
 }

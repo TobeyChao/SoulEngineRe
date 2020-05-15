@@ -19,37 +19,29 @@ namespace Soul
 
 		virtual void OnRegisterSceneNode();
 
-		virtual std::wstring GetName() const;
+		virtual void ProcessVisibleGameObject();
 
-		virtual void SetName(std::wstring name);
+		const Soul::Core::SMatrix4x4& GetAbsoluteTransformation() const;
 
-		virtual void Render() {};
+		Soul::Core::SMatrix4x4 GetRelativeTransformation() const;
 
-		virtual const Soul::Core::SMatrix4x4& GetAbsoluteTransformation() const;
+		size_t GetID() const { return mID; }
 
-		virtual Soul::Core::SMatrix4x4 GetRelativeTransformation() const;
+		void SetID(size_t id) { mID = id; }
 
-		virtual bool IsVisible() const;
+		bool IsRegister() const;
 
-		virtual void SetVisible(bool isVisible);
+		SceneNode* AddChild(SceneNode* child);
 
-		virtual size_t GetID() const;
+		bool RemoveChild(SceneNode* child);
 
-		virtual void SetID(size_t id);
+		void RemoveAllChildren();
 
-		virtual bool IsRegister() const;
+		void RemoveFromParent();
 
-		virtual SceneNode* AddChild(SceneNode* child);
+		void AttachObj(GameObject* obj);
 
-		virtual bool RemoveChild(SceneNode* child);
-
-		virtual void RemoveAll();
-
-		virtual void Remove();
-
-		virtual void AttachObj(GameObject* obj);
-
-		virtual void DetachObj(GameObject* obj);
+		void DetachObj();
 
 		void UpdateAbsolutePosition();
 
@@ -77,14 +69,10 @@ namespace Soul
 		void SetSceneManager(SceneManager* newManager);
 
 	protected:
+		// 节点ID
 		size_t mID;
-
+		// 是否已经注册
 		bool mIsRegister;
-
-		std::wstring mName;
-
-		bool mIsVisible;
-
 		// Absolute transformation of the node.
 		Core::SMatrix4x4 mAbsoluteTransformation;
 
@@ -105,6 +93,6 @@ namespace Soul
 
 		std::vector<SceneNode*> mChildren;
 
-		std::vector<GameObject*> mAttachedGameObject;
+		GameObject* mAttachedGameObject;
 	};
 }
