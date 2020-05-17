@@ -4,6 +4,7 @@ namespace Soul
 {
 	RenderTarget::RenderTarget()
 		:
+		mClearColor({ 0.0f, 0.0f, 0.0f, 1.0f }),
 		mWidth(0),
 		mHeight(0)
 	{
@@ -52,6 +53,7 @@ namespace Soul
 
 	void RenderTarget::Update()
 	{
+		Clear();
 		for (auto it = mViewports.begin(); it != mViewports.end(); it++)
 		{
 			it->second->Update();

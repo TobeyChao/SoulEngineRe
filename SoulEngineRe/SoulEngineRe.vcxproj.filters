@@ -503,5 +503,8 @@
     <ClInclude Include="SoulMain\Utils\FileUtils.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="RenderSystem\DirectX11\D3D11RenderTarget.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

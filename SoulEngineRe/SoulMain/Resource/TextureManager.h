@@ -19,6 +19,7 @@ namespace Soul
 		TextureManager();
 		virtual ~TextureManager();
 		virtual ITexture* LoadTexture(std::wstring imageName) = 0;
+		virtual ITexture* CreateTexture(const std::wstring& textureName, const Core::SDimension2& imageSize, bool generateMips = false) = 0;
 		ITexture* GetTexture(std::wstring imageName);
 	protected:
 		std::map<std::wstring, ITexture*> mTextureList;

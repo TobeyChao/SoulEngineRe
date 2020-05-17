@@ -31,6 +31,14 @@ cbuffer CBChangesRarely : register(b2)
 	float4 gShadowplane;
 }
 
+cbuffer CBRenderStates : register(b3)
+{
+	float4 gFogColor;
+	bool gFogEnabled;
+	float gFogStart;
+	float gFogRange;
+}
+
 Texture2D gTex : register(t0);
 Texture2D gNormalMap : register(t1);
 SamplerState gSamLinear : register(s0);
@@ -91,6 +99,7 @@ float4 PS(VertexOut vertIn) : SV_Target
     vertIn.NormalW = normalize(vertIn.NormalW); 
     // 物体顶点到摄像机眼睛，用来计算镜面高光
 	float3 toEyeW = normalize(gEyePosW - vertIn.PosW);
+	float distToEye = distance(gEyePosW, vertIn.PosW);
 	float3 NormalW = vertIn.NormalW;
 
 	// 如果使用法线贴图更新法线值
@@ -136,6 +145,16 @@ float4 PS(VertexOut vertIn) : SV_Target
 	}
 
 	float4 finalColor = originColor * (ambient + diffuse) + spec;
+
+	// 雾效部分
+    [flatten]
+    if (gFogEnabled)
+    {
+        // 限定在0.0f到1.0f范围
+        float fogLerp = saturate((distToEye - gFogStart) / gFogRange);
+        // 根据雾色和光照颜色进行线性插值
+        finalColor = lerp(finalColor, gFogColor, fogLerp);
+    }
 
 	// Common to take alpha from diffuse material.
 	finalColor.a = originColor.a * gMaterial.Diffuse.a;

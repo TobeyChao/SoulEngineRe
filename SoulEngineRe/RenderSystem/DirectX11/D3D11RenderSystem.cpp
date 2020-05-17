@@ -142,7 +142,7 @@ namespace Soul
 	void D3D11RenderSystem::SetRenderTarget(RenderTarget* renderTarget)
 	{
 		RenderSystem::SetRenderTarget(renderTarget);
-		D3D11RenderWindow* renderWindow = dynamic_cast<D3D11RenderWindow*>(mActiveRenderTarget);
+		D3D11RenderTarget* renderWindow = dynamic_cast<D3D11RenderTarget*>(mActiveRenderTarget);
 		ID3D11RenderTargetView* renderTargetView = renderWindow->GetRenderTargetView();
 		ID3D11DepthStencilView* depthStencilView = renderWindow->GetDepthStencilView();
 		mD3D11Device->GetDeviceContext()->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
@@ -174,9 +174,20 @@ namespace Soul
 	}
 	void D3D11RenderSystem::SetTexture(size_t slot, ITexture* texture)
 	{
-		mTextures[slot] = texture;
-		mTextureNum = slot + 1;
-		mTextureSettingChanged = true;
+		D3D11Texture* d3d11Texture = dynamic_cast<D3D11Texture*>(texture);
+		if (d3d11Texture)
+		{
+			mTextures[slot] = d3d11Texture->GetTextureSRV();
+			mTextureNum = slot + 1;
+			mTextureSettingChanged = true;
+		}
+		else
+		{
+			D3D11RenderTexture* d3d11RenderTexture = dynamic_cast<D3D11RenderTexture*>(texture);
+			mTextures[slot] = d3d11RenderTexture->GetOutputTexture();
+			mTextureNum = slot + 1;
+			mTextureSettingChanged = true;
+		}
 	}
 	void D3D11RenderSystem::SetBlendType(const BlendType& bt)
 	{
@@ -399,16 +410,6 @@ namespace Soul
 	{
 		mCurrentShader = shader;
 	}
-	void D3D11RenderSystem::Clear(const Core::SColorf& color)
-	{
-		if (mActiveRenderTarget)
-		{
-			D3D11RenderWindow* renderTarget = dynamic_cast<D3D11RenderWindow*>(mActiveRenderTarget);
-			mD3D11Device->GetDeviceContext()->ClearRenderTargetView(renderTarget->GetRenderTargetView(), color.Get());
-			mD3D11Device->GetDeviceContext()->ClearDepthStencilView(renderTarget->GetDepthStencilView(),
-				D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		}
-	}
 	void D3D11RenderSystem::Render(const RenderParameter& rp)
 	{
 		if (rp.mVertexCount == 0)
@@ -464,11 +465,7 @@ namespace Soul
 			ros.mTexturesCount = mTextureNum < MAX_TEXTURES ? mTextureNum : MAX_TEXTURES;
 			for (size_t i = 0; i < ros.mTexturesCount; i++)
 			{
-				D3D11Texture* texture = dynamic_cast<D3D11Texture*>(mTextures[i]);
-				if (texture)
-				{
-					ros.mTextures[i] = texture->GetTextureSRV();
-				}
+				ros.mTextures[i] = mTextures[i];
 			}
 			if (ros.mTexturesCount > 0)
 			{

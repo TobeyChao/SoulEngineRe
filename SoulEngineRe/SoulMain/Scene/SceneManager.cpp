@@ -525,8 +525,6 @@ namespace Soul
 		SetViewport(viewport);
 		// 注册所有可见场景节点
 		OnRegisterSceneNode();
-		// 清理缓冲区
-		mRenderSystem->Clear({ 0.14f, 0.14f, 0.152f, 1.0f });
 		// 处理可见游戏物体
 		ProcessVisibleGameObject();
 		// 对每个节点所绑定的SubMesh进行渲染
@@ -575,6 +573,7 @@ namespace Soul
 				shader->SetWorld(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation());
 				shader->SetView(GetActiveCamera()->GetViewMatrix());
 				shader->SetProj(GetActiveCamera()->GetProjectionMatrix());
+				shader->SetEyePos(GetActiveCamera()->GetPosition());
 
 				// 材质
 				auto& textures = sm->GetTextures();

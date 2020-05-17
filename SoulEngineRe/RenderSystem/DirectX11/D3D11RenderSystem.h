@@ -21,7 +21,6 @@ constexpr auto MAX_TEXTURES = 8;
 		void SetDepthStencilType(const DepthStencilType& dst) override;
 		void SetStencilRef(UINT StencilRef) override;
 		void BindShader(Shader* shader) override;
-		void Clear(const Core::SColorf& color) override;
 		void Render(const RenderParameter& rp) override;
 	private:
 		HRESULT CreateD3D11Device() const;
@@ -52,7 +51,7 @@ constexpr auto MAX_TEXTURES = 8;
 		Microsoft::WRL::ComPtr<ID3D11SamplerState> mDefaultSamplerStates;
 
 		// ²ÄÖÊ
-		ITexture* mTextures[MAX_TEXTURES];
+		ID3D11ShaderResourceView* mTextures[MAX_TEXTURES];
 		size_t mTextureNum = 0;
 		// ×ÅÉ«Æ÷
 		Shader* mCurrentShader;

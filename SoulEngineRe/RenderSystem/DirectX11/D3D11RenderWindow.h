@@ -1,10 +1,11 @@
 #pragma once
 #include "D3D11PCH.h"
 #include "D3D11Device.h"
+#include "D3D11RenderTarget.h"
 #include "../../SoulMain/RenderSystem/RenderWindow.h"
 namespace Soul
 {
-	class D3D11RenderWindow final : public RenderWindow
+	class D3D11RenderWindow final : public RenderWindow, public D3D11RenderTarget
 	{
 	public:
 		D3D11RenderWindow(D3D11Device& device);
@@ -13,6 +14,7 @@ namespace Soul
 		void UnInitialize() override;
 		void SwapBuffers() override;
 		void Update() override;
+		void Clear() override;
 		IDXGISwapChain* GetSwapChain() const
 		{
 			return mSwapChain.Get();
@@ -21,11 +23,11 @@ namespace Soul
 		{
 			return fullscreen ? mFullscreenWinStyle : mWindowedWinStyle;
 		}
-		ID3D11RenderTargetView* GetRenderTargetView() const
+		ID3D11RenderTargetView* GetRenderTargetView() const override
 		{
 			return mRenderTargetView.Get();
 		}
-		ID3D11DepthStencilView* GetDepthStencilView() const
+		ID3D11DepthStencilView* GetDepthStencilView() const override
 		{
 			return mDepthStencilView.Get();
 		}

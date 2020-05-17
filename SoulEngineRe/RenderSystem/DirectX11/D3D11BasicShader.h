@@ -19,6 +19,15 @@ namespace Soul
 		float pad1 = 0;
 	};
 
+	struct BasicCBDrawingStates
+	{
+		Core::SVector4 fogColor;
+		BOOL fogEnabled;
+		float fogStart;
+		float fogRange;
+		float pad;
+	};
+
 	struct BasicCBChangesRarely
 	{
 		DirectionalLight dirLight[Light::MaxLights];
@@ -44,7 +53,8 @@ namespace Soul
 			D3D11Shader(device, shaderName, shaderConfig),
 			mConstantBufferChangesEveryDrawing(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBChangesEveryDrawing)),
 			mConstantBufferChangesEveryFrame(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBChangesEveryFrame)),
-			mConstantBufferChangesRarely(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBChangesRarely))
+			mConstantBufferChangesRarely(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBChangesRarely)),
+			mConstantBufferDrawingStates(device, GPU_BUFFER_TYPE::GBT_CONSTANT, nullptr, sizeof(BasicCBDrawingStates))
 		{
 		}
 		void SetWorld(const Core::SMatrix4x4& world) override
@@ -146,6 +156,26 @@ namespace Soul
 			mBasicCBChangesRarely.useNormalMap = useNormalMap;
 			mIsDirty = mConstantBufferChangesRarely.mIsDirty = true;
 		};
+		void SetFogState(bool isOn) override
+		{
+			mBasicCBDrawingStates.fogEnabled = isOn;
+			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
+		};
+		void SetFogStart(float fogStart) override
+		{
+			mBasicCBDrawingStates.fogStart = fogStart;
+			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
+		};
+		void SetFogColor(const Core::SVector4& fogColor) override
+		{
+			mBasicCBDrawingStates.fogColor = fogColor;
+			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
+		};
+		void SetFogRange(float fogRange) override
+		{
+			mBasicCBDrawingStates.fogRange = fogRange;
+			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
+		};
 		void ApplyShader() override
 		{
 			ID3D11DeviceContext* deviceContext = mDevice.GetDeviceContext();
@@ -161,25 +191,23 @@ namespace Soul
 				mConstantBufferChangesEveryDrawing.UpdateBuffer(&mBasicCBChangesEveryDrawing, sizeof(mBasicCBChangesEveryDrawing));
 				mConstantBufferChangesEveryFrame.UpdateBuffer(&mBasicCBChangesEveryFrame, sizeof(mBasicCBChangesEveryFrame));
 				mConstantBufferChangesRarely.UpdateBuffer(&mBasicCBChangesRarely, sizeof(mBasicCBChangesRarely));
+				mConstantBufferDrawingStates.UpdateBuffer(&mBasicCBDrawingStates, sizeof(mBasicCBDrawingStates));
 			}
 			mConstantBufferChangesEveryDrawing.BindPS(0);
 			mConstantBufferChangesEveryDrawing.BindVS(0);
 			mConstantBufferChangesEveryFrame.BindPS(1);
 			mConstantBufferChangesRarely.BindPS(2);
 			mConstantBufferChangesRarely.BindVS(2);
+			mConstantBufferDrawingStates.BindPS(3);
 		}
 	private:
-		//静态缓存对应的结构体变量
 		BasicCBChangesEveryDrawing mBasicCBChangesEveryDrawing;
-		//静态缓存对应的结构体变量
 		BasicCBChangesEveryFrame mBasicCBChangesEveryFrame;
-		//静态缓存对应的结构体变量
 		BasicCBChangesRarely mBasicCBChangesRarely;
-		//静态缓存
+		BasicCBDrawingStates mBasicCBDrawingStates;
 		D3D11GPUBuffer mConstantBufferChangesEveryDrawing;
-		//静态缓存
 		D3D11GPUBuffer mConstantBufferChangesEveryFrame;
-		//阴影反射
 		D3D11GPUBuffer mConstantBufferChangesRarely;
+		D3D11GPUBuffer mConstantBufferDrawingStates;
 	};
 }

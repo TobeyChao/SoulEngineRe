@@ -110,6 +110,10 @@ namespace Soul
 		void SetPointLightNum(int num) override {};
 		void SetUseTexture(bool useTexture) override {};
 		void SetUseNormalMap(bool useNormalMap) override {};
+		void SetFogState(bool isOn) override {};
+		void SetFogStart(float fogStart) override {};
+		void SetFogColor(const Core::SVector4& fogColor) override {};
+		void SetFogRange(float fogRange) override {};
 		ID3D11VertexShader* GetVertexShader() const
 		{
 			return mVertexShader;

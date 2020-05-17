@@ -146,6 +146,13 @@ namespace Soul
 		RenderWindow::Update();
 	}
 
+	void D3D11RenderWindow::Clear()
+	{
+		mDx11Device.GetDeviceContext()->ClearRenderTargetView(mRenderTargetView.Get(), mClearColor.Get());
+		mDx11Device.GetDeviceContext()->ClearDepthStencilView(mDepthStencilView.Get(),
+			D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	}
+
 	HRESULT D3D11RenderWindow::CreateSwapChain(const json& createParams)
 	{
 		// Use the factory to create an adapter for the primary graphics interface (video card).

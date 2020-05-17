@@ -7,8 +7,8 @@
     "window_title" : "渲染 demo",
     "icon" : "Soul.ico",
     "fullscreen" : false,
-    "screen_width" : 1280,
-    "screen_height" : 720,
+    "screen_width" : 1600,
+    "screen_height" : 900,
     "vsync" : true,
     "msaa" : 4
 }

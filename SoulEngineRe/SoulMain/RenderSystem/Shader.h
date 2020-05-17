@@ -56,6 +56,12 @@ namespace Soul
 		virtual void SetPointLightNum(int num) = 0;
 		virtual void SetUseTexture(bool useTexture) = 0;
 		virtual void SetUseNormalMap(bool useNormalMap) = 0;
+
+		virtual void SetFogState(bool isOn) = 0;
+		virtual void SetFogStart(float fogStart) = 0;
+		virtual void SetFogColor(const Core::SVector4& fogColor) = 0;
+		virtual void SetFogRange(float fogRange) = 0;
+
 	protected:
 		std::wstring mShaderName;
 		SHADER_TYPE mShaderType;

@@ -45,7 +45,6 @@ namespace Soul
 		// ÉèÖÃ×ÅÉ«Æ÷
 		virtual void BindShader(Shader* shader) = 0;
 
-		virtual void Clear(const Core::SColorf& color) = 0;
 		virtual void Render(const RenderParameter& rp);
 	protected:
 		// ÅäÖÃ

@@ -23,6 +23,7 @@
 #include "../SoulEngineRe/SoulMain/Resource/TextureManager.h"
 #include "../SoulEngineRe/SoulMain/RenderSystem/RenderWindow.h"
 #include "../SoulEngineRe/SoulMain/RenderSystem/RenderSystem2D.h"
+#include "../SoulEngineRe/SoulMain/RenderSystem/ShaderManager.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "../bin/SoulEngineRe/Debug/SoulEngineRe_d.lib")

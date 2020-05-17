@@ -233,6 +233,7 @@
     <ClInclude Include="RenderSystem\DirectX11\D3D11PCH.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11RenderModule.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11RenderSystem.h" />
+    <ClInclude Include="RenderSystem\DirectX11\D3D11RenderTarget.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11RenderWindow.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11Shader.h" />
     <ClInclude Include="RenderSystem\DirectX11\D3D11ShaderManager.h" />

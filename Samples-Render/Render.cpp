@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "../SoulEngineRe/RenderSystem/DirectX11/D3D11Texture.h"
 
 class RenderSample final : public Soul::App::Application
 {
@@ -20,6 +21,15 @@ public:
 		// SceneManager也是根节点
 		sceneMgr = launcher->CreateSceneManager();
 
+		Shader* shader = ShaderManager::GetInstance().GetShaderByName(L"Basic");
+		ITexture* tex = TextureManager::GetInstance().CreateTexture(L"rtt", { 1024, 1024 }, false);
+
+		shader->SetFogColor({ 0.752941251f, 0.752941251f, 0.752941251f, 1.000000000f });
+		shader->SetFogRange(120.0f);
+		shader->SetFogStart(5.0f);
+		shader->SetFogState(true);
+		mWindow->SetClearColor({ 0.752941251f, 0.752941251f, 0.752941251f, 1.000000000f });
+
 		InitLight();
 
 		// sky
@@ -28,24 +38,25 @@ public:
 		sky["DepthStencil"] = "DST_LESS_EQUAL";
 		sky["Rasterizer"] = "RT_CULL_CLOCKWISE";
 		sphere = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sky);
-		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/space.dds"));
+		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/sky.dds"));
 		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeSky->AttachObj(sphere);
 		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
+		nodeSky->SetScale({ 10.0f, 10.0f, 10.0f });
 
 		json terrainSet;
-		terrainSet["width"] = 257.0f;
-		terrainSet["depth"] = 257.0f;
-		terrainSet["m"] = 257;
-		terrainSet["n"] = 257;
-		terrainSet["scale"] = 0.0003f;
-		terrainSet["heightMap"] = "../Assets/Terrain/heightmap(2).raw";
+		terrainSet["width"] = 128.0f;
+		terrainSet["depth"] = 128.0f;
+		terrainSet["m"] = 512;
+		terrainSet["n"] = 512;
+		terrainSet["scale"] = 0.0001f;
+		terrainSet["heightMap"] = "../Assets/Terrain/hm.raw";
 		terrainSet["Shader"] = "Basic";
 		terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
 		terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
 		nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeTerrain->SetPosition({ 0.0f, 0.0f, 0.0f });
-		nodeTerrain->AttachObj(terrain);
+		nodeTerrain->SetPosition({ 0.0f, 1.0f, 0.0f });
+		//nodeTerrain->AttachObj(terrain);
 
 		Core::SMatrix4x4 shadowMat = Core::MatrixShadow({ 0.0f, 1.0f, 0.0f, -0.01f }, { 0.0f, 3.0f, 0.0f, 1.0f });
 
@@ -55,13 +66,13 @@ public:
 		planeSet["depth"] = 30.0f;
 		planeSet["m"] = 5.0f;
 		planeSet["n"] = 5.0f;
-		planeSet["maxU"] = 2.0f;
-		planeSet["maxV"] = 2.0f;
+		planeSet["maxU"] = 1.0f;
+		planeSet["maxV"] = 1.0f;
 		planeSet["DepthStencil"] = "DST_WRITE_STECIL";
 		planeSet["StencilRef"] = 1;
 		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones.dds"));
-		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones_NORM.png"));
+		plane->GetSubMesh(0)->PushTexture(tex);
+		//plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones_NORM.png"));
 		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodePlane->AttachObj(plane);
 
@@ -103,7 +114,7 @@ public:
 
 		// Mesh
 		json meshSet;
-		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/house2/house2.obj", meshSet);
+		mesh = sceneMgr->CreateGameObject("mesh", L"../Assets/Models/box/box.obj", meshSet);
 		for (auto it : mesh->GetAllSubMesh())
 		{
 			it->EnableShadow(true);
@@ -113,18 +124,6 @@ public:
 		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeMesh->SetPosition({ -3.f, 0.f, 0.f });
 		nodeMesh->AttachObj(mesh);
-
-		mesh2 = sceneMgr->CreateGameObject("mesh2", L"../Assets/Models/box/box.obj", meshSet);
-		for (auto it : mesh2->GetAllSubMesh())
-		{
-			it->EnableShadow(true);
-			it->SetShadowMatrix(shadowMat);
-			it->SetShadowPlane({ 0.0f, 1.0f, 0.0f, -0.01f });
-		}
-		nodeMesh2 = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeMesh2->SetPosition({ 0.f, 0.2f, -3.f });
-		nodeMesh2->AttachObj(mesh2);
-
 
 		/*
 		particleEmitter = new ParticleEmitter();
@@ -172,9 +171,18 @@ public:
 		nodeWater->SetPosition({ 0.f, 1.1f, 0.f });
 
 		camera = new SceneNodeCamera(sceneMgr, sceneMgr, 101);
+		secondCamera = new SceneNodeCamera(sceneMgr, sceneMgr, 102);
+		secondCamera->SetPosition({ 0.0f, 10.0f, -10.0f });
+		secondCamera->SetRotation({ Core::SM_PIDIV4, 0.f, 0.f });
 		sceneMgr->AddChild(camera);
-		sceneMgr->SetActiveCamera(camera);
-		mWindow->AddViewport(camera);
+		sceneMgr->AddChild(secondCamera);
+		mWindow->AddViewport(camera, 0, 0.0f, 0.0f, 1.f, 1.f);
+		
+		D3D11RenderTexture* rtt = dynamic_cast<D3D11RenderTexture*>(tex);
+		rtt->AddViewport(secondCamera, 1, 0.0f, 0.0f, 1.f, 1.f);
+		rtt->SetClearColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+
+		GetLauncher()->GetActiveRenderSystem()->AddRenderTarget(rtt);
 		return true;
 	}
 
@@ -182,9 +190,6 @@ public:
 	bool FrameStarted() override
 	{
 		//particleEmitter->Update(Timer::DeltaTime());
-
-		intersects = mesh->GetBoundingBox().Intersects(mesh2->GetBoundingBox());
-
 		if (Input::DXInput::GetInstance().IsPressed(DIK_ESCAPE))
 		{
 			return false;
@@ -292,14 +297,6 @@ public:
 		std::wstring info = buffer.str();
 
 		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 10 });
-		if (intersects)
-		{
-			RenderSystem2D::GetInstance().DrawTextW(L"相交", { 10, 90 });
-		}
-		else
-		{
-			RenderSystem2D::GetInstance().DrawTextW(L"未相交", { 10, 90 });
-		}
 		return Application::FrameUpdated();
 	}
 
@@ -355,8 +352,8 @@ public:
 		dirLight->SetDirection({ -0.577f, -0.577f, 0.577f });
 
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
-		//lightNode->AttachObj(dirLight);
-		lightNode->AttachObj(pointLight);
+		lightNode->AttachObj(dirLight);
+		//lightNode->AttachObj(pointLight);
 		//lightNode->AttachObj(spotLight1);
 		//lightNode->AttachObj(spotLight2);
 		//lightNode->AttachObj(spotLight3);
@@ -405,7 +402,6 @@ public:
 private:
 	SceneNode* lightNode{};
 	SceneNode* nodeMesh{};
-	SceneNode* nodeMesh2{};
 	SceneNode* nodeCylinder{};
 	SceneNode* nodeCube{};
 	SceneNode* nodeSky{};
@@ -419,7 +415,6 @@ private:
 	GameObject* sphere{};
 	GameObject* cylinder{};
 	GameObject* mesh{};
-	GameObject* mesh2{};
 	GameObject* plane{};
 	GameObject* particleList{};
 	GameObject* terrain{};
@@ -431,6 +426,7 @@ private:
 	Light* dirLight{};
 
 	SceneNodeCamera* camera{};
+	SceneNodeCamera* secondCamera{};
 	SceneManager* sceneMgr{};
 	ParticleEmitter* particleEmitter{};
 	Core::SVector3 pos = { -3.f, 0.2f, 0.f };
@@ -439,8 +435,6 @@ private:
 	Core::SVector3 cameraPos = { 0.f, 8.f, -8.f };
 	Core::SVector3 cameraRotate = { Core::SM_PIDIV4, 0.f, 0.f };
 	int cameraChoose = 1;
-
-	bool intersects;
 };
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
