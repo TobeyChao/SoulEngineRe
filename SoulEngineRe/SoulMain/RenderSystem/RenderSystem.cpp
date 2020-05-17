@@ -70,7 +70,7 @@ namespace Soul
 	}
 	void RenderSystem::SetRenderTarget(RenderTarget* renderTarget)
 	{
-		AddRenderTarget(renderTarget);
+		//AddRenderTarget(renderTarget);
 		mActiveRenderTarget = renderTarget;
 	}
 	void RenderSystem::AddRenderTarget(RenderTarget* renderTarget)

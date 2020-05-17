@@ -372,6 +372,34 @@ namespace Soul
 			mat4x4.mat[3][3] = dot + planeVec.w * light.w;
 			return mat4x4;
 		}
+		SMatrix4x4 MatrixReflect(const SVector4& plane)
+		{
+			SVector4 p = plane;
+			p.PlaneNormalize();
+			SVector4 s;
+			s.x = p.x * -2.0f;
+			s.y = p.y * -2.0f;
+			s.z = p.z * -2.0f;
+			s.w = 0.0f;
+			SMatrix4x4 mat4x4 = Matrix4x4Identity();
+			mat4x4.mat[0][0] = p.x * s.x + 1;
+			mat4x4.mat[0][1] = p.x * s.y;
+			mat4x4.mat[0][2] = p.x * s.z;
+			mat4x4.mat[0][3] = 0.f;
+			mat4x4.mat[1][0] = p.y * s.x;
+			mat4x4.mat[1][1] = p.y * s.y + 1;
+			mat4x4.mat[1][2] = p.y * s.z;
+			mat4x4.mat[1][3] = 0.f;
+			mat4x4.mat[2][0] = p.z * s.x;
+			mat4x4.mat[2][1] = p.z * s.y;
+			mat4x4.mat[2][2] = p.z * s.z + 1;
+			mat4x4.mat[2][3] = 0.f;
+			mat4x4.mat[3][0] = p.w * s.x;
+			mat4x4.mat[3][1] = p.w * s.y;
+			mat4x4.mat[3][2] = p.w * s.z;
+			mat4x4.mat[3][3] = 1;
+			return mat4x4;
+		}
 		SVector3 operator*(const SVector3& vec3, const SMatrix4x4& matrix)
 		{
 			return SVector3(

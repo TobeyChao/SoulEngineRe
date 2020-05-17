@@ -21,8 +21,12 @@ namespace Soul
 
 	struct BasicCBDrawingStates
 	{
+		BOOL enableShadow = FALSE;
+		BOOL useTexture = FALSE;
+		BOOL useNormalMap = FALSE;
+		BOOL enableReflect = FALSE;
 		Core::SVector4 fogColor;
-		BOOL fogEnabled;
+		BOOL EnableFog;
 		float fogStart;
 		float fogRange;
 		float pad;
@@ -36,13 +40,10 @@ namespace Soul
 		int numDirLight = 0;
 		int numPointLight = 0;
 		int numSpotLight = 0;
-		float pad1 = 0;
-		Core::SMatrix4x4 shadowMat;
-		BOOL shadow = FALSE;
-		BOOL useTexture = FALSE;
-		BOOL useNormalMap = FALSE;
 		float pad3 = 0;
+		Core::SMatrix4x4 shadowMat;
 		Core::SVector4 shadowPlane;
+		Core::SMatrix4x4 reflectMat;
 	};
 
 	class D3D11BasicShader : public D3D11Shader
@@ -79,15 +80,26 @@ namespace Soul
 		{
 			mBasicCBChangesRarely.shadowMat = shadowMat;
 			Core::MatrixTranspose(mBasicCBChangesRarely.shadowMat);
+			mIsDirty = mConstantBufferChangesRarely.mIsDirty = true;
 		}
 		void SetShadowPlane(const Core::SVector4& shadowPlane) override
 		{
 			mBasicCBChangesRarely.shadowPlane = shadowPlane;
+			mIsDirty = mConstantBufferChangesRarely.mIsDirty = true;
 		}
 		void SetEnableShadow(bool useShadow) override
 		{
-			mBasicCBChangesRarely.shadow = useShadow ? 1 : 0;
+			mBasicCBDrawingStates.enableShadow = useShadow ? true : false;
+			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
 		};
+		void SetReflectMatrix(const Core::SMatrix4x4& reflectMatrix) override
+		{
+
+		}
+		void SetEnableReflect(bool enableReflect) override
+		{
+
+		}
 		void SetMaterial(const Material& matrial) override
 		{
 			mBasicCBChangesEveryDrawing.material = matrial;
@@ -148,17 +160,17 @@ namespace Soul
 		};
 		void SetUseTexture(bool useTexture) override
 		{
-			mBasicCBChangesRarely.useTexture = useTexture;
-			mIsDirty = mConstantBufferChangesRarely.mIsDirty = true;
+			mBasicCBDrawingStates.useTexture = useTexture;
+			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
 		};
 		void SetUseNormalMap(bool useNormalMap) override
 		{
-			mBasicCBChangesRarely.useNormalMap = useNormalMap;
-			mIsDirty = mConstantBufferChangesRarely.mIsDirty = true;
+			mBasicCBDrawingStates.useNormalMap = useNormalMap;
+			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
 		};
 		void SetFogState(bool isOn) override
 		{
-			mBasicCBDrawingStates.fogEnabled = isOn;
+			mBasicCBDrawingStates.EnableFog = isOn;
 			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
 		};
 		void SetFogStart(float fogStart) override
@@ -198,6 +210,7 @@ namespace Soul
 			mConstantBufferChangesEveryFrame.BindPS(1);
 			mConstantBufferChangesRarely.BindPS(2);
 			mConstantBufferChangesRarely.BindVS(2);
+			mConstantBufferDrawingStates.BindVS(3);
 			mConstantBufferDrawingStates.BindPS(3);
 		}
 	private:

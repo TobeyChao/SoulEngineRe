@@ -45,6 +45,7 @@ namespace Soul
 		SMatrix4x4 MatrixRotationAboutAxis(const SVector3& axis, float angle);
 		SMatrix4x4 MatrixScaling(float scale_x, float scale_y, float scale_z);
 		SMatrix4x4 MatrixShadow(const SVector4& plane, const SVector4& light);
+		SMatrix4x4 MatrixReflect(const SVector4& plane);
 		SVector3 operator*(const SVector3& vec3, const SMatrix4x4& matrix);
 	}
 }

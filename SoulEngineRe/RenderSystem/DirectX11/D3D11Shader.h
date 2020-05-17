@@ -100,6 +100,8 @@ namespace Soul
 		void SetShadowMatrix(const Core::SMatrix4x4& shadowMat) override {};
 		void SetShadowPlane(const Core::SVector4& shadowPlane) override {};
 		void SetEnableShadow(bool useShadow) override {};
+		void SetReflectMatrix(const Core::SMatrix4x4& reflectMatrix) override {};
+		void SetEnableReflect(bool enableReflect) override {};
 		void SetMaterial(const Material& matrial) override {};
 		void SetEyePos(const Core::SVector3& eyePos) override {};
 		void SetDirectinalLight(int slot, const DirectionalLight& light) override {};

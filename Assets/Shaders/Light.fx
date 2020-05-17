@@ -24,19 +24,20 @@ cbuffer CBChangesRarely : register(b2)
 	int gNumSpotLight;
 	float pad1 = 0;
 	matrix gShadow;
-	bool gIsShadow;
-	bool gUseTexture;
-	bool gUseNormal;
-	float pad2 = 0;
 	float4 gShadowplane;
 }
 
 cbuffer CBRenderStates : register(b3)
 {
+	bool gEnableShadow;
+	bool gUseTexture;
+	bool gUseNormal;
+	bool gEnableReflect;
 	float4 gFogColor;
 	bool gFogEnabled;
 	float gFogStart;
 	float gFogRange;
+	float pad3 = 0;
 }
 
 Texture2D gTex : register(t0);
@@ -67,14 +68,14 @@ VertexOut VS(VertexIn vertIn)
     VertexOut vertOut;
 	float4 posw = mul(float4(vertIn.PosL, 1.0f), gWorld);
 	float t = 1;
-	if(gIsShadow)
+	if(gEnableShadow)
 	{
 		t = dot(posw, gShadowplane);
 		posw = mul(posw, gShadow);
 	}
 	float4x4 viewProj = mul(gView, gProj);
 	vertOut.PosH = mul(posw, viewProj);
-	if(t <= 0.0f)
+	if(t < 0.0f)
 	{
 		vertOut.PosH.w = 0;
 	}

@@ -28,7 +28,7 @@ public:
 		shader->SetFogRange(120.0f);
 		shader->SetFogStart(5.0f);
 		shader->SetFogState(true);
-		mWindow->SetClearColor({ 0.752941251f, 0.752941251f, 0.752941251f, 1.000000000f });
+		mWindow->SetClearColor({ 0.3f, 0.4f, 0.5f, 1.0f });
 
 		InitLight();
 
@@ -40,7 +40,7 @@ public:
 		sphere = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sky);
 		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/sky.dds"));
 		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeSky->AttachObj(sphere);
+		//nodeSky->AttachObj(sphere);
 		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
 		nodeSky->SetScale({ 10.0f, 10.0f, 10.0f });
 
@@ -71,12 +71,23 @@ public:
 		planeSet["DepthStencil"] = "DST_WRITE_STECIL";
 		planeSet["StencilRef"] = 1;
 		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-		plane->GetSubMesh(0)->PushTexture(tex);
-		//plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones_NORM.png"));
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones.dds"));
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones_NORM.png"));
 		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodePlane->AttachObj(plane);
 
 		nodePlane->SetPosition({ 0.f, 0.f, 0.f });
+
+		// nodePlane
+		//planeSet["DepthStencil"] = "DST_WRITE_STECIL";
+		//planeSet["StencilRef"] = 1;
+		plane2 = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
+		plane2->GetSubMesh(0)->PushTexture(tex);
+		nodeRenderToTexture = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeRenderToTexture->AttachObj(plane2);
+
+		nodeRenderToTexture->SetPosition({ 0.f, 15.f, 15.f });
+		nodeRenderToTexture->SetRotation({ -Core::SM_PIDIV2, 0.f , 0.f });
 
 		// Cube
 		json cubeSet;
@@ -406,6 +417,7 @@ private:
 	SceneNode* nodeCube{};
 	SceneNode* nodeSky{};
 	SceneNode* nodePlane{};
+	SceneNode* nodeRenderToTexture{};
 	SceneNode* nodeParticles{};
 	SceneNode* nodeTerrain{};
 	SceneNode* nodeWater{};
@@ -416,6 +428,7 @@ private:
 	GameObject* cylinder{};
 	GameObject* mesh{};
 	GameObject* plane{};
+	GameObject* plane2{};
 	GameObject* particleList{};
 	GameObject* terrain{};
 	IAudioBuffer* audio;
