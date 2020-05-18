@@ -12,8 +12,9 @@ namespace Soul
 	enum class BlendType
 	{
 		BT_DEFAULT,
-		BT_TRANSPARENT,	// 透明混合
-		BT_ADD,			//颜色加法
+		BT_TRANSPARENT,		// 透明混合
+		BT_ADD,				// 颜色加法
+		BT_NO_COLOR_WRITE,	// 无颜色写入
 	};
 
 	enum class RasterizerType

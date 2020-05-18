@@ -25,6 +25,7 @@ cbuffer CBChangesRarely : register(b2)
 	float pad1 = 0;
 	matrix gShadow;
 	float4 gShadowplane;
+	matrix gReflection;
 }
 
 cbuffer CBRenderStates : register(b3)
@@ -67,21 +68,29 @@ VertexOut VS(VertexIn vertIn)
 {
     VertexOut vertOut;
 	float4 posw = mul(float4(vertIn.PosL, 1.0f), gWorld);
+	vertOut.NormalW = mul(vertIn.NormalL, (float3x3)gWorld);
+	vertOut.TangentW = mul(float4(vertIn.TangentL, 1.0f), gWorld).xyz;
 	float t = 1;
+	[flatten]
 	if(gEnableShadow)
 	{
 		t = dot(posw, gShadowplane);
 		posw = mul(posw, gShadow);
 	}
+	[flatten]
+    if (gEnableReflect)
+    {
+        posw = mul(posw, gReflection);
+        vertOut.NormalW = mul(vertOut.NormalW, (float3x3) gReflection);
+		vertOut.TangentW = mul(vertOut.TangentW, (float3x3) gReflection);
+    }
 	float4x4 viewProj = mul(gView, gProj);
 	vertOut.PosH = mul(posw, viewProj);
-	if(t < 0.0f)
+	if(t < -0.001f)
 	{
 		vertOut.PosH.w = 0;
 	}
 	vertOut.PosW = posw.xyz;
-	vertOut.NormalW = mul(vertIn.NormalL, (float3x3)gWorld);
-	vertOut.TangentW = mul(float4(vertIn.TangentL, 1.0f), gWorld).xyz;
     vertOut.Color = vertIn.Color;
 	vertOut.Tex = vertIn.Tex;
     return vertOut;
@@ -118,10 +127,17 @@ float4 PS(VertexOut vertIn) : SV_Target
 	// Sum the light contribution from each light source.
 	float4 A, D, S;
 	int i;
+	DirectionalLight dirLight = gDirLight[i];
 	[unroll]
     for (i = 0; i < gNumDirLight; ++i)
     {
-		ComputeDirectionalLight(gMaterial, gDirLight[i], NormalW, toEyeW, A, D, S);
+		dirLight = gDirLight[i];
+		[flatten]
+        if (gEnableReflect)
+        {
+            dirLight.Direction = mul(dirLight.Direction, (float3x3) gReflection);
+        }
+		ComputeDirectionalLight(gMaterial, dirLight, NormalW, toEyeW, A, D, S);
 		ambient += A;  
 		diffuse += D;
 		spec += S;
@@ -130,6 +146,12 @@ float4 PS(VertexOut vertIn) : SV_Target
 	[unroll]
     for (i = 0; i < gNumPointLight; ++i)
     {
+		/*
+		[flatten]
+        if (gEnableReflect)
+        {
+            gPointLight[i].Position = (float3) mul(float4(gPointLight[i].Position, 1.0f), gReflection);
+        }*/
 		ComputePointLight(gMaterial, gPointLight[i], vertIn.PosW, NormalW, toEyeW, A, D, S);
 		ambient += A;
 		diffuse += D;
@@ -139,6 +161,13 @@ float4 PS(VertexOut vertIn) : SV_Target
 	[unroll]
     for (i = 0; i < gNumSpotLight; ++i)
     {
+		/*
+		[flatten]
+        if (gEnableReflect)
+        {
+            gSpotLight[i].Position = (float3) mul(float4(gSpotLight[i].Position, 1.0f), gReflection);
+            gSpotLight[i].Direction = mul(gSpotLight[i].Direction, (float3x3) gReflection);
+        }*/
 		ComputeSpotLight(gMaterial, gSpotLight[i], vertIn.PosW, NormalW, toEyeW, A, D, S);
 		ambient += A;
 		diffuse += D;

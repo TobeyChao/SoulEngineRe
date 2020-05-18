@@ -18,17 +18,20 @@ public:
 		}
 
 		Launcher* launcher = GetLauncher();
-		// SceneManager也是根节点
 		sceneMgr = launcher->CreateSceneManager();
+		mWindow->SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 
 		Shader* shader = ShaderManager::GetInstance().GetShaderByName(L"Basic");
-		ITexture* tex = TextureManager::GetInstance().CreateTexture(L"rtt", { 1024, 1024 }, false);
 
-		shader->SetFogColor({ 0.752941251f, 0.752941251f, 0.752941251f, 1.000000000f });
-		shader->SetFogRange(120.0f);
-		shader->SetFogStart(5.0f);
-		shader->SetFogState(true);
-		mWindow->SetClearColor({ 0.3f, 0.4f, 0.5f, 1.0f });
+		shader->SetShadowMatrix(Core::MatrixShadow({ 0.0f, 1.0f, 0.0f, -0.01f }, { 0.0f, 5.0f, -2.0f, 1.0f }));
+		shader->SetShadowPlane({ 0.0f, 1.0f, 0.0f, -0.01f });
+
+		//shader->SetFogColor({ 0.752941251f, 0.752941251f, 0.752941251f, 1.000000000f });
+		//shader->SetFogRange(120.0f);
+		//shader->SetFogStart(5.0f);
+		//shader->SetFogState(true);
+
+		shader->SetReflectMatrix(Core::MatrixReflect({ 0.0f, 0.0f, 1.0f, -5.0f }));
 
 		InitLight();
 
@@ -40,55 +43,104 @@ public:
 		sphere = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sky);
 		sphere->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/sky.dds"));
 		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		//nodeSky->AttachObj(sphere);
+		nodeSky->AttachObj(sphere);
 		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
 		nodeSky->SetScale({ 10.0f, 10.0f, 10.0f });
 
-		json terrainSet;
-		terrainSet["width"] = 128.0f;
-		terrainSet["depth"] = 128.0f;
-		terrainSet["m"] = 512;
-		terrainSet["n"] = 512;
-		terrainSet["scale"] = 0.0001f;
-		terrainSet["heightMap"] = "../Assets/Terrain/hm.raw";
-		terrainSet["Shader"] = "Basic";
-		terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
-		terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
-		nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeTerrain->SetPosition({ 0.0f, 1.0f, 0.0f });
+#pragma region Terrain
+		//json terrainSet;
+		//terrainSet["width"] = 128.0f;
+		//terrainSet["depth"] = 128.0f;
+		//terrainSet["m"] = 512;
+		//terrainSet["n"] = 512;
+		//terrainSet["scale"] = 0.0001f;
+		//terrainSet["heightMap"] = "../Assets/Terrain/hm.raw";
+		//terrainSet["Shader"] = "Basic";
+		//terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
+		//terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
+		//nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		//nodeTerrain->SetPosition({ 0.0f, 1.0f, 0.0f });
 		//nodeTerrain->AttachObj(terrain);
+#pragma endregion
 
-		Core::SMatrix4x4 shadowMat = Core::MatrixShadow({ 0.0f, 1.0f, 0.0f, -0.01f }, { 0.0f, 3.0f, 0.0f, 1.0f });
+#pragma region Plane
+		// nodePlane
+		json planeSet2;
+		planeSet2["width"] = 10.0f;
+		planeSet2["depth"] = 5.0f;
+		planeSet2["m"] = 10.0f;
+		planeSet2["n"] = 5.0f;
+		planeSet2["maxU"] = 1.0f;
+		planeSet2["maxV"] = 1.0f;
+		planeSet2["Blend"] = "BT_TRANSPARENT";
+		planeSet2["DepthStencil"] = "DST_NO_DEPTH_WRITE";
+		Material* material = new Material();
+		material->ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
+		material->diffuse = { 1.0f, 1.0f, 1.0f, 0.5f };
+		material->specular = { 0.4f, 0.4f, 0.4f, 16.0f };
+		plane2 = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet2);
+		plane2->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/ice.dds"));
+		plane2->GetSubMesh(0)->SetMaterial(material);
+		nodePlane2 = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodePlane2->AttachObj(plane2);
+		nodePlane2->SetPosition({ 0.f, 2.5f, 5.f });
+		nodePlane2->SetRotation({ -Core::SM_PIDIV2, 0.f , 0.f });
+
+		// mirror
+		json planeMirror;
+		planeMirror["width"] = 10.0f;
+		planeMirror["depth"] = 5.0f;
+		planeMirror["m"] = 10.0f;
+		planeMirror["n"] = 5.0f;
+		planeMirror["maxU"] = 5.0f;
+		planeMirror["maxV"] = 5.0f;
+		planeMirror["Blend"] = "BT_NO_COLOR_WRITE";
+		planeMirror["DepthStencil"] = "DST_NO_DEPTH_WRITE_WRITE_STECIL";
+		planeMirror["StencilRef"] = 1;
+		mirror = sceneMgr->CreateGameObject("mirror", SIMPLE_GAMEOBJECT::SG_PLANE, planeMirror);
+		nodeMirror = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		nodeMirror->AttachObj(mirror);
+		nodeMirror->SetPosition({ 0.f, 2.5f, 5.f });
+		nodeMirror->SetRotation({ -Core::SM_PIDIV2, 0.f , 0.f });
 
 		// nodePlane
 		json planeSet;
-		planeSet["width"] = 30.0f;
-		planeSet["depth"] = 30.0f;
-		planeSet["m"] = 5.0f;
-		planeSet["n"] = 5.0f;
-		planeSet["maxU"] = 1.0f;
-		planeSet["maxV"] = 1.0f;
-		planeSet["DepthStencil"] = "DST_WRITE_STECIL";
+		planeSet["width"] = 10.0f;
+		planeSet["depth"] = 10.0f;
+		planeSet["m"] = 10.0f;
+		planeSet["n"] = 10.0f;
+		planeSet["maxU"] = 5.0f;
+		planeSet["maxV"] = 5.0f;
 		planeSet["StencilRef"] = 1;
+		planeSet["DepthStencil"] = "DST_WRITE_STECIL";
 		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones.dds"));
-		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones_NORM.png"));
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/catton_grpund.jpg"));
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/catton_grpund.jpg_NORM.jpg"));
+		plane->GetSubMesh(0)->EnableReflect(true);
 		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodePlane->AttachObj(plane);
-
 		nodePlane->SetPosition({ 0.f, 0.f, 0.f });
 
-		// nodePlane
-		//planeSet["DepthStencil"] = "DST_WRITE_STECIL";
-		//planeSet["StencilRef"] = 1;
-		plane2 = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-		plane2->GetSubMesh(0)->PushTexture(tex);
-		nodeRenderToTexture = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeRenderToTexture->AttachObj(plane2);
+		// nodeWater
+		json waterSet;
+		waterSet["width"] = 30.0f;
+		waterSet["depth"] = 30.0f;
+		waterSet["m"] = 5.0f;
+		waterSet["n"] = 5.0f;
+		waterSet["maxU"] = 5.0f;
+		waterSet["maxV"] = 5.0f;
+		waterSet["alpha"] = 0.7f;
+		waterSet["Blend"] = "BT_TRANSPARENT";
+		waterSet["Rasterizer"] = "RT_CULL_NONE";
+		waterSet["DepthStencil"] = "DST_NO_DEPTH_WRITE";
+		water = sceneMgr->CreateGameObject("water", SIMPLE_GAMEOBJECT::SG_PLANE, waterSet);
+		water->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/water.dds"));
+		nodeWater = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
+		//nodeWater->AttachObj(water);
+		nodeWater->SetPosition({ 0.f, 1.1f, 0.f });
+#pragma endregion
 
-		nodeRenderToTexture->SetPosition({ 0.f, 15.f, 15.f });
-		nodeRenderToTexture->SetRotation({ -Core::SM_PIDIV2, 0.f , 0.f });
-
+#pragma region SimpleGameObject
 		// Cube
 		json cubeSet;
 		cubeSet["Shader"] = "Basic";
@@ -99,8 +151,7 @@ public:
 		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/floor.dds"));
 		cube->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/floor_NORM.png"));
 		cube->GetSubMesh(0)->EnableShadow(true);
-		cube->GetSubMesh(0)->SetShadowMatrix(shadowMat);
-		cube->GetSubMesh(0)->SetShadowPlane({ 0.0f, 1.0f, 0.0f, -0.01f });
+		cube->GetSubMesh(0)->EnableReflect(true);
 		nodeCube = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCube->AttachObj(cube);
 		nodeCube->SetPosition({ 0.f, 0.51f, 0.f });
@@ -117,8 +168,7 @@ public:
 		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks.dds"));
 		cylinder->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks_NORM.png"));
 		cylinder->GetSubMesh(0)->EnableShadow(true);
-		cylinder->GetSubMesh(0)->SetShadowMatrix(shadowMat);
-		cylinder->GetSubMesh(0)->SetShadowPlane({ 0.0f, 1.0f, 0.0f, -0.01f });
+		cylinder->GetSubMesh(0)->EnableReflect(true);
 		nodeCylinder = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeCylinder->AttachObj(cylinder);
 		nodeCylinder->SetPosition({ 3.f, 1.51f, 0.f });
@@ -129,58 +179,14 @@ public:
 		for (auto it : mesh->GetAllSubMesh())
 		{
 			it->EnableShadow(true);
-			it->SetShadowMatrix(shadowMat);
-			it->SetShadowPlane({ 0.0f, 1.0f, 0.0f, -0.01f });
+			it->EnableReflect(true);
 		}
 		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodeMesh->SetPosition({ -3.f, 0.f, 0.f });
 		nodeMesh->AttachObj(mesh);
+#pragma endregion
 
-		/*
-		particleEmitter = new ParticleEmitter();
-		json particleSet;
-		particleSet["texture"] = "../Assets/Images/particle_texture.png";
-		particleSet["particle_emit_center_x"] = 0.0f;
-		particleSet["particle_emit_center_y"] = 0.0f;
-		particleSet["particle_emit_center_z"] = 0.0f;
-		particleSet["particle_emit_deviation_x"] = 10.f;
-		particleSet["particle_emit_deviation_y"] = 0.1f;
-		particleSet["particle_emit_deviation_z"] = 10.f;
-		particleSet["particle_velocity_x"] = 0.0f;
-		particleSet["particle_velocity_y"] = -2.0f;
-		particleSet["particle_velocity_z"] = 0.0f;
-		particleSet["particle_velocity_variation_angle_x"] = 0;
-		particleSet["particle_velocity_variation_angle_y"] = 0;
-		particleSet["particle_lifetime_min"] = 3.0f;
-		particleSet["particle_lifetime_max"] = 4.0f;
-		particleSet["particles_max_num"] = 100.0f;
-		particleSet["particle_size"] = 0.2f;
-		particleSet["particles_per_second"] = 40;
-		particleList = sceneMgr->CreateGameObject("particle", particleEmitter, particleSet);
-		nodeParticles = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeParticles->SetPosition({ 0.0f, 3.0f, 0.0f });
-		nodeParticles->AttachObj(particleList);
-		*/
-
-		// nodeWater
-		json waterSet;
-		waterSet["width"] = 30.0f;
-		waterSet["depth"] = 30.0f;
-		waterSet["m"] = 5.0f;
-		waterSet["n"] = 5.0f;
-		waterSet["maxU"] = 5.0f;
-		waterSet["maxV"] = 5.0f;
-		waterSet["alpha"] = 0.7f;
-		waterSet["Blend"] = "BT_TRANSPARENT";
-		waterSet["Rasterizer"] = "RT_CULL_NONE";
-		waterSet["DepthStencil"] = "DST_NO_DEPTH_WRITE";
-
-		water = sceneMgr->CreateGameObject("water", SIMPLE_GAMEOBJECT::SG_PLANE, waterSet);
-		water->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/water.dds"));
-		nodeWater = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		//nodeWater->AttachObj(water);
-		nodeWater->SetPosition({ 0.f, 1.1f, 0.f });
-
+#pragma region CameraAndRt
 		camera = new SceneNodeCamera(sceneMgr, sceneMgr, 101);
 		secondCamera = new SceneNodeCamera(sceneMgr, sceneMgr, 102);
 		secondCamera->SetPosition({ 0.0f, 10.0f, -10.0f });
@@ -188,12 +194,13 @@ public:
 		sceneMgr->AddChild(camera);
 		sceneMgr->AddChild(secondCamera);
 		mWindow->AddViewport(camera, 0, 0.0f, 0.0f, 1.f, 1.f);
-		
+		ITexture* tex = TextureManager::GetInstance().CreateTexture(L"rtt", { 1024, 1024 }, false);
 		D3D11RenderTexture* rtt = dynamic_cast<D3D11RenderTexture*>(tex);
 		rtt->AddViewport(secondCamera, 1, 0.0f, 0.0f, 1.f, 1.f);
 		rtt->SetClearColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
 		GetLauncher()->GetActiveRenderSystem()->AddRenderTarget(rtt);
+#pragma endregion
 		return true;
 	}
 
@@ -324,7 +331,7 @@ public:
 		pointLight->SetSpecular({ 0.7f, 0.7f, 0.7f, 1.0f });
 		pointLight->SetAtt({ 0.0f, 0.5f, 0.0f });
 		pointLight->SetRange(45.0f);
-		pointLight->SetPosition({ 0.0f, 5.0f, 0.0f });
+		pointLight->SetPosition({ 0.0f, 5.0f, -2.0f });
 
 		spotLight1 = sceneMgr->CreateLight("spot light1", LIGHT_TYPE::LT_SPOT);
 		spotLight1->SetPosition({ 3.0f, 6.0f, 3.0f });
@@ -357,14 +364,14 @@ public:
 		spotLight3->SetRange(100.0f);
 
 		dirLight = sceneMgr->CreateLight("dirLight", LIGHT_TYPE::LT_DIRECTIONAL);
-		dirLight->SetAmbient({ 0.2f, 0.2f, 0.2f, 1.0f });
+		dirLight->SetAmbient({ 1.f, 1.f, 1.f, 1.0f });
 		dirLight->SetDiffuse({ 1.f, 1.f, 1.f, 1.0f });
 		dirLight->SetSpecular({ 0.1f, 0.1f, 0.1f, 1.0f });
 		dirLight->SetDirection({ -0.577f, -0.577f, 0.577f });
 
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
-		lightNode->AttachObj(dirLight);
-		//lightNode->AttachObj(pointLight);
+		//lightNode->AttachObj(dirLight);
+		lightNode->AttachObj(pointLight);
 		//lightNode->AttachObj(spotLight1);
 		//lightNode->AttachObj(spotLight2);
 		//lightNode->AttachObj(spotLight3);
@@ -416,12 +423,14 @@ private:
 	SceneNode* nodeCylinder{};
 	SceneNode* nodeCube{};
 	SceneNode* nodeSky{};
+	SceneNode* nodeMirror{};
 	SceneNode* nodePlane{};
-	SceneNode* nodeRenderToTexture{};
+	SceneNode* nodePlane2{};
 	SceneNode* nodeParticles{};
 	SceneNode* nodeTerrain{};
 	SceneNode* nodeWater{};
 
+	GameObject* mirror{};
 	GameObject* water{};
 	GameObject* cube{};
 	GameObject* sphere{};

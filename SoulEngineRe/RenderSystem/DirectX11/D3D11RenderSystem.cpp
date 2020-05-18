@@ -227,6 +227,19 @@ namespace Soul
 			mBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 			mBlendDescChanged = true;
 			break;
+		case BlendType::BT_NO_COLOR_WRITE:
+			ZeroMemory(&mBlendDesc, sizeof(mBlendDesc));
+			// 无颜色写入混合模式
+			// Color = DestColor
+			// Alpha = DestAlpha
+			mBlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
+			mBlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+			mBlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			mBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+			mBlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+			mBlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			mBlendDescChanged = true;
+			break;
 		default:
 			mBlendDescChanged = false;
 			break;

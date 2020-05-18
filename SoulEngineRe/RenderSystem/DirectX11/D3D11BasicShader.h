@@ -26,7 +26,7 @@ namespace Soul
 		BOOL useNormalMap = FALSE;
 		BOOL enableReflect = FALSE;
 		Core::SVector4 fogColor;
-		BOOL EnableFog;
+		BOOL enableFog;
 		float fogStart;
 		float fogRange;
 		float pad;
@@ -89,16 +89,19 @@ namespace Soul
 		}
 		void SetEnableShadow(bool useShadow) override
 		{
-			mBasicCBDrawingStates.enableShadow = useShadow ? true : false;
+			mBasicCBDrawingStates.enableShadow = useShadow;
 			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
 		};
 		void SetReflectMatrix(const Core::SMatrix4x4& reflectMatrix) override
 		{
-
+			mBasicCBChangesRarely.reflectMat = reflectMatrix;
+			Core::MatrixTranspose(mBasicCBChangesRarely.reflectMat);
+			mIsDirty = mConstantBufferChangesRarely.mIsDirty = true;
 		}
 		void SetEnableReflect(bool enableReflect) override
 		{
-
+			mBasicCBDrawingStates.enableReflect = enableReflect;
+			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
 		}
 		void SetMaterial(const Material& matrial) override
 		{
@@ -170,7 +173,7 @@ namespace Soul
 		};
 		void SetFogState(bool isOn) override
 		{
-			mBasicCBDrawingStates.EnableFog = isOn;
+			mBasicCBDrawingStates.enableFog = isOn;
 			mIsDirty = mConstantBufferDrawingStates.mIsDirty = true;
 		};
 		void SetFogStart(float fogStart) override

@@ -39,7 +39,7 @@ namespace Soul
 
 		void DrawAll(SceneNodeCamera* camera, Viewport* viewport);
 
-		void EnqueueSubMeshQueue(SubMesh* subMesh) { mRenderCacheSubMeshes.push(subMesh); }
+		void EnqueueSubMeshQueue(SubMesh* subMesh);
 
 		void EnqueueLightQueue(Light* light) { mRenderCacheLightList.push_back(light); }
 
@@ -47,6 +47,8 @@ namespace Soul
 
 	private:
 		void SetCustomEffect(SubMesh* subMesh, const json& effctSetting);
+
+		void DrawAllInQueue(std::queue<SubMesh*>& queue);
 
 	private:
 		// 需要渲染的所有场景节点
@@ -61,6 +63,7 @@ namespace Soul
 		Viewport* mActiveViewport;
 		// 需要渲染的游戏物体
 		std::queue<SubMesh*> mRenderCacheSubMeshes;
+		std::queue<SubMesh*> mRenderCacheSubMeshesBlend;
 		// 需要设置的灯光list
 		std::vector<Light*> mRenderCacheLightList;
 		// 创建的所有游戏物体

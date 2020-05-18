@@ -487,6 +487,14 @@ namespace Soul
 			{
 				subMesh->SetBlend(BlendType::BT_TRANSPARENT);
 			}
+			else if (blend == "BT_ADD")
+			{
+				subMesh->SetBlend(BlendType::BT_ADD);
+			}
+			else if (blend == "BT_NO_COLOR_WRITE")
+			{
+				subMesh->SetBlend(BlendType::BT_NO_COLOR_WRITE);
+			}
 		}
 
 		// Shader
@@ -503,45 +511,22 @@ namespace Soul
 		subMesh->SetShader(shader);
 	}
 
-	void SceneManager::ProcessVisibleGameObject()
+	void SceneManager::DrawAllInQueue(std::queue<SubMesh*>& queue)
 	{
-		// 遍历所有灯光节点
-		for (auto& i : mLightNodeList)
+		while (!queue.empty())
 		{
-			i->ProcessVisibleGameObject();
-		}
-		// 遍历所有渲染节点
-		for (auto& i : mRenderableNodeList)
-		{
-			i->ProcessVisibleGameObject();
-		}
-	}
-
-	void SceneManager::DrawAll(SceneNodeCamera* camera, Viewport* viewport)
-	{
-		// 设置激活摄像机
-		SetActiveCamera(camera);
-		// 设置视口
-		SetViewport(viewport);
-		// 注册所有可见场景节点
-		OnRegisterSceneNode();
-		// 处理可见游戏物体
-		ProcessVisibleGameObject();
-		// 对每个节点所绑定的SubMesh进行渲染
-		while (!mRenderCacheSubMeshes.empty())
-		{
-			SubMesh* sm = mRenderCacheSubMeshes.front();
-			const BoundingBox& bb = sm->GetParent()->GetBoundingBox();
-			// 到三边距离均为0不进行裁剪
-			if (bb.mLengthToSides != Core::SVector3{ 0.0f, 0.0f, 0.0f })
-			{
-				if (!mActiveCamera->CheckRectangle(bb))
-				{
-					std::cout << sm->GetParent()->GetName() << std::endl;
-					mRenderCacheSubMeshes.pop();
-					continue;
-				}
-			}
+			SubMesh* sm = queue.front();
+			//const BoundingBox& bb = sm->GetParent()->GetBoundingBox();
+			//// 到三边距离均为0不进行裁剪
+			//if (bb.mLengthToSides != Core::SVector3{ 0.0f, 0.0f, 0.0f })
+			//{
+			//	if (!mActiveCamera->CheckRectangle(bb))
+			//	{
+			//		std::cout << sm->GetParent()->GetName() << std::endl;
+			//		queue.pop();
+			//		continue;
+			//	}
+			//}
 
 			// 深度模板
 			if (sm->UseDepthStencil())
@@ -643,29 +628,79 @@ namespace Soul
 				shader->SetPointLightNum(slotP);
 				shader->SetDirectinalLightNum(slotD);
 				shader->SetSpotLightNum(slotS);
-				// 材质 非阴影
+				// 非阴影
 				shader->SetEnableShadow(false);
+				// 非反射
+				shader->SetEnableReflect(false);
+				// 材质
 				shader->SetMaterial(*(sm->GetMaterial()));
 				// 设置Shader
 				mRenderSystem->BindShader(shader);
 				// 渲染
 				mRenderSystem->Render(sm->GetRenderParameter());
-				// 渲染阴影
+				// 渲染反射
+				if (sm->IsEnableReflect())
+				{
+					shader->SetEnableReflect(true);
+					// 在模板值为1的地方绘制（即镜面上）
+					mRenderSystem->SetDepthStencilType(DepthStencilType::DST_DRAW_WITH_STECIL);
+					mRenderSystem->SetStencilRef(1);
+					// 光栅化与原来的裁剪方式相反
+					if (sm->UseRasterizer())
+					{
+						if (sm->GetRasterizerType() == RasterizerType::RT_CULL_CLOCKWISE)
+						{
+							mRenderSystem->SetRasterizerType(RasterizerType::RT_CULL_COUNTERCLOCKWISE);
+						}
+						else if (sm->GetRasterizerType() == RasterizerType::RT_CULL_COUNTERCLOCKWISE)
+						{
+							mRenderSystem->SetRasterizerType(RasterizerType::RT_CULL_COUNTERCLOCKWISE);
+						}
+					}
+					else
+					{
+						mRenderSystem->SetRasterizerType(RasterizerType::RT_CULL_CLOCKWISE);
+					}
+					mRenderSystem->Render(sm->GetRenderParameter());
+					// 绘制反射物体的阴影
+					if (sm->IsEnableShadow())
+					{
+						shader->SetEnableShadow(true);
+						// 黑色材质
+						static Material materialShadow;
+						materialShadow.ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
+						materialShadow.diffuse = { 0.0f, 0.0f, 0.0f, 0.8f };
+						materialShadow.specular = { 0.0f, 0.0f, 0.0f, 16.0f };
+						shader->SetMaterial(materialShadow);
+						// 不使用纹理
+						shader->SetUseTexture(false);
+						// 禁止二次混合，且在模板值为1的地方绘制
+						mRenderSystem->SetDepthStencilType(DepthStencilType::DST_NO_DOUBLE_BLEND);
+						mRenderSystem->SetStencilRef(1);
+						// 开启透明混合
+						mRenderSystem->SetBlendType(BlendType::BT_TRANSPARENT);
+						// 渲染阴影
+						mRenderSystem->Render(sm->GetRenderParameter());
+					}
+				}
+				// 渲染非反射物体的阴影
 				if (sm->IsEnableShadow())
 				{
+					shader->SetEnableShadow(true);
+					shader->SetEnableReflect(false);
+					// 黑色材质
 					static Material materialShadow;
 					materialShadow.ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
 					materialShadow.diffuse = { 0.0f, 0.0f, 0.0f, 0.8f };
 					materialShadow.specular = { 0.0f, 0.0f, 0.0f, 16.0f };
 					shader->SetMaterial(materialShadow);
-					shader->SetEnableShadow(true);
-					shader->SetShadowMatrix(sm->GetShadowMatrix());
-					shader->SetShadowPlane(sm->GetShadowPlane());
+					// 不使用纹理
 					shader->SetUseTexture(false);
+					// 禁止二次混合，且在模板值为1的地方绘制
 					mRenderSystem->SetDepthStencilType(DepthStencilType::DST_NO_DOUBLE_BLEND);
 					mRenderSystem->SetStencilRef(1);
+					// 开启透明混合
 					mRenderSystem->SetBlendType(BlendType::BT_TRANSPARENT);
-					mRenderSystem->BindShader(shader);
 					// 渲染阴影
 					mRenderSystem->Render(sm->GetRenderParameter());
 				}
@@ -675,11 +710,52 @@ namespace Soul
 				mRenderSystem->BindShader(nullptr);
 			}
 
-			mRenderCacheSubMeshes.pop();
+			queue.pop();
 		}
+	}
+
+	void SceneManager::ProcessVisibleGameObject()
+	{
+		// 遍历所有灯光节点
+		for (auto& i : mLightNodeList)
+		{
+			i->ProcessVisibleGameObject();
+		}
+		// 遍历所有渲染节点
+		for (auto& i : mRenderableNodeList)
+		{
+			i->ProcessVisibleGameObject();
+		}
+	}
+
+	void SceneManager::DrawAll(SceneNodeCamera* camera, Viewport* viewport)
+	{
+		// 设置激活摄像机
+		SetActiveCamera(camera);
+		// 设置视口
+		SetViewport(viewport);
+		// 注册所有可见场景节点
+		OnRegisterSceneNode();
+		// 处理可见游戏物体
+		ProcessVisibleGameObject();
+		// 对每个节点所绑定的SubMesh进行渲染
+		DrawAllInQueue(mRenderCacheSubMeshes);
+		DrawAllInQueue(mRenderCacheSubMeshesBlend);
 		mRenderCacheLightList.clear();
 		mCameraNodeList.clear();
 		mLightNodeList.clear();
 		mRenderableNodeList.clear();
+	}
+	void SceneManager::EnqueueSubMeshQueue(SubMesh* subMesh)
+	{
+		mRenderCacheSubMeshes.push(subMesh);
+		if (subMesh->GetBlendType() == BlendType::BT_TRANSPARENT)
+		{
+			mRenderCacheSubMeshesBlend.push(subMesh);
+		}
+		else
+		{
+			mRenderCacheSubMeshes.push(subMesh);
+		}
 	}
 }

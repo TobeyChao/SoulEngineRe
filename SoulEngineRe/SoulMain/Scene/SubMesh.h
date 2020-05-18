@@ -95,29 +95,19 @@ namespace Soul
 			mEnableShadow = enableShadow;
 		}
 
-		void SetShadowMatrix(const Core::SMatrix4x4& shadowMatrix)
-		{
-			mShadowMat = shadowMatrix;
-		}
-
-		void SetShadowPlane(const Core::SVector4& shadowPlane)
-		{
-			mShadowPlane = shadowPlane;
-		}
-
-		const Core::SVector4& GetShadowPlane()
-		{
-			return mShadowPlane;
-		}
-
-		const Core::SMatrix4x4& GetShadowMatrix()
-		{
-			return mShadowMat;
-		}
-
 		bool IsEnableShadow()
 		{
 			return mEnableShadow;
+		}
+
+		void EnableReflect(bool enableReflect)
+		{
+			mEnableReflect = enableReflect;
+		}
+
+		bool IsEnableReflect()
+		{
+			return mEnableReflect;
 		}
 
 		// Œ∆¿Ì
@@ -243,6 +233,7 @@ namespace Soul
 		std::string mName;
 
 		bool mEnableShadow;
+		bool mEnableReflect;
 
 		Core::SMatrix4x4 mShadowMat;
 		Core::SVector4 mShadowPlane;
