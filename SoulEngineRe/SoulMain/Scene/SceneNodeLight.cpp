@@ -19,10 +19,13 @@ namespace Soul
 	void SceneNodeLight::ProcessVisibleGameObject()
 	{
 		UpdateAbsolutePosition();
-		Light* light = dynamic_cast<Light*>(mAttachedGameObject);
-		if (light)
+		for (auto& gameObject : mAttachedGameObject)
 		{
-			mSceneManager->EnqueueLightQueue(light);
+			Light* light = dynamic_cast<Light*>(gameObject);
+			if (light)
+			{
+				mSceneManager->EnqueueLightQueue(light);
+			}
 		}
 	}
 }

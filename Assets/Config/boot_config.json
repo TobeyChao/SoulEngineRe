@@ -6,9 +6,9 @@
     "d3d_driver_type" : "hardware",
     "window_title" : "渲染 demo",
     "icon" : "Soul.ico",
-    "fullscreen" : false,
-    "screen_width" : 1600,
-    "screen_height" : 900,
+    "fullscreen" : true,
+    "screen_width" : 1920,
+    "screen_height" : 1080,
     "vsync" : false,
     "msaa" : 0
 }

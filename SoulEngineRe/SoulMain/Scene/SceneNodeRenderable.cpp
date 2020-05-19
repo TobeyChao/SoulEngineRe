@@ -20,13 +20,12 @@ namespace Soul
 	void SceneNodeRenderable::ProcessVisibleGameObject()
 	{
 		UpdateAbsolutePosition();
-		if (!mAttachedGameObject || !mAttachedGameObject->IsVisible())
+		for (auto& gameObject : mAttachedGameObject)
 		{
-			return;
-		}
-		for (auto subMesh : mAttachedGameObject->GetAllSubMesh())
-		{
-			mSceneManager->EnqueueSubMeshQueue(subMesh);
+			for (auto subMesh : gameObject->GetAllSubMesh())
+			{
+				mSceneManager->EnqueueSubMeshQueue(subMesh);
+			}
 		}
 	}
 }

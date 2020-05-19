@@ -511,42 +511,178 @@ namespace Soul
 		subMesh->SetShader(shader);
 	}
 
+	void SceneManager::DrawAllInShadowQueue(std::queue<SubMesh*>& queue)
+	{
+		while (!mRenderCacheSubMeshesShadowRef.empty())
+		{
+			SubMesh* sm = mRenderCacheSubMeshesShadowRef.front();
+
+			mRenderSystem->SetRasterizerType(RasterizerType::RT_CULL_NONE);
+			mRenderSystem->SetDepthStencilType(DepthStencilType::DST_NO_DOUBLE_BLEND);
+			mRenderSystem->SetStencilRef(1);
+			mRenderSystem->SetBlendType(BlendType::BT_TRANSPARENT);
+
+			// 根据SceneNode设置Shader的相关变量
+			Shader* shader = sm->GetShader();
+			if (shader)
+			{
+				// 变换矩阵
+				shader->SetWorldViewProj(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation() *
+					GetActiveCamera()->GetViewMatrix() *
+					GetActiveCamera()->GetProjectionMatrix());
+				shader->SetWorld(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation());
+				shader->SetView(GetActiveCamera()->GetViewMatrix());
+				shader->SetProj(GetActiveCamera()->GetProjectionMatrix());
+				shader->SetEyePos(GetActiveCamera()->GetPosition());
+				// 灯光
+				SetLight(shader);
+				// 渲染反射
+				shader->SetEnableReflect(true);
+				shader->SetEnableShadow(true);
+				// 黑色材质
+				static Material materialShadow;
+				materialShadow.ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
+				materialShadow.diffuse = { 0.0f, 0.0f, 0.0f, 0.8f };
+				materialShadow.specular = { 0.0f, 0.0f, 0.0f, 16.0f };
+				shader->SetMaterial(materialShadow);
+				// 不使用纹理
+				shader->SetUseTexture(false);
+				// 设置Shader
+				mRenderSystem->BindShader(shader);
+				// 渲染阴影
+				mRenderSystem->Render(sm->GetRenderParameter());
+			}
+			else
+			{
+				mRenderSystem->BindShader(nullptr);
+			}
+			mRenderCacheSubMeshesShadowRef.pop();
+		}
+	}
+
+	void SceneManager::DrawAllInRefQueue(std::queue<SubMesh*>& queue)
+	{
+		while (!queue.empty())
+		{
+			SubMesh* sm = queue.front();
+			// 深度模板，无深度信息写入，写入模板值
+			if (sm->GetDepthStencilType() == DepthStencilType::DST_NO_DEPTH_WRITE_WRITE_STECIL)
+			{
+				mRenderSystem->SetDepthStencilType(sm->GetDepthStencilType());
+				mRenderSystem->SetStencilRef(sm->GetStencilRef());
+			}
+			else
+			{
+				// 在模板值为1的地方绘制（即镜面上）
+				mRenderSystem->SetDepthStencilType(DepthStencilType::DST_DRAW_WITH_STECIL);
+				mRenderSystem->SetStencilRef(1);
+				if (sm->UseRasterizer())
+				{
+					// 正面裁剪的改为反面
+					// 反面改成正面
+					// 不裁剪的保持原状
+					if (sm->GetRasterizerType() == RasterizerType::RT_CULL_CLOCKWISE)
+					{
+						mRenderSystem->SetRasterizerType(RasterizerType::RT_CULL_COUNTERCLOCKWISE);
+					}
+					else if (sm->GetRasterizerType() == RasterizerType::RT_CULL_COUNTERCLOCKWISE)
+					{
+						mRenderSystem->SetRasterizerType(RasterizerType::RT_CULL_CLOCKWISE);
+					}
+					else
+					{
+						mRenderSystem->SetRasterizerType(sm->GetRasterizerType());
+					}
+				}
+				else
+				{
+					// 默认为背面裁剪，反射后改为正面
+					mRenderSystem->SetRasterizerType(RasterizerType::RT_CULL_CLOCKWISE);
+				}
+			}
+			// 混合
+			if (sm->UseBlend())
+			{
+				mRenderSystem->SetBlendType(sm->GetBlendType());
+			}
+			// 根据SceneNode设置Shader的相关变量
+			Shader* shader = sm->GetShader();
+			if (shader)
+			{
+				// 变换矩阵
+				shader->SetWorldViewProj(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation() *
+					GetActiveCamera()->GetViewMatrix() *
+					GetActiveCamera()->GetProjectionMatrix());
+				shader->SetWorld(sm->GetParent()->GetSceneNodeBelongsTo()->GetAbsoluteTransformation());
+				shader->SetView(GetActiveCamera()->GetViewMatrix());
+				shader->SetProj(GetActiveCamera()->GetProjectionMatrix());
+				shader->SetEyePos(GetActiveCamera()->GetPosition());
+				// 材质
+				auto& textures = sm->GetTextures();
+				for (size_t i = 0; i < textures.size(); i++)
+				{
+					mRenderSystem->SetTexture(i, textures[i]);
+				}
+				shader->SetUseTexture(sm->GetTextures().size() > 0);
+				shader->SetUseNormalMap(sm->GetTextures().size() > 1);
+				// 灯光
+				SetLight(shader);
+				// 材质
+				shader->SetMaterial(*(sm->GetMaterial()));
+				// 非阴影
+				shader->SetEnableShadow(false);
+				// 反射
+				shader->SetEnableReflect(true);
+				// 设置Shader
+				mRenderSystem->BindShader(shader);
+				// 渲染
+				mRenderSystem->Render(sm->GetRenderParameter());
+				// 物体的阴影入队
+				if (sm->IsEnableShadow())
+				{
+					mRenderCacheSubMeshesShadowRef.push(sm);
+				}
+			}
+			else
+			{
+				mRenderSystem->BindShader(nullptr);
+			}
+			queue.pop();
+		}
+	}
+
 	void SceneManager::DrawAllInQueue(std::queue<SubMesh*>& queue)
 	{
 		while (!queue.empty())
 		{
 			SubMesh* sm = queue.front();
-			//const BoundingBox& bb = sm->GetParent()->GetBoundingBox();
-			//// 到三边距离均为0不进行裁剪
-			//if (bb.mLengthToSides != Core::SVector3{ 0.0f, 0.0f, 0.0f })
-			//{
-			//	if (!mActiveCamera->CheckRectangle(bb))
-			//	{
-			//		std::cout << sm->GetParent()->GetName() << std::endl;
-			//		queue.pop();
-			//		continue;
-			//	}
-			//}
-
+			// 到三边距离均为0不进行裁剪
+			const BoundingBox& bb = sm->GetParent()->GetBoundingBox();
+			if (bb.mLengthToSides != Core::SVector3{ 0.0f, 0.0f, 0.0f })
+			{
+				if (!mActiveCamera->CheckRectangle(bb))
+				{
+					std::cout << sm->GetParent()->GetName() << std::endl;
+					queue.pop();
+					continue;
+				}
+			}
 			// 深度模板
 			if (sm->UseDepthStencil())
 			{
 				mRenderSystem->SetDepthStencilType(sm->GetDepthStencilType());
 				mRenderSystem->SetStencilRef(sm->GetStencilRef());
 			}
-
 			// 光栅化
 			if (sm->UseRasterizer())
 			{
 				mRenderSystem->SetRasterizerType(sm->GetRasterizerType());
 			}
-
 			// 混合
 			if (sm->UseBlend())
 			{
 				mRenderSystem->SetBlendType(sm->GetBlendType());
 			}
-
 			// 根据SceneNode设置Shader的相关变量
 			Shader* shader = sm->GetShader();
 			if (shader)
@@ -568,121 +704,17 @@ namespace Soul
 				}
 				shader->SetUseTexture(sm->GetTextures().size() > 0);
 				shader->SetUseNormalMap(sm->GetTextures().size() > 1);
-
+				shader->SetMaterial(*(sm->GetMaterial()));
 				// 灯光
-				int slotD = 0;
-				int slotP = 0;
-				int slotS = 0;
-				for (size_t i = 0; i < mRenderCacheLightList.size(); i++)
-				{
-					LIGHT_TYPE lt = mRenderCacheLightList[i]->GetType();
-					switch (lt)
-					{
-					case Soul::LIGHT_TYPE::LT_NONE:
-					{
-						break;
-					}
-					case Soul::LIGHT_TYPE::LT_DIRECTIONAL:
-					{
-						DirectionalLight dl;
-						dl.Ambient = mRenderCacheLightList[i]->GetAmbient();
-						dl.Diffuse = mRenderCacheLightList[i]->GetDiffuse();
-						dl.Specular = mRenderCacheLightList[i]->GetSpecular();
-						dl.Direction = mRenderCacheLightList[i]->GetDirection();
-						shader->SetDirectinalLight(slotD++, dl);
-						break;
-					}
-					case Soul::LIGHT_TYPE::LT_POINT:
-					{
-						PointLight pl;
-						pl.Ambient = mRenderCacheLightList[i]->GetAmbient();
-						pl.Diffuse = mRenderCacheLightList[i]->GetDiffuse();
-						pl.Specular = mRenderCacheLightList[i]->GetSpecular();
-						pl.Att = mRenderCacheLightList[i]->GetAtt();
-						pl.Position = mRenderCacheLightList[i]->GetPosition();
-						pl.Range = mRenderCacheLightList[i]->GetRange();
-						shader->SetPointLight(slotP++, pl);
-						break;
-					}
-					case Soul::LIGHT_TYPE::LT_SPOT:
-					{
-						SpotLight sl;
-						sl.Spot = mRenderCacheLightList[i]->GetSpot();
-						sl.Ambient = mRenderCacheLightList[i]->GetAmbient();
-						sl.Diffuse = mRenderCacheLightList[i]->GetDiffuse();
-						sl.Specular = mRenderCacheLightList[i]->GetSpecular();
-						sl.Att = mRenderCacheLightList[i]->GetAtt();
-						sl.Position = mRenderCacheLightList[i]->GetPosition();
-						sl.Range = mRenderCacheLightList[i]->GetRange();
-						sl.Direction = mRenderCacheLightList[i]->GetDirection();
-						shader->SetSpotLight(slotS++, sl);
-						break;
-					}
-					default:
-					{
-						break;
-					}
-					}
-				}
-				// 设置各类灯光的数量
-				shader->SetPointLightNum(slotP);
-				shader->SetDirectinalLightNum(slotD);
-				shader->SetSpotLightNum(slotS);
+				SetLight(shader);
 				// 非阴影
 				shader->SetEnableShadow(false);
 				// 非反射
 				shader->SetEnableReflect(false);
-				// 材质
-				shader->SetMaterial(*(sm->GetMaterial()));
 				// 设置Shader
 				mRenderSystem->BindShader(shader);
 				// 渲染
 				mRenderSystem->Render(sm->GetRenderParameter());
-				// 渲染反射
-				if (sm->IsEnableReflect())
-				{
-					shader->SetEnableReflect(true);
-					// 在模板值为1的地方绘制（即镜面上）
-					mRenderSystem->SetDepthStencilType(DepthStencilType::DST_DRAW_WITH_STECIL);
-					mRenderSystem->SetStencilRef(1);
-					// 光栅化与原来的裁剪方式相反
-					if (sm->UseRasterizer())
-					{
-						if (sm->GetRasterizerType() == RasterizerType::RT_CULL_CLOCKWISE)
-						{
-							mRenderSystem->SetRasterizerType(RasterizerType::RT_CULL_COUNTERCLOCKWISE);
-						}
-						else if (sm->GetRasterizerType() == RasterizerType::RT_CULL_COUNTERCLOCKWISE)
-						{
-							mRenderSystem->SetRasterizerType(RasterizerType::RT_CULL_COUNTERCLOCKWISE);
-						}
-					}
-					else
-					{
-						mRenderSystem->SetRasterizerType(RasterizerType::RT_CULL_CLOCKWISE);
-					}
-					mRenderSystem->Render(sm->GetRenderParameter());
-					// 绘制反射物体的阴影
-					if (sm->IsEnableShadow())
-					{
-						shader->SetEnableShadow(true);
-						// 黑色材质
-						static Material materialShadow;
-						materialShadow.ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
-						materialShadow.diffuse = { 0.0f, 0.0f, 0.0f, 0.8f };
-						materialShadow.specular = { 0.0f, 0.0f, 0.0f, 16.0f };
-						shader->SetMaterial(materialShadow);
-						// 不使用纹理
-						shader->SetUseTexture(false);
-						// 禁止二次混合，且在模板值为1的地方绘制
-						mRenderSystem->SetDepthStencilType(DepthStencilType::DST_NO_DOUBLE_BLEND);
-						mRenderSystem->SetStencilRef(1);
-						// 开启透明混合
-						mRenderSystem->SetBlendType(BlendType::BT_TRANSPARENT);
-						// 渲染阴影
-						mRenderSystem->Render(sm->GetRenderParameter());
-					}
-				}
 				// 渲染非反射物体的阴影
 				if (sm->IsEnableShadow())
 				{
@@ -698,7 +730,7 @@ namespace Soul
 					shader->SetUseTexture(false);
 					// 禁止二次混合，且在模板值为1的地方绘制
 					mRenderSystem->SetDepthStencilType(DepthStencilType::DST_NO_DOUBLE_BLEND);
-					mRenderSystem->SetStencilRef(1);
+					mRenderSystem->SetStencilRef(2);
 					// 开启透明混合
 					mRenderSystem->SetBlendType(BlendType::BT_TRANSPARENT);
 					// 渲染阴影
@@ -709,9 +741,70 @@ namespace Soul
 			{
 				mRenderSystem->BindShader(nullptr);
 			}
-
 			queue.pop();
 		}
+	}
+
+	void SceneManager::SetLight(Shader* shader)
+	{
+		int slotD = 0;
+		int slotP = 0;
+		int slotS = 0;
+		for (size_t i = 0; i < mRenderCacheLightList.size(); i++)
+		{
+			LIGHT_TYPE lt = mRenderCacheLightList[i]->GetType();
+			switch (lt)
+			{
+			case Soul::LIGHT_TYPE::LT_NONE:
+			{
+				break;
+			}
+			case Soul::LIGHT_TYPE::LT_DIRECTIONAL:
+			{
+				DirectionalLight dl;
+				dl.Ambient = mRenderCacheLightList[i]->GetAmbient();
+				dl.Diffuse = mRenderCacheLightList[i]->GetDiffuse();
+				dl.Specular = mRenderCacheLightList[i]->GetSpecular();
+				dl.Direction = mRenderCacheLightList[i]->GetDirection();
+				shader->SetDirectinalLight(slotD++, dl);
+				break;
+			}
+			case Soul::LIGHT_TYPE::LT_POINT:
+			{
+				PointLight pl;
+				pl.Ambient = mRenderCacheLightList[i]->GetAmbient();
+				pl.Diffuse = mRenderCacheLightList[i]->GetDiffuse();
+				pl.Specular = mRenderCacheLightList[i]->GetSpecular();
+				pl.Att = mRenderCacheLightList[i]->GetAtt();
+				pl.Position = mRenderCacheLightList[i]->GetPosition();
+				pl.Range = mRenderCacheLightList[i]->GetRange();
+				shader->SetPointLight(slotP++, pl);
+				break;
+			}
+			case Soul::LIGHT_TYPE::LT_SPOT:
+			{
+				SpotLight sl;
+				sl.Spot = mRenderCacheLightList[i]->GetSpot();
+				sl.Ambient = mRenderCacheLightList[i]->GetAmbient();
+				sl.Diffuse = mRenderCacheLightList[i]->GetDiffuse();
+				sl.Specular = mRenderCacheLightList[i]->GetSpecular();
+				sl.Att = mRenderCacheLightList[i]->GetAtt();
+				sl.Position = mRenderCacheLightList[i]->GetPosition();
+				sl.Range = mRenderCacheLightList[i]->GetRange();
+				sl.Direction = mRenderCacheLightList[i]->GetDirection();
+				shader->SetSpotLight(slotS++, sl);
+				break;
+			}
+			default:
+			{
+				break;
+			}
+			}
+		}
+		// 设置各类灯光的数量
+		shader->SetPointLightNum(slotP);
+		shader->SetDirectinalLightNum(slotD);
+		shader->SetSpotLightNum(slotS);
 	}
 
 	void SceneManager::ProcessVisibleGameObject()
@@ -738,9 +831,17 @@ namespace Soul
 		OnRegisterSceneNode();
 		// 处理可见游戏物体
 		ProcessVisibleGameObject();
-		// 对每个节点所绑定的SubMesh进行渲染
+		// 渲染反射物体
+		DrawAllInRefQueue(mRenderCacheSubMeshesRef);
+		// 渲染反射阴影
+		DrawAllInShadowQueue(mRenderCacheSubMeshesShadowRef);
+		// 渲染反射透明物体
+		DrawAllInRefQueue(mRenderCacheSubMeshesBlendRef);
+		// 渲染正常物体
 		DrawAllInQueue(mRenderCacheSubMeshes);
+		// 渲染正常透明物体
 		DrawAllInQueue(mRenderCacheSubMeshesBlend);
+		// 清理临时list
 		mRenderCacheLightList.clear();
 		mCameraNodeList.clear();
 		mLightNodeList.clear();
@@ -748,14 +849,28 @@ namespace Soul
 	}
 	void SceneManager::EnqueueSubMeshQueue(SubMesh* subMesh)
 	{
-		mRenderCacheSubMeshes.push(subMesh);
 		if (subMesh->GetBlendType() == BlendType::BT_TRANSPARENT)
 		{
+			// 透明非反射
 			mRenderCacheSubMeshesBlend.push(subMesh);
 		}
 		else
 		{
+			// 非反射
 			mRenderCacheSubMeshes.push(subMesh);
+		}
+		if (subMesh->IsEnableReflect())
+		{
+			if (subMesh->GetBlendType() == BlendType::BT_TRANSPARENT)
+			{
+				// 透明反射
+				mRenderCacheSubMeshesBlendRef.push(subMesh);
+			}
+			else
+			{
+				// 反射
+				mRenderCacheSubMeshesRef.push(subMesh);
+			}
 		}
 	}
 }

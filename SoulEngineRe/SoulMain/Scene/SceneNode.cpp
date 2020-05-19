@@ -120,13 +120,18 @@ namespace Soul
 
 	void SceneNode::AttachObj(GameObject* obj)
 	{
-		mAttachedGameObject = obj;
+		mAttachedGameObject.push_back(obj);
 		obj->SetSceneNodeBelongsTo(this);
 	}
 
-	void SceneNode::DetachObj()
+	void SceneNode::DetachObj(GameObject* obj)
 	{
-		mAttachedGameObject = nullptr;
+		auto it = std::find(mAttachedGameObject.begin(), mAttachedGameObject.end(), obj);
+		if (it != mAttachedGameObject.end())
+		{
+			obj->SetSceneNodeBelongsTo(nullptr);
+			mAttachedGameObject.erase(it);
+		}
 	}
 
 	void SceneNode::UpdateAbsolutePosition()

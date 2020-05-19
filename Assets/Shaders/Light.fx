@@ -130,14 +130,14 @@ float4 PS(VertexOut vertIn) : SV_Target
 	DirectionalLight dirLight = gDirLight[i];
 	[unroll]
     for (i = 0; i < gNumDirLight; ++i)
-    {
+    {/*
 		dirLight = gDirLight[i];
 		[flatten]
         if (gEnableReflect)
         {
             dirLight.Direction = mul(dirLight.Direction, (float3x3) gReflection);
-        }
-		ComputeDirectionalLight(gMaterial, dirLight, NormalW, toEyeW, A, D, S);
+        }*/
+		ComputeDirectionalLight(gMaterial, gDirLight[i], NormalW, toEyeW, A, D, S);
 		ambient += A;  
 		diffuse += D;
 		spec += S;

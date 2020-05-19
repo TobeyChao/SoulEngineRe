@@ -48,8 +48,13 @@ namespace Soul
 	private:
 		void SetCustomEffect(SubMesh* subMesh, const json& effctSetting);
 
+		void DrawAllInShadowQueue(std::queue<SubMesh*>& queue);
+
+		void DrawAllInRefQueue(std::queue<SubMesh*>& queue);
+
 		void DrawAllInQueue(std::queue<SubMesh*>& queue);
 
+		void SetLight(Shader* shader);
 	private:
 		// 需要渲染的所有场景节点
 		std::vector<SceneNode*> mCameraNodeList;
@@ -62,6 +67,9 @@ namespace Soul
 		// 当前激活的视口
 		Viewport* mActiveViewport;
 		// 需要渲染的游戏物体
+		std::queue<SubMesh*> mRenderCacheSubMeshesRef;
+		std::queue<SubMesh*> mRenderCacheSubMeshesBlendRef;
+		std::queue<SubMesh*> mRenderCacheSubMeshesShadowRef;
 		std::queue<SubMesh*> mRenderCacheSubMeshes;
 		std::queue<SubMesh*> mRenderCacheSubMeshesBlend;
 		// 需要设置的灯光list

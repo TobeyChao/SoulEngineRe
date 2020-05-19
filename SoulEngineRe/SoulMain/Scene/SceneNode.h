@@ -41,7 +41,7 @@ namespace Soul
 
 		void AttachObj(GameObject* obj);
 
-		void DetachObj();
+		void DetachObj(GameObject* obj);
 
 		void UpdateAbsolutePosition();
 
@@ -93,6 +93,6 @@ namespace Soul
 
 		std::vector<SceneNode*> mChildren;
 
-		GameObject* mAttachedGameObject;
+		std::vector<GameObject*> mAttachedGameObject;
 	};
 }
