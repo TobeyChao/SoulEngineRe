@@ -26,20 +26,6 @@ namespace Soul
 	{
 		mParticlesMesh = particlesMesh;
 
-		mParticleEmitCenter = { 0.f, 0.f , 0.f };
-		if (createParameters.contains("particle_emit_center_x"))
-		{
-			mParticleEmitCenter.x = createParameters["particle_emit_center_x"];
-		}
-		if (createParameters.contains("particle_emit_center_y"))
-		{
-			mParticleEmitCenter.y = createParameters["particle_emit_center_y"];
-		}
-		if (createParameters.contains("particle_emit_center_z"))
-		{
-			mParticleEmitCenter.z = createParameters["particle_emit_center_z"];
-		}
-
 		// Set the random deviation of where the particles can be located when emitted.
 		mParticleDeviation = { 1.0f, 1.0f, 1.0f };
 		if (createParameters.contains("particle_emit_deviation_x"))
@@ -176,14 +162,14 @@ namespace Soul
 			mCurrentParticleCount++;
 
 			std::uniform_real_distribution<float> XDist(
-				mParticleEmitCenter.x - mParticleDeviation.x,
-				mParticleEmitCenter.x + mParticleDeviation.x);
+				-mParticleDeviation.x,
+				mParticleDeviation.x);
 			std::uniform_real_distribution<float> YDist(
-				mParticleEmitCenter.y - mParticleDeviation.y,
-				mParticleEmitCenter.y + mParticleDeviation.y);
+				-mParticleDeviation.y,
+				mParticleDeviation.y);
 			std::uniform_real_distribution<float> ZDist(
-				mParticleEmitCenter.z - mParticleDeviation.z,
-				mParticleEmitCenter.z + mParticleDeviation.z);
+				-mParticleDeviation.z,
+				mParticleDeviation.z);
 
 			positionX = XDist(rng);
 			positionY = YDist(rng);

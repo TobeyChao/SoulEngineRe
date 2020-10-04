@@ -1,10 +1,10 @@
 #include "pch.h"
 #include "../SoulEngineRe/RenderSystem/DirectX11/D3D11Texture.h"
 
-class RenderSample final : public Soul::App::Application
+class AudioSample final : public Soul::App::Application
 {
 public:
-	~RenderSample()
+	~AudioSample()
 	{
 		delete sceneMgr;
 	}
@@ -23,13 +23,13 @@ public:
 
 		Shader* shader = ShaderManager::GetInstance().GetShaderByName(L"Basic");
 
+		shader->SetFogColor({ 0.752941251f, 0.752941251f, 0.752941251f, 1.000000000f });
+		shader->SetFogRange(200.0f);
+		shader->SetFogStart(80.0f);
+		shader->SetFogState(true);
+
 		shader->SetShadowMatrix(Core::MatrixShadow({ 0.0f, 1.0f, 0.0f, -0.01f }, { 0.5f, 1.f, -0.5f, 0.0f }));
 		shader->SetShadowPlane({ 0.0f, 1.0f, 0.0f, -0.01f });
-
-		//shader->SetFogColor({ 0.752941251f, 0.752941251f, 0.752941251f, 1.000000000f });
-		//shader->SetFogRange(200.0f);
-		//shader->SetFogStart(80.0f);
-		//shader->SetFogState(true);
 
 		shader->SetReflectMatrix(Core::MatrixReflect({ 0.0f, 0.0f, 1.0f, -5.0f }));
 
@@ -43,7 +43,6 @@ public:
 		sky->GetSubMesh(0)->SetDepthStencil(DepthStencilType::DST_LESS_EQUAL, 0);
 		sky->GetSubMesh(0)->SetRasterizer(RasterizerType::RT_CULL_CLOCKWISE);
 		nodeSky = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeSky->AttachObj(sky);
 		nodeSky->SetPosition({ 0.f, 0.f, 0.f });
 		nodeSky->SetScale({ 10.0f, 10.0f, 10.0f });
 
@@ -59,7 +58,7 @@ public:
 		terrain = sceneMgr->CreateGameObject("terrain", terrainSet);
 		terrain->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Terrain/dirt01d.tga"));
 		nodeTerrain = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeTerrain->SetPosition({ 0.0f, -40.0f, 0.0f });
+		nodeTerrain->SetPosition({ 0.0f, -33.0f, 0.0f });
 		nodeTerrain->AttachObj(terrain);
 #pragma endregion
 
@@ -73,8 +72,8 @@ public:
 		planeSet["maxU"] = 5.0f;
 		planeSet["maxV"] = 5.0f;
 		plane = sceneMgr->CreateGameObject("plane", SIMPLE_GAMEOBJECT::SG_PLANE, planeSet);
-		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/catton_grpund.jpg"));
-		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/catton_grpund.jpg_NORM.jpg"));
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks.dds"));
+		plane->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks_NORM.png"));
 		plane->GetSubMesh(0)->SetDepthStencil(DepthStencilType::DST_WRITE_STECIL, 2);
 		nodePlane = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 		nodePlane->AttachObj(plane);
@@ -95,8 +94,8 @@ public:
 		water->GetSubMesh(0)->SetDepthStencil(DepthStencilType::DST_NO_DEPTH_WRITE, 0);
 		water->GetSubMesh(0)->SetRasterizer(RasterizerType::RT_CULL_NONE);
 		nodeWater = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeWater->AttachObj(water);
-		nodeWater->SetPosition({ 0.f, 0.5f, 0.f });
+		//nodeWater->AttachObj(water);
+		nodeWater->SetPosition({ 0.f, 1.5f, 0.f });
 #pragma endregion
 
 #pragma region SimpleGameObject
@@ -111,12 +110,14 @@ public:
 		for (size_t i = 0; i < 4; i++)
 		{
 			cylinder[i] = sceneMgr->CreateGameObject("cylinder", SIMPLE_GAMEOBJECT::SG_CYLINDER, cylinderSet);
-			cylinder[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks.dds"));
-			cylinder[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/bricks_NORM.png"));
+			cylinder[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/catton_grpund.jpg"));
 			cylinder[i]->GetSubMesh(0)->EnableShadow(true);
 			nodeCylinder[i] = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 			nodeCylinder[i]->AttachObj(cylinder[i]);
-		}		
+		}
+
+		cylinder[0]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/catton_grpund.jpg_NORM.jpg"));
+		cylinder[3]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/catton_grpund.jpg_NORM.jpg"));
 		nodeCylinder[0]->SetPosition({ 8.f, 2.51f, 8.f });
 		nodeCylinder[1]->SetPosition({ 8.f, 2.51f, -8.f });
 		nodeCylinder[2]->SetPosition({ -8.f, 2.51f, 8.f });
@@ -126,9 +127,9 @@ public:
 		json sphereSet;
 		for (size_t i = 0; i < 4; i++)
 		{
-			sphere[i] = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, cylinderSet);
-			sphere[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones.dds"));
-			sphere[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/stones_NORM.png"));
+			sphere[i] = sceneMgr->CreateGameObject("sphere", SIMPLE_GAMEOBJECT::SG_SPHERE, sphereSet);
+			sphere[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/Redocn_2013122305390429.jpg"));
+			sphere[i]->GetSubMesh(0)->PushTexture(TextureManager::GetInstance().GetTexture(L"../Assets/Images/Redocn_2013122305390429_NORM.png"));
 			sphere[i]->GetSubMesh(0)->EnableShadow(true);
 			nodeSphere[i] = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
 			nodeSphere[i]->AttachObj(sphere[i]);
@@ -145,17 +146,15 @@ public:
 			it->EnableShadow(true);
 		}
 		nodeMesh = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeMesh->SetPosition({ 0.f, 0.0f, 0.f });
+		nodeMesh->SetPosition({ 0.f, 0.5f, 0.f });
 		nodeMesh->SetScale({ 0.5f, 0.5f, 0.5f });
 		nodeMesh->AttachObj(mesh);
 #pragma endregion
 
+		// Particles
 		particleEmitter = new ParticleEmitter();
 		json particleSet;
 		particleSet["texture"] = "../Assets/Images/particle_texture.png";
-		particleSet["particle_emit_center_x"] = 0.0f;
-		particleSet["particle_emit_center_y"] = 5.0f;
-		particleSet["particle_emit_center_z"] = 0.0f;
 		particleSet["particle_emit_deviation_x"] = 10.f;
 		particleSet["particle_emit_deviation_y"] = 0.1f;
 		particleSet["particle_emit_deviation_z"] = 10.f;
@@ -168,26 +167,16 @@ public:
 		particleSet["particle_lifetime_max"] = 4.0f;
 		particleSet["particles_max_num"] = 100.0f;
 		particleSet["particle_size"] = 0.2f;
-		particleSet["particles_per_second"] = 100;
+		particleSet["particles_per_second"] = 20;
 		particleList = sceneMgr->CreateGameObject("particle", particleEmitter, particleSet);
 		nodeParticles = sceneMgr->AddChild(new SceneNodeRenderable(sceneMgr, sceneMgr));
-		nodeParticles->SetPosition({ 0.0f, 3.0f, 0.0f });
+		nodeParticles->SetPosition({ 0.0f, 10.0f, 0.0f });
 		nodeParticles->AttachObj(particleList);
 
 #pragma region CameraAndRt
 		camera = new SceneNodeCamera(sceneMgr, sceneMgr, 101);
-		secondCamera = new SceneNodeCamera(sceneMgr, sceneMgr, 102);
-		secondCamera->SetPosition({ 0.0f, 10.0f, -10.0f });
-		secondCamera->SetRotation({ Core::SM_PIDIV4, 0.f, 0.f });
 		sceneMgr->AddChild(camera);
-		sceneMgr->AddChild(secondCamera);
 		mWindow->AddViewport(camera, 0, 0.0f, 0.0f, 1.f, 1.f);
-		//ITexture* tex = TextureManager::GetInstance().CreateTexture(L"rtt", { 1024, 1024 }, false);
-		//D3D11RenderTexture* rtt = dynamic_cast<D3D11RenderTexture*>(tex);
-		//rtt->AddViewport(secondCamera, 1, 0.0f, 0.0f, 1.f, 1.f);
-		//rtt->SetClearColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-
-		//GetLauncher()->GetActiveRenderSystem()->AddRenderTarget(rtt);
 #pragma endregion
 		return true;
 	}
@@ -200,30 +189,7 @@ public:
 		{
 			return false;
 		}
-		if (Input::DXInput::GetInstance().IsPressed(DIK_DOWN))
-		{
-			meshPos.z -= 0.03f;
-		}
-		if (Input::DXInput::GetInstance().IsPressed(DIK_UP))
-		{
-			meshPos.z += 0.03f;
-		}
-		if (Input::DXInput::GetInstance().IsPressed(DIK_RIGHT))
-		{
-			meshPos.x += 0.03f;
-		}
-		if (Input::DXInput::GetInstance().IsPressed(DIK_LEFT))
-		{
-			meshPos.x -= 0.03f;
-		}
-		if (Input::DXInput::GetInstance().IsPressed(DIK_PGUP))
-		{
-			meshPos.y += 0.03f;
-		}
-		if (Input::DXInput::GetInstance().IsPressed(DIK_PGDN))
-		{
-			meshPos.y -= 0.03f;
-		}
+		sphereRotation.y += Timer::DeltaTime();
 
 		if (Input::DXInput::GetInstance().IsPressed(DIK_1))
 		{
@@ -232,6 +198,27 @@ public:
 		else if (Input::DXInput::GetInstance().IsPressed(DIK_2))
 		{
 			cameraChoose = 2;
+		}
+
+		if (Input::DXInput::GetInstance().IsPressed(DIK_F1) && !Input::DXInput::GetInstance().IsLastPressed(DIK_F1))
+		{
+			if (fog == 2)
+			{
+				nodeSky->DetachObj(sky);
+				Shader* shader = ShaderManager::GetInstance().GetShaderByName(L"Basic");
+				shader->SetFogState(true);
+				fog = 1;
+			}
+		}
+		else if (Input::DXInput::GetInstance().IsPressed(DIK_F2) && !Input::DXInput::GetInstance().IsLastPressed(DIK_F2))
+		{
+			if (fog == 1)
+			{
+				Shader* shader = ShaderManager::GetInstance().GetShaderByName(L"Basic");
+				shader->SetFogState(false);
+				nodeSky->AttachObj(sky);
+				fog = 2;
+			}
 		}
 
 		if ((Input::DXInput::GetInstance().GetMouseState().lX != Input::DXInput::GetInstance().GetLastMouseState().lX) ||
@@ -259,26 +246,26 @@ public:
 		nodeSky->SetPosition(cameraPos);
 		camera->SetRotation(cameraRotate);
 
-		nodeMesh->SetPosition(meshPos);
-
+		for (size_t i = 0; i < 4; i++)
+		{
+			nodeSphere[i]->SetRotation(sphereRotation);
+		}
 		return Application::FrameStarted();
 	}
 
 	bool FrameUpdated() override
 	{
-		const Core::SVector2 pos = Input::DXInput::GetInstance().GetMouseLocation();
-		Ray ray = Ray::ScreenToRay(*camera, pos);
-
 		std::wostringstream buffer;
 		buffer << "FPS:" << 1.0f / Timer::DeltaTime() << std::endl
 			<< L"CPU占用:" << GetCPUUSe() << std::endl
 			<< L"按1切换自由视角摄像机!" << std::endl
 			<< L"按2切换第三人称摄像机!" << std::endl
-			<< L"CameraPos:(" << cameraPos.x << "," << cameraPos.y << "," << cameraPos.z << ")" << std::endl
-			<< L"RayDir:(" << ray.mDirection.x << "," << ray.mDirection.y << "," << ray.mDirection.z << ")" << std::endl;
+			<< L"按F1切换雾效" << std::endl
+			<< L"按F2切换天空盒" << std::endl
+			<< L"CameraPos:(" << cameraPos.x << "," << cameraPos.y << "," << cameraPos.z << ")" << std::endl;
 		std::wstring info = buffer.str();
 
-		RenderSystem2D::GetInstance().DrawTextW(info, { 10, 10 });
+		//RenderSystem2D::GetInstance().DrawTextW(info, { 10, 10 });
 		return Application::FrameUpdated();
 	}
 
@@ -328,10 +315,10 @@ public:
 		spotLight3->SetRange(100.0f);
 
 		dirLight = sceneMgr->CreateLight("dirLight", LIGHT_TYPE::LT_DIRECTIONAL);
-		dirLight->SetAmbient({ 0.8f, 0.8f, 0.8f, 1.0f });
-		dirLight->SetDiffuse({ 0.8f, 0.8f, 0.8f, 1.0f });
-		dirLight->SetSpecular({ 0.5f, 0.5f, 0.5f, 1.0f });
-		dirLight->SetDirection({ -0.5f, -1.f, 0.5f });
+		dirLight->SetAmbient({ 1.f, 1.f, 1.f, 1.0f });
+		dirLight->SetDiffuse({ 1.f, 1.f, 1.f, 1.0f });
+		dirLight->SetSpecular({ 0.5f, 0.5f, 0.5f, 16.0f });
+		dirLight->SetDirection({ -0.577f, -0.577f, 0.577f });
 
 		lightNode = sceneMgr->AddChild(new SceneNodeLight(sceneMgr, sceneMgr));
 		lightNode->AttachObj(dirLight);
@@ -404,9 +391,12 @@ private:
 
 	SceneNode* nodeWater{};
 	GameObject* water{};
-	
+
 	GameObject* plane{};
 	SceneNode* nodePlane{};
+
+	GameObject* plane2{};
+	SceneNode* nodePlane2{};
 
 	IAudioBuffer* audio;
 
@@ -418,12 +408,12 @@ private:
 	Light* dirLight{};
 
 	SceneNodeCamera* camera{};
-	SceneNodeCamera* secondCamera{};
 	SceneManager* sceneMgr{};
-	Core::SVector3 meshPos = { 0.f, 0.51f, 0.f };
+	Core::SVector3 sphereRotation = { 0.f, 0.51f, 0.f };
 	Core::SVector3 cameraPos = { 0.f, 8.f, -8.f };
 	Core::SVector3 cameraRotate = { Core::SM_PIDIV4, 0.f, 0.f };
 	int cameraChoose = 1;
+	int fog = 1;
 };
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -433,7 +423,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
-	RenderSample renderSample;
+	AudioSample renderSample;
 	if (!renderSample.Initialize())
 	{
 		return 1;

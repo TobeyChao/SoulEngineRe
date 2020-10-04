@@ -43,8 +43,6 @@ namespace Soul
 		bool UpdateBuffers();
 
 	private:
-		// 粒子的发射中心
-		Core::SVector3 mParticleEmitCenter;
 		// 粒子的发射中心偏离
 		Core::SVector3 mParticleDeviation;
 		// 粒子速度，默认z轴正方向

@@ -1,14 +1,14 @@
 {
     "render_system" : "dx11_render_system",
     "shader_manager_config" : "../Assets/Shaders/Shader.json",
-    "audio_system" : "xaudio2",
+    "audio_system" : "dsound",
     "d3d_feature_level" : "11.1",
     "d3d_driver_type" : "hardware",
     "window_title" : "渲染 demo",
     "icon" : "Soul.ico",
-    "fullscreen" : true,
-    "screen_width" : 1920,
-    "screen_height" : 1080,
+    "fullscreen" : false,
+    "screen_width" : 1600,
+    "screen_height" : 900,
     "vsync" : false,
-    "msaa" : 0
+    "msaa" : 8
 }

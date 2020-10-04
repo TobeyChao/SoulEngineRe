@@ -656,17 +656,21 @@ namespace Soul
 		while (!queue.empty())
 		{
 			SubMesh* sm = queue.front();
-			// 到三边距离均为0不进行裁剪
-			const BoundingBox& bb = sm->GetParent()->GetBoundingBox();
-			if (bb.mLengthToSides != Core::SVector3{ 0.0f, 0.0f, 0.0f })
+			if (mIsEnableFrustumCulling)
 			{
-				if (!mActiveCamera->CheckRectangle(bb))
+				// 到三边距离均为0不进行裁剪
+				const BoundingBox& bb = sm->GetParent()->GetBoundingBox();
+				if (bb.mLengthToSides != Core::SVector3{ 0.0f, 0.0f, 0.0f })
 				{
-					std::cout << sm->GetParent()->GetName() << std::endl;
-					queue.pop();
-					continue;
+					if (!mActiveCamera->CheckRectangle(bb))
+					{
+						std::cout << sm->GetParent()->GetName() << std::endl;
+						queue.pop();
+						continue;
+					}
 				}
 			}
+			
 			// 深度模板
 			if (sm->UseDepthStencil())
 			{

@@ -45,6 +45,10 @@ namespace Soul
 
 		void ProcessVisibleGameObject() override;
 
+		bool EnableFrustumCulling(bool enable)
+		{
+			mIsEnableFrustumCulling = enable;
+		}
 	private:
 		void SetCustomEffect(SubMesh* subMesh, const json& effctSetting);
 
@@ -56,6 +60,7 @@ namespace Soul
 
 		void SetLight(Shader* shader);
 	private:
+		bool mIsEnableFrustumCulling = false;
 		// 需要渲染的所有场景节点
 		std::vector<SceneNode*> mCameraNodeList;
 		std::vector<SceneNode*> mLightNodeList;

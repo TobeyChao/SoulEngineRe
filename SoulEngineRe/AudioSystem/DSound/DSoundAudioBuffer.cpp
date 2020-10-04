@@ -56,6 +56,8 @@ namespace Soul
 			return false;
 		mIsPaused = true;
 		pDSB->Stop();
+		mPlayPos = 0;
+		mSample->SetCurrentPosition(mPlayPos);
 		return true;
 	}
 
